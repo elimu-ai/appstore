@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 public class SynchronizationService extends Service {
+
     public SynchronizationService() {
     }
 
