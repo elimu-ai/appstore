@@ -41,7 +41,7 @@ public class AppstoreApplication extends Application {
 
         // Configure Log4J
         LogConfigurator logConfigurator = new LogConfigurator();
-        logConfigurator.setFileName(logDirectory + File.separator + "appstore.log." + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()));
+        logConfigurator.setFileName(logDirectory + File.separator + "logs" + File.separator + "appstore.log." + new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()));
         logConfigurator.setRootLevel(org.apache.log4j.Level.DEBUG);
         logConfigurator.setLevel("org.apache", org.apache.log4j.Level.ERROR);
         logConfigurator.setFilePattern("%d %-5p [%c{2}]-[%L] %m%n");

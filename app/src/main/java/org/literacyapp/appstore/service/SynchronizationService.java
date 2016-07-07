@@ -1,4 +1,4 @@
-package org.literacyapp.appstore;
+package org.literacyapp.appstore.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,13 +10,18 @@ public class SynchronizationService extends Service {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    public SynchronizationService() {
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        logger.info("onStartCommand");
+
+
+
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         logger.info("onBind");
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
 }
