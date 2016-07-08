@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.literacyapp.appstore">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
+        android:name=".AppstoreApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,11 +20,14 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".SynchronizationService"
-            android:enabled="true"
-            android:exported="true">
-        </service>
-    </application>
+        <activity android:name=".PermissionActivity" />
 
+        <service android:name=".service.SynchronizationService" />
+
+        <receiver android:name=".BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
 </manifest>
