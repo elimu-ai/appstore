@@ -14,14 +14,13 @@ public class SynchronizationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         logger.info("onStartCommand");
 
-        // TODO: initiate cron job
+        // TODO: initiate hourly cron job
 
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        logger.info("onBind");
         return null;
     }
 }
