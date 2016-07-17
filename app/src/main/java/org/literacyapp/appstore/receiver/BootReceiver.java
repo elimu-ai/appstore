@@ -1,4 +1,4 @@
-package org.literacyapp.appstore;
+package org.literacyapp.appstore.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
