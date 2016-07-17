@@ -20,7 +20,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PermissionActivity" />
         <activity android:name=".LocaleActivity" />
 
         <service android:name=".service.SynchronizationService" />
