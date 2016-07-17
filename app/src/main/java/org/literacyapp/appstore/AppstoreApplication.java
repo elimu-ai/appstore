@@ -18,6 +18,10 @@ public class AppstoreApplication extends Application {
 
     private Logger logger;
 
+//    private SQLiteDatabase db;
+//    private DaoMaster daoMaster;
+//    private DaoSession daoSession;
+
     @Override
     public void onCreate() {
         super.onCreate();

@@ -15,6 +15,7 @@ public class SynchronizationService extends Service {
         logger.info("onStartCommand");
 
         // TODO: initiate hourly cron job
+        // TODO: trigger DownloadApplicationsAsyncTask
 
         return super.onStartCommand(intent, flags, startId);
     }
