@@ -1,11 +1,14 @@
 package org.literacyapp.appstore.receiver;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
 import org.apache.log4j.Logger;
-import org.literacyapp.appstore.service.SynchronizationService;
+
+import java.util.Calendar;
 
 public class BootReceiver extends BroadcastReceiver {
 
@@ -15,8 +18,14 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         logger.info("onReceive");
 
-        logger.info("Starting SynchronizationService...");
-        Intent synchronizationServiceIntent = new Intent(context, SynchronizationService.class);
-        context.startService(synchronizationServiceIntent);
+        // Start alarm
+        Intent alarmReceiverIntent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Calendar calendarDaily = Calendar.getInstance();
+        calendarDaily.set(Calendar.HOUR_OF_DAY, 3);
+        calendarDaily.set(Calendar.MINUTE, 0);
+        calendarDaily.set(Calendar.SECOND, 0);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendarDaily.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 }

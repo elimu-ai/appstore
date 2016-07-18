@@ -1,6 +1,9 @@
 package org.literacyapp.appstore;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,9 +19,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.log4j.Logger;
-import org.literacyapp.appstore.service.SynchronizationService;
+import org.literacyapp.appstore.receiver.AlarmReceiver;
+import org.literacyapp.appstore.task.DownloadApplicationsAsyncTask;
+import org.literacyapp.appstore.util.ConnectivityHelper;
 
 import java.util.Calendar;
 
@@ -75,9 +81,15 @@ public class MainActivity extends AppCompatActivity {
         int languageResourceId = getResources().getIdentifier("language_" + localeAsString.toLowerCase(), "string", getApplicationContext().getPackageName());
         mTextViewMain.setText(getString(R.string.locale_selected) + ": " + localeAsString + " (" + getString(languageResourceId) + ")");
 
-        // 3. Start service for synchronizing applications
-        Intent synchronizationServiceIntent = new Intent(this, SynchronizationService.class);
-        startService(synchronizationServiceIntent);
+        // 3. Start alarm
+        Intent alarmReceiverIntent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Calendar calendarDaily = Calendar.getInstance();
+        calendarDaily.set(Calendar.HOUR_OF_DAY, 3);
+        calendarDaily.set(Calendar.MINUTE, 0);
+        calendarDaily.set(Calendar.SECOND, 0);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendarDaily.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
         long timeOfLastSynchronizationInMillis = sharedPreferences.getLong(PREF_LAST_SYNCHRONIZATION, 0);
         if (timeOfLastSynchronizationInMillis > 0) {
@@ -94,7 +106,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 logger.info("mButtonSynchronization onClick");
 
-                // TODO: trigger the same task as inside the SynchronizationService cron job
+                boolean isWifiEnabled = ConnectivityHelper.isWifiEnabled(getApplicationContext());
+                logger.info("isWifiEnabled: " + isWifiEnabled);
+                if (!isWifiEnabled) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.wifi_needs_to_be_enabled), Toast.LENGTH_SHORT).show();
+                } else {
+                    new DownloadApplicationsAsyncTask(getApplicationContext()).execute();
+                }
 
                 mTextViewLastSynchronization.setText(getString(R.string.synchronizing) + "...");
                 mButtonSynchronization.setVisibility(View.GONE);
