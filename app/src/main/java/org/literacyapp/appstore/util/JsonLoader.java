@@ -16,7 +16,7 @@ public class JsonLoader {
     private static Logger logger = Logger.getLogger(JsonLoader.class);
 
     public static String loadJson(String urlValue) {
-        logger.info("loadJson");
+        logger.info("loadApk");
 
         logger.info("Downloading from " + urlValue + "...");
 
@@ -27,7 +27,6 @@ public class JsonLoader {
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.setDoOutput(true);
             httpURLConnection.connect();
 
             int responseCode = httpURLConnection.getResponseCode();
