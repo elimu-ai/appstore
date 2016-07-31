@@ -14,4 +14,5 @@
     <string name="start_synchronization">Start synchronization</string>
     <string name="synchronizing">Synchronizing</string>
     <string name="wifi_needs_to_be_enabled">Wi-Fi needs to be enabled</string>
+    <string name="type_the_password">Type the password</string>
 </resources>

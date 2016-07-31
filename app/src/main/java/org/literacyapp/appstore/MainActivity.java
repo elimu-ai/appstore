@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
         logger.info("onStart");
         super.onStart();
 
+        // TODO: start by asking for root access
+
         // 1. Write permission is needed for storing Log4J files
         int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED) {
@@ -81,12 +83,24 @@ public class MainActivity extends AppCompatActivity {
         int languageResourceId = getResources().getIdentifier("language_" + localeAsString.toLowerCase(), "string", getApplicationContext().getPackageName());
         mTextViewMain.setText(getString(R.string.locale_selected) + ": " + localeAsString + " (" + getString(languageResourceId) + ")");
 
-        // 3. Start alarm
+        // 3. Password to be used for checksum generation
+        String password = sharedPreferences.getString(PasswordActivity.PREF_PASSWORD, null);
+        if (TextUtils.isEmpty(password)) {
+            // Ask user to type password
+            Intent passwordIntent = new Intent(this, PasswordActivity.class);
+            startActivity(passwordIntent);
+            return;
+        }
+
+        // 4. Start alarm
         Intent alarmReceiverIntent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Calendar calendarDaily = Calendar.getInstance();
         calendarDaily.set(Calendar.HOUR_OF_DAY, 3);
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 3) {
+            calendarDaily.add(Calendar.DATE, 1); // Makes sure the alarm doesn't trigger until tomorrow
+        }
         calendarDaily.set(Calendar.MINUTE, 0);
         calendarDaily.set(Calendar.SECOND, 0);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendarDaily.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
