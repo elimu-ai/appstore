@@ -2,35 +2,34 @@ package org.literacyapp.appstore.task;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.literacyapp.appstore.MainActivity;
 import org.literacyapp.appstore.R;
 import org.literacyapp.appstore.util.ApkLoader;
+import org.literacyapp.appstore.util.ChecksumHelper;
 import org.literacyapp.appstore.util.ConnectivityHelper;
 import org.literacyapp.appstore.util.DeviceInfoHelper;
 import org.literacyapp.appstore.util.EnvironmentSettings;
 import org.literacyapp.appstore.util.JsonLoader;
-import org.literacyapp.model.enums.Locale;
-import org.literacyapp.model.json.admin.ApplicationJson;
-import org.literacyapp.model.json.admin.ApplicationVersionJson;
+import org.literacyapp.appstore.util.UserPrefsHelper;
+import org.literacyapp.model.gson.admin.ApplicationGson;
+import org.literacyapp.model.gson.admin.ApplicationVersionGson;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.List;
 
-public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, List<ApplicationJson>> {
+public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, List<ApplicationGson>> {
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -41,7 +40,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
     }
 
     @Override
-    protected List<ApplicationJson> doInBackground(Object... objects) {
+    protected List<ApplicationGson> doInBackground(Object... objects) {
         logger.info("doInBackground");
 
         boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
@@ -50,44 +49,57 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
             logger.warn(context.getString(R.string.server_is_not_reachable));
         } else {
             // Download List of applications
-            String url = EnvironmentSettings.getBaseUrl() + "/rest/admin/application/list" +
+            String url = EnvironmentSettings.getBaseRestUrl() + "/admin/application/list" +
                     "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
-                    //"&checksum=" + ...
-                    "&locale=" + Locale.EN +
+                    "&checksum=" + ChecksumHelper.getChecksum(context) +
+                    "&locale=" + UserPrefsHelper.getLocale(context) +
                     "&deviceModel=" + DeviceInfoHelper.getDeviceModel(context) +
                     "&osVersion=" + Build.VERSION.SDK_INT +
+                    "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
                     "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
             String jsonResponse = JsonLoader.loadJson(url);
             logger.info("jsonResponse: " + jsonResponse);
-            Type type = new TypeToken<List<ApplicationJson>>(){}.getType();
-            List<ApplicationJson> applicationJsonList = new Gson().fromJson(jsonResponse, type);
-            logger.info("applicationJsonList.size(): " + applicationJsonList.size());
-            int counter = 0;
-            for (ApplicationJson applicationJson : applicationJsonList) {
-                logger.info("applicationJson.getPackageName(): " + applicationJson.getPackageName());
-
-                ApplicationVersionJson applicationVersionJson = applicationJson.getApplicationVersionJsonList().get(0);
-
-                // Install/update application
-                PackageManager packageManager = context.getPackageManager();
-                try {
-                    PackageInfo packageInfo = packageManager.getPackageInfo(applicationJson.getPackageName(), PackageManager.GET_ACTIVITIES);
-                    logger.info("The application is already installed: " + applicationJson.getPackageName());
-                    // Check if a newer version is available for download
-                    logger.info("packageInfo.versionCode: " + packageInfo.versionCode);
-                    logger.info("Newest version available for download: " + applicationVersionJson.getVersionCode());
-                    if (packageInfo.versionCode < applicationVersionJson.getVersionCode()) {
-                        // Download the APK and install it
-                        downloadAndInstallApk(applicationVersionJson);
-                    }
-                } catch (PackageManager.NameNotFoundException e) {
-                    logger.info("The application is not installed: " + applicationJson.getPackageName());
-                    // Download the APK file and install it
-                    downloadAndInstallApk(applicationVersionJson);
+            try {
+                JSONObject jsonObject = new JSONObject(jsonResponse);
+                if (!"success".equals(jsonObject.getString("result"))) {
+                    logger.warn("Download failed");
+                } else {
+                    JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
+                    // TODO
                 }
-
-                publishProgress(++counter * 100 / applicationJsonList.size());
+            } catch (JSONException e) {
+                logger.error(null, e);
             }
+
+//            Type type = new TypeToken<List<ApplicationGson>>(){}.getType();
+//            List<ApplicationGson> applicationGsonList = new Gson().fromJson(jsonResponse, type);
+//            logger.info("applicationGsonList.size(): " + applicationGsonList.size());
+//            int counter = 0;
+//            for (ApplicationGson applicationGson : applicationGsonList) {
+//                logger.info("applicationGson.getPackageName(): " + applicationGson.getPackageName());
+//
+//                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+//
+//                // Install/update application
+//                PackageManager packageManager = context.getPackageManager();
+//                try {
+//                    PackageInfo packageInfo = packageManager.getPackageInfo(applicationGson.getPackageName(), PackageManager.GET_ACTIVITIES);
+//                    logger.info("The application is already installed: " + applicationGson.getPackageName());
+//                    // Check if a newer version is available for download
+//                    logger.info("packageInfo.versionCode: " + packageInfo.versionCode);
+//                    logger.info("Newest version available for download: " + applicationVersionGson.getVersionCode());
+//                    if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
+//                        // Download the APK and install it
+//                        downloadAndInstallApk(applicationVersionGson);
+//                    }
+//                } catch (PackageManager.NameNotFoundException e) {
+//                    logger.info("The application is not installed: " + applicationGson.getPackageName());
+//                    // Download the APK file and install it
+//                    downloadAndInstallApk(applicationVersionGson);
+//                }
+//
+//                publishProgress(++counter * 100 / applicationGsonList.size());
+//            }
 
             // Update time of last synchronization
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -97,19 +109,20 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
         return null;
     }
 
-    private void downloadAndInstallApk(ApplicationVersionJson applicationVersionJson) {
+    private void downloadAndInstallApk(ApplicationVersionGson applicationVersionGson) {
         logger.info("downloadAndInstallApk");
 
-        String fileUrl = EnvironmentSettings.getBaseUrl() + applicationVersionJson.getFileUrl() +
+        String fileUrl = EnvironmentSettings.getBaseUrl() + applicationVersionGson.getFileUrl() +
                 "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
-                //"&checksum=" + ...
-                "&locale=" + Locale.EN +
+                "&checksum=" + ChecksumHelper.getChecksum(context) +
+                "&locale=" + UserPrefsHelper.getLocale(context) +
                 "&deviceModel=" + DeviceInfoHelper.getDeviceModel(context) +
                 "&osVersion=" + Build.VERSION.SDK_INT +
+                "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
                 "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
         logger.info("fileUrl: " + fileUrl);
 
-        String fileName = applicationVersionJson.getApplicationJson().getPackageName() + "-" + applicationVersionJson.getVersionCode() + ".apk";
+        String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
         logger.info("fileName: " + fileName);
 
         File apkFile = ApkLoader.loadApk(fileUrl, fileName, context);
@@ -122,7 +135,13 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
             try {
                 Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
                 process.waitFor();
-                // TODO: log output
+                // TODO: log process output
+
+                String startCommand = applicationVersionGson.getStartCommand();
+                if (!TextUtils.isEmpty(startCommand)) {
+                    logger.info("startCommand: " + startCommand);
+                    // TODO
+                }
             } catch (IOException e) {
                 logger.error("IOException: " + command, e);
             } catch (InterruptedException e) {
@@ -142,11 +161,10 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
     }
 
     @Override
-    protected void onPostExecute(List<ApplicationJson> applicationJsonList) {
+    protected void onPostExecute(List<ApplicationGson> applicationGsonList) {
         logger.info("onPostExecute");
-        super.onPostExecute(applicationJsonList);
+        super.onPostExecute(applicationGsonList);
 
         Toast.makeText(context, "Synchronization complete!", Toast.LENGTH_SHORT).show();
-        // TODO: deactivate ProgressBar
     }
 }

@@ -29,6 +29,10 @@ public class DeviceInfoHelper {
         return deviceModel;
     }
 
+    public static String getApplicationId(Context context) {
+        return context.getPackageName();
+    }
+
     public static int getAppVersionCode(Context context) {
         try {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);

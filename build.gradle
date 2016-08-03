@@ -14,6 +14,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         jcenter()
         maven {
             url "http://archiva.educativo.eu:8081/repository/internal/"

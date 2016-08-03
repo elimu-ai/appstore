@@ -4,19 +4,31 @@ import org.literacyapp.model.enums.Environment;
 
 public class EnvironmentSettings {
 
-    public static final String DOMAIN = "literacyapp.org";
-
-//      public static final Environment ENVIRONMENT = Environment.DEV;
-      public static final Environment ENVIRONMENT = Environment.TEST;
+      private static final Environment ENVIRONMENT = Environment.DEV;
+//      public static final Environment ENVIRONMENT = Environment.TEST;
 //    public static final Environment ENVIRONMENT = Environment.PROD;
+
+    public static final String PROD_DOMAIN = "literacyapp.org";
+
+    public static String getDomain() {
+        if (ENVIRONMENT == Environment.DEV) {
+            return "192.168.0.103"; // Replace with the IP address of your WIFI router
+        } else if (ENVIRONMENT == Environment.TEST) {
+            return "test." + PROD_DOMAIN;
+        } else {
+            return PROD_DOMAIN;
+        }
+    }
+
+    public static String getBaseRestUrl() {
+        return getBaseUrl() + "/rest/v1";
+    }
 
     public static String getBaseUrl() {
         if (ENVIRONMENT == Environment.DEV) {
-            return "http://192.168.1.129:8080/literacyapp-webapp"; // Replace with the IP address of your WIFI router
-        } else if (ENVIRONMENT == Environment.TEST) {
-            return "http://test." + DOMAIN;
+            return "http://" + getDomain() + ":8080/literacyapp-webapp";
         } else {
-            return "http://" + DOMAIN;
+            return "http://" + getDomain();
         }
     }
 }

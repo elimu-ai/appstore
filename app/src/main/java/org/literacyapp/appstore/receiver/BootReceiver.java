@@ -24,6 +24,9 @@ public class BootReceiver extends BroadcastReceiver {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Calendar calendarDaily = Calendar.getInstance();
         calendarDaily.set(Calendar.HOUR_OF_DAY, 3);
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 3) {
+            calendarDaily.add(Calendar.DATE, 1); // Makes sure the alarm doesn't trigger until tomorrow
+        }
         calendarDaily.set(Calendar.MINUTE, 0);
         calendarDaily.set(Calendar.SECOND, 0);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendarDaily.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
