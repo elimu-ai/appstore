@@ -65,7 +65,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
                     logger.warn("Download failed");
                 } else {
                     JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
-                    TODO
+                    // TODO
                 }
             } catch (JSONException e) {
                 logger.error(null, e);
