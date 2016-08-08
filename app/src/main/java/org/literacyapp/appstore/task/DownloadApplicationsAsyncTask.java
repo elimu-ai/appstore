@@ -2,11 +2,16 @@ package org.literacyapp.appstore.task;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -26,6 +31,7 @@ import org.literacyapp.model.gson.admin.ApplicationVersionGson;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.List;
 
@@ -69,41 +75,38 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
                     logger.warn("Download failed");
                 } else {
                     JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
-                    // TODO
+                    int counter = 0;
+                    for (int i = 0; i < jsonArrayApplications.length(); i++) {
+                        Type type = new TypeToken<ApplicationGson>() {}.getType();
+                        ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
+                        logger.info("applicationGson.getPackageName(): " + applicationGson.getPackageName());
+
+                        ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+
+                        // Install/update application
+                        PackageManager packageManager = context.getPackageManager();
+                        try {
+                            PackageInfo packageInfo = packageManager.getPackageInfo(applicationGson.getPackageName(), PackageManager.GET_ACTIVITIES);
+                            logger.info("The application is already installed: " + applicationGson.getPackageName());
+                            // Check if a newer version is available for download
+                            logger.info("packageInfo.versionCode: " + packageInfo.versionCode);
+                            logger.info("Newest version available for download: " + applicationVersionGson.getVersionCode());
+                            if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
+                                // Download the APK and install it
+                                downloadAndInstallApk(applicationVersionGson);
+                            }
+                        } catch (PackageManager.NameNotFoundException e) {
+                            logger.info("The application is not installed: " + applicationGson.getPackageName());
+                            // Download the APK file and install it
+                            downloadAndInstallApk(applicationVersionGson);
+                        }
+
+                        publishProgress(++counter * 100 / jsonArrayApplications.length());
+                    }
                 }
             } catch (JSONException e) {
                 logger.error(null, e);
             }
-
-//            Type type = new TypeToken<List<ApplicationGson>>(){}.getType();
-//            List<ApplicationGson> applicationGsonList = new Gson().fromJson(jsonResponse, type);
-//            logger.info("applicationGsonList.size(): " + applicationGsonList.size());
-//            int counter = 0;
-//            for (ApplicationGson applicationGson : applicationGsonList) {
-//                logger.info("applicationGson.getPackageName(): " + applicationGson.getPackageName());
-//
-//                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-//
-//                // Install/update application
-//                PackageManager packageManager = context.getPackageManager();
-//                try {
-//                    PackageInfo packageInfo = packageManager.getPackageInfo(applicationGson.getPackageName(), PackageManager.GET_ACTIVITIES);
-//                    logger.info("The application is already installed: " + applicationGson.getPackageName());
-//                    // Check if a newer version is available for download
-//                    logger.info("packageInfo.versionCode: " + packageInfo.versionCode);
-//                    logger.info("Newest version available for download: " + applicationVersionGson.getVersionCode());
-//                    if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
-//                        // Download the APK and install it
-//                        downloadAndInstallApk(applicationVersionGson);
-//                    }
-//                } catch (PackageManager.NameNotFoundException e) {
-//                    logger.info("The application is not installed: " + applicationGson.getPackageName());
-//                    // Download the APK file and install it
-//                    downloadAndInstallApk(applicationVersionGson);
-//                }
-//
-//                publishProgress(++counter * 100 / applicationGsonList.size());
-//            }
 
             // Update time of last synchronization
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
