@@ -25,7 +25,8 @@ public class BootReceiver extends BroadcastReceiver {
         Calendar calendarDaily = Calendar.getInstance();
         calendarDaily.set(Calendar.HOUR_OF_DAY, 3);
         if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 3) {
-            calendarDaily.add(Calendar.DATE, 1); // Makes sure the alarm doesn't trigger until tomorrow
+            // Make sure the alarm doesn't trigger until tomorrow
+            calendarDaily.add(Calendar.DAY_OF_MONTH, 1);
         }
         calendarDaily.set(Calendar.MINUTE, 0);
         calendarDaily.set(Calendar.SECOND, 0);

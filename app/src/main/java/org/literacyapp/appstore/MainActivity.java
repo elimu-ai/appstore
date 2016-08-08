@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
         Calendar calendarDaily = Calendar.getInstance();
         calendarDaily.set(Calendar.HOUR_OF_DAY, 3);
         if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 3) {
-            calendarDaily.add(Calendar.DATE, 1); // Makes sure the alarm doesn't trigger until tomorrow
+            // Make sure the alarm doesn't trigger until tomorrow
+            calendarDaily.add(Calendar.DAY_OF_MONTH, 1);
         }
         calendarDaily.set(Calendar.MINUTE, 0);
         calendarDaily.set(Calendar.SECOND, 0);
@@ -122,8 +123,12 @@ public class MainActivity extends AppCompatActivity {
 
                 boolean isWifiEnabled = ConnectivityHelper.isWifiEnabled(getApplicationContext());
                 logger.info("isWifiEnabled: " + isWifiEnabled);
+                boolean isWifiConnected = ConnectivityHelper.isWifiConnected(getApplicationContext());
+                logger.info("isWifiConnected: " + isWifiConnected);
                 if (!isWifiEnabled) {
                     Toast.makeText(getApplicationContext(), getString(R.string.wifi_needs_to_be_enabled), Toast.LENGTH_SHORT).show();
+                } else if (!isWifiConnected) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.wifi_needs_to_be_connected), Toast.LENGTH_SHORT).show();
                 } else {
                     new DownloadApplicationsAsyncTask(getApplicationContext()).execute();
                 }
