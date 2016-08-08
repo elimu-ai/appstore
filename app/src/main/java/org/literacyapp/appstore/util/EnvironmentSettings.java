@@ -4,9 +4,9 @@ import org.literacyapp.model.enums.Environment;
 
 public class EnvironmentSettings {
 
-      private static final Environment ENVIRONMENT = Environment.DEV;
+//      private static final Environment ENVIRONMENT = Environment.DEV;
 //      public static final Environment ENVIRONMENT = Environment.TEST;
-//    public static final Environment ENVIRONMENT = Environment.PROD;
+    public static final Environment ENVIRONMENT = Environment.PROD;
 
     public static final String PROD_DOMAIN = "literacyapp.org";
 

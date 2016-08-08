@@ -45,8 +45,12 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
 
         boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
         logger.info("isServerReachable: " + isServerReachable);
+        boolean isWifiConnected = ConnectivityHelper.isWifiConnected(context);
+        logger.info("isWifiConnected: " + isWifiConnected);
         if (!isServerReachable) {
             logger.warn(context.getString(R.string.server_is_not_reachable));
+        } else if (!isWifiConnected) {
+            logger.warn(context.getString(R.string.wifi_needs_to_be_connected));
         } else {
             // Download List of applications
             String url = EnvironmentSettings.getBaseRestUrl() + "/admin/application/list" +
