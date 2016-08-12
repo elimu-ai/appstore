@@ -26,6 +26,11 @@ import org.literacyapp.appstore.receiver.AlarmReceiver;
 import org.literacyapp.appstore.task.DownloadApplicationsAsyncTask;
 import org.literacyapp.appstore.util.ConnectivityHelper;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
@@ -62,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
         logger.info("onStart");
         super.onStart();
 
-        // TODO: start by asking for root access
-
         // 1. Write permission is needed for storing Log4J files
         int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED) {
@@ -71,7 +74,44 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // 2. Select locale
+        // 2. Ask for root access (encourage user to select "Remember my choice")
+        try {
+            java.lang.Process process = Runtime.getRuntime().exec("su");
+
+            // Attempt to write a file to a root-only folder
+            DataOutputStream dataOutputStream = new DataOutputStream(process.getOutputStream());
+            dataOutputStream.writeBytes("echo \"Do I have root?\" >/system/sd/temporary.txt\n");
+
+            // Close the terminal
+            dataOutputStream.writeBytes("exit\n");
+            dataOutputStream.flush();
+
+            process.waitFor();
+            InputStream inputStream = process.getInputStream();
+            if (process.getErrorStream() != null) {
+                inputStream = process.getErrorStream();
+            }
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String result = bufferedReader.readLine();
+            logger.info("result: " + result);
+
+            int exitValue = process.exitValue();
+            logger.info("exitValue: " + exitValue);
+            if (exitValue == 1) {
+                // Root access denied
+                finish();
+                return;
+            } else {
+                // Root access allowed
+            }
+        } catch (IOException | InterruptedException e) {
+            logger.error(null, e);
+            // Root access denied
+            finish();
+            return;
+        }
+
+        // 3. Select locale
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String localeAsString = sharedPreferences.getString(LocaleActivity.PREF_LOCALE, null);
         if (TextUtils.isEmpty(localeAsString)) {
@@ -83,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         int languageResourceId = getResources().getIdentifier("language_" + localeAsString.toLowerCase(), "string", getApplicationContext().getPackageName());
         mTextViewMain.setText(getString(R.string.locale_selected) + ": " + localeAsString + " (" + getString(languageResourceId) + ")");
 
-        // 3. Password to be used for checksum generation
+        // 4. Password to be used for checksum generation
         String password = sharedPreferences.getString(PasswordActivity.PREF_PASSWORD, null);
         if (TextUtils.isEmpty(password)) {
             // Ask user to type password
@@ -92,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // 4. Start alarm
+        // 5. Start alarm
         Intent alarmReceiverIntent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -121,6 +161,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 logger.info("mButtonSynchronization onClick");
 
+                mTextViewLastSynchronization.setText(getString(R.string.synchronizing) + "...");
+                mButtonSynchronization.setVisibility(View.GONE);
+                mProgressBarSynchronization.setVisibility(View.VISIBLE);
+
                 boolean isWifiEnabled = ConnectivityHelper.isWifiEnabled(getApplicationContext());
                 logger.info("isWifiEnabled: " + isWifiEnabled);
                 boolean isWifiConnected = ConnectivityHelper.isWifiConnected(getApplicationContext());
@@ -132,10 +176,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     new DownloadApplicationsAsyncTask(getApplicationContext()).execute();
                 }
-
-                mTextViewLastSynchronization.setText(getString(R.string.synchronizing) + "...");
-                mButtonSynchronization.setVisibility(View.GONE);
-                mProgressBarSynchronization.setVisibility(View.VISIBLE);
             }
         });
     }
