@@ -75,6 +75,10 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 JSONObject jsonObject = new JSONObject(jsonResponse);
                 if (!"success".equals(jsonObject.getString("result"))) {
                     logger.warn("Download failed");
+                    if (jsonObject.has("error") && jsonObject.has("description")) {
+                        String errorDescription = jsonObject.getString("description");
+                        publishProgress("error: " + errorDescription);
+                    }
                 } else {
                     JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
                     for (int i = 0; i < jsonArrayApplications.length(); i++) {
