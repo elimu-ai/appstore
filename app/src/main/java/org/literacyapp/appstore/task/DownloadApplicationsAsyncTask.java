@@ -29,13 +29,15 @@ import org.literacyapp.appstore.util.UserPrefsHelper;
 import org.literacyapp.model.gson.admin.ApplicationGson;
 import org.literacyapp.model.gson.admin.ApplicationVersionGson;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Calendar;
-import java.util.List;
 
-public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, List<ApplicationGson>> {
+public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Void> {
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -46,17 +48,17 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
     }
 
     @Override
-    protected List<ApplicationGson> doInBackground(Object... objects) {
+    protected Void doInBackground(Object... objects) {
         logger.info("doInBackground");
 
-        boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
-        logger.info("isServerReachable: " + isServerReachable);
         boolean isWifiConnected = ConnectivityHelper.isWifiConnected(context);
         logger.info("isWifiConnected: " + isWifiConnected);
-        if (!isServerReachable) {
-            logger.warn(context.getString(R.string.server_is_not_reachable));
-        } else if (!isWifiConnected) {
+        boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
+        logger.info("isServerReachable: " + isServerReachable);
+        if (!isWifiConnected) {
             logger.warn(context.getString(R.string.wifi_needs_to_be_connected));
+        } else if (!isServerReachable) {
+            logger.warn(context.getString(R.string.server_is_not_reachable));
         } else {
             // Download List of applications
             String url = EnvironmentSettings.getBaseRestUrl() + "/admin/application/list" +
@@ -75,13 +77,14 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
                     logger.warn("Download failed");
                 } else {
                     JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
-                    int counter = 0;
                     for (int i = 0; i < jsonArrayApplications.length(); i++) {
                         Type type = new TypeToken<ApplicationGson>() {}.getType();
                         ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
                         logger.info("applicationGson.getPackageName(): " + applicationGson.getPackageName());
 
                         ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+
+                        publishProgress("Downloading APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
 
                         // Install/update application
                         PackageManager packageManager = context.getPackageManager();
@@ -100,17 +103,16 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
                             // Download the APK file and install it
                             downloadAndInstallApk(applicationVersionGson);
                         }
-
-                        publishProgress(++counter * 100 / jsonArrayApplications.length());
                     }
+                    publishProgress("Synchronization complete!");
+
+                    // Update time of last synchronization
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                    sharedPreferences.edit().putLong(MainActivity.PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
                 }
             } catch (JSONException e) {
                 logger.error(null, e);
             }
-
-            // Update time of last synchronization
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-            sharedPreferences.edit().putLong(MainActivity.PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
         }
 
         return null;
@@ -142,12 +144,42 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
             try {
                 Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
                 process.waitFor();
-                // TODO: log process output
+
+                InputStream inputStreamSuccess = process.getInputStream();
+                if (inputStreamSuccess != null) {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
+                    String successMessage = bufferedReader.readLine();
+                    logger.info("successMessage: " + successMessage);
+                }
+
+                InputStream inputStreamError = process.getErrorStream();
+                if (inputStreamError != null) {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
+                    String errorMessage = bufferedReader.readLine();
+                    logger.info("errorMessage: " + errorMessage);
+                }
 
                 String startCommand = applicationVersionGson.getStartCommand();
                 if (!TextUtils.isEmpty(startCommand)) {
+                    // Expected format: "adb shell <startCommand>"
                     logger.info("startCommand: " + startCommand);
-                    // TODO
+
+                    process = Runtime.getRuntime().exec(new String[]{"su", "-c", startCommand});
+                    process.waitFor();
+
+                    inputStreamSuccess = process.getInputStream();
+                    if (inputStreamSuccess != null) {
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
+                        String successMessage = bufferedReader.readLine();
+                        logger.info("startCommand successMessage: " + successMessage);
+                    }
+
+                    inputStreamError = process.getErrorStream();
+                    if (inputStreamError != null) {
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
+                        String errorMessage = bufferedReader.readLine();
+                        logger.info("startCommand errorMessage: " + errorMessage);
+                    }
                 }
             } catch (IOException e) {
                 logger.error("IOException: " + command, e);
@@ -158,20 +190,18 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, Integer, Li
     }
 
     @Override
-    protected void onProgressUpdate(Integer... percentage) {
+    protected void onProgressUpdate(String... updateMessages) {
         logger.info("onProgressUpdate");
-        super.onProgressUpdate(percentage);
+        super.onProgressUpdate(updateMessages);
 
-        int percentCompleted = percentage[0];
-        logger.info("percentCompleted: " + percentCompleted + "%");
-        Toast.makeText(context, "percentCompleted: " + percentCompleted + "%", Toast.LENGTH_SHORT).show();
+        String message = updateMessages[0];
+        logger.info(message);
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    protected void onPostExecute(List<ApplicationGson> applicationGsonList) {
+    protected void onPostExecute(Void v) {
         logger.info("onPostExecute");
-        super.onPostExecute(applicationGsonList);
-
-        Toast.makeText(context, "Synchronization complete!", Toast.LENGTH_SHORT).show();
+        super.onPostExecute(v);
     }
 }
