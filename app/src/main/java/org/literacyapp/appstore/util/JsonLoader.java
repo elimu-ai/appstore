@@ -16,7 +16,7 @@ public class JsonLoader {
     private static Logger logger = Logger.getLogger(JsonLoader.class);
 
     public static String loadJson(String urlValue) {
-        logger.info("loadApk");
+        logger.info("loadJson");
 
         logger.info("Downloading from " + urlValue + "...");
 

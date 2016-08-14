@@ -75,6 +75,8 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 JSONObject jsonObject = new JSONObject(jsonResponse);
                 if (!"success".equals(jsonObject.getString("result"))) {
                     logger.warn("Download failed");
+                    String errorDescription = jsonObject.getString("description");
+                    publishProgress("error: " + errorDescription);
                 } else {
                     JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
                     for (int i = 0; i < jsonArrayApplications.length(); i++) {
@@ -84,7 +86,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 
                         ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
 
-                        publishProgress("Downloading APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
+                        publishProgress("Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
 
                         // Install/update application
                         PackageManager packageManager = context.getPackageManager();
@@ -134,11 +136,13 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
         String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
         logger.info("fileName: " + fileName);
 
+        publishProgress("Downloading APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ", " + applicationVersionGson.getFileSizeInKb() + "kB)");
         File apkFile = ApkLoader.loadApk(fileUrl, fileName, context);
         logger.info("apkFile: " + apkFile);
         if ((apkFile == null) || !apkFile.exists()) {
             logger.error("APK download failed: " + fileUrl);
         } else {
+            publishProgress("Installing APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
             String command = "pm install -r " + apkFile.getAbsolutePath();
             logger.info("command: " + command);
             try {
@@ -150,36 +154,36 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
                     String successMessage = bufferedReader.readLine();
                     logger.info("successMessage: " + successMessage);
+
+                    String startCommand = applicationVersionGson.getStartCommand();
+                    if (!TextUtils.isEmpty(startCommand)) {
+                        // Expected format: "adb shell <startCommand>"
+                        logger.info("startCommand: " + startCommand);
+
+                        process = Runtime.getRuntime().exec(new String[]{"su", "-c", startCommand});
+                        process.waitFor();
+
+                        inputStreamSuccess = process.getInputStream();
+                        if (inputStreamSuccess != null) {
+                            bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
+                            successMessage = bufferedReader.readLine();
+                            logger.info("startCommand successMessage: " + successMessage);
+                        }
+
+                        InputStream inputStreamError = process.getErrorStream();
+                        if (inputStreamError != null) {
+                            bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
+                            String errorMessage = bufferedReader.readLine();
+                            logger.warn("startCommand errorMessage: " + errorMessage);
+                        }
+                    }
                 }
 
                 InputStream inputStreamError = process.getErrorStream();
                 if (inputStreamError != null) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
                     String errorMessage = bufferedReader.readLine();
-                    logger.info("errorMessage: " + errorMessage);
-                }
-
-                String startCommand = applicationVersionGson.getStartCommand();
-                if (!TextUtils.isEmpty(startCommand)) {
-                    // Expected format: "adb shell <startCommand>"
-                    logger.info("startCommand: " + startCommand);
-
-                    process = Runtime.getRuntime().exec(new String[]{"su", "-c", startCommand});
-                    process.waitFor();
-
-                    inputStreamSuccess = process.getInputStream();
-                    if (inputStreamSuccess != null) {
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
-                        String successMessage = bufferedReader.readLine();
-                        logger.info("startCommand successMessage: " + successMessage);
-                    }
-
-                    inputStreamError = process.getErrorStream();
-                    if (inputStreamError != null) {
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
-                        String errorMessage = bufferedReader.readLine();
-                        logger.info("startCommand errorMessage: " + errorMessage);
-                    }
+                    logger.warn("errorMessage: " + errorMessage);
                 }
             } catch (IOException e) {
                 logger.error("IOException: " + command, e);
