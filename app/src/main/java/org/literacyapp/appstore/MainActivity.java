@@ -25,12 +25,8 @@ import org.apache.log4j.Logger;
 import org.literacyapp.appstore.receiver.AlarmReceiver;
 import org.literacyapp.appstore.task.DownloadApplicationsAsyncTask;
 import org.literacyapp.appstore.util.ConnectivityHelper;
+import org.literacyapp.appstore.util.RootHelper;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
@@ -75,38 +71,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 2. Ask for root access (encourage user to select "Remember my choice")
-        try {
-            java.lang.Process process = Runtime.getRuntime().exec("su");
-
-            // Attempt to write a file to a root-only folder
-            DataOutputStream dataOutputStream = new DataOutputStream(process.getOutputStream());
-            dataOutputStream.writeBytes("echo \"Do I have root?\" >/system/sd/temporary.txt\n");
-
-            // Close the terminal
-            dataOutputStream.writeBytes("exit\n");
-            dataOutputStream.flush();
-
-            process.waitFor();
-            InputStream inputStream = process.getInputStream();
-            if (process.getErrorStream() != null) {
-                inputStream = process.getErrorStream();
-            }
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String result = bufferedReader.readLine();
-            logger.info("result: " + result);
-
-            int exitValue = process.exitValue();
-            logger.info("exitValue: " + exitValue);
-            if (exitValue == 1) {
-                // Root access denied
-                finish();
-                return;
-            } else {
-                // Root access allowed
-            }
-        } catch (IOException | InterruptedException e) {
-            logger.error(null, e);
-            // Root access denied
+        boolean isSuccessRoot = RootHelper.runAsRoot(new String[] {
+                "echo \"Do I have root?\" >/system/sd/temporary.txt\n",
+                "exit\n"
+        });
+        logger.info("isSuccessRoot: " + isSuccessRoot);
+        if (!isSuccessRoot) {
             finish();
             return;
         }
