@@ -144,6 +144,10 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
         } else {
             publishProgress("Installing APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
             String command = "pm install -r -g " + apkFile.getAbsolutePath(); // https://developer.android.com/studio/command-line/shell.html#pm
+            if ("KFFOWI".equals(DeviceInfoHelper.getDeviceModel(context))) {
+                // The '-g' command does not work on Amazon Fire: "Error: Unknown option: -g"
+                command = "pm install -r " + apkFile.getAbsolutePath();
+            }
             logger.info("command: " + command);
             try {
                 Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
