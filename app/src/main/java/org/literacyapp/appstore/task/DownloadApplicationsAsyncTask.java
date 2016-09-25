@@ -143,7 +143,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
             logger.error("APK download failed: " + fileUrl);
         } else {
             publishProgress("Installing APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
-            String command = "pm install -r -g " + apkFile.getAbsolutePath();
+            String command = "pm install -r -g " + apkFile.getAbsolutePath(); // https://developer.android.com/studio/command-line/shell.html#pm
             logger.info("command: " + command);
             try {
                 Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
@@ -154,6 +154,10 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
                     String successMessage = bufferedReader.readLine();
                     logger.info("successMessage: " + successMessage);
+                    if (!"Success".equals(successMessage)) {
+                        publishProgress("APK installation failed: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
+                        logger.error("APK installation failed: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
+                    }
 
                     String startCommand = applicationVersionGson.getStartCommand();
                     if (!TextUtils.isEmpty(startCommand)) {
