@@ -22,14 +22,17 @@ public class BootReceiver extends BroadcastReceiver {
         Intent alarmReceiverIntent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
         Calendar calendarDaily = Calendar.getInstance();
-        calendarDaily.set(Calendar.HOUR_OF_DAY, 3);
-        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 3) {
+        calendarDaily.set(Calendar.HOUR_OF_DAY, 15);
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 15) {
             // Make sure the alarm doesn't trigger until tomorrow
             calendarDaily.add(Calendar.DAY_OF_MONTH, 1);
         }
         calendarDaily.set(Calendar.MINUTE, 0);
         calendarDaily.set(Calendar.SECOND, 0);
+        logger.info("calendarDaily.getTime(): " + calendarDaily.getTime());
+
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendarDaily.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 }
