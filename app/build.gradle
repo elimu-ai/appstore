@@ -13,8 +13,8 @@ android {
         applicationId "org.literacyapp.appstore"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 1001005
-        versionName "1.1.5"
+        versionCode 1001006
+        versionName "1.1.6-SNAPSHOT"
     }
 
     lintOptions {
@@ -25,7 +25,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'org.literacyapp:literacyapp-model:1.1.12'
+    compile 'org.literacyapp:literacyapp-model:1.1.18'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:support-annotations:23.4.0'
     compile 'log4j:log4j:1.2.17'
