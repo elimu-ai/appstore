@@ -73,7 +73,13 @@ public class LocaleActivity extends AppCompatActivity {
                 }
 
                 // Set locale of device
-                java.util.Locale deviceLocale = new java.util.Locale(locale.getLanguage());
+                String language = locale.getLanguage();
+                logger.info("language: " + language);
+                java.util.Locale deviceLocale = new java.util.Locale(language);
+                if ("en".equals(language)) {
+                    // Use "en_US" instead of "en_AU"
+                    deviceLocale = new java.util.Locale(language, "US");
+                }
                 logger.info("deviceLocale: " + deviceLocale);
                 try {
                     Class activityManagerNativeClass = Class.forName("android.app.ActivityManagerNative");
