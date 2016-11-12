@@ -26,6 +26,7 @@ import org.literacyapp.appstore.util.DeviceInfoHelper;
 import org.literacyapp.appstore.util.EnvironmentSettings;
 import org.literacyapp.appstore.util.JsonLoader;
 import org.literacyapp.appstore.util.UserPrefsHelper;
+import org.literacyapp.model.enums.admin.ApplicationStatus;
 import org.literacyapp.model.gson.admin.ApplicationGson;
 import org.literacyapp.model.gson.admin.ApplicationVersionGson;
 
@@ -88,22 +89,32 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 
                         publishProgress("Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
 
-                        // Install/update application
+                        // Delete/update/install application
                         PackageManager packageManager = context.getPackageManager();
                         try {
                             PackageInfo packageInfo = packageManager.getPackageInfo(applicationGson.getPackageName(), PackageManager.GET_ACTIVITIES);
                             logger.info("The application is already installed: " + applicationGson.getPackageName());
-                            // Check if a newer version is available for download
-                            logger.info("packageInfo.versionCode: " + packageInfo.versionCode);
-                            logger.info("Newest version available for download: " + applicationVersionGson.getVersionCode());
-                            if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
-                                // Download the APK and install it
-                                downloadAndInstallApk(applicationVersionGson);
+
+                            // Check if the Application has been deleted/deactivated on the website
+                            if (applicationGson.getApplicationStatus() != ApplicationStatus.ACTIVE) {
+                                // Delete application
+                                uninstallApk(applicationGson);
+                            } else {
+                                // Check if a newer version is available for download
+                                logger.info("packageInfo.versionCode: " + packageInfo.versionCode);
+                                logger.info("Newest version available for download: " + applicationVersionGson.getVersionCode());
+                                if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
+                                    // Download the APK and install it
+                                    downloadAndInstallApk(applicationVersionGson);
+                                }
                             }
                         } catch (PackageManager.NameNotFoundException e) {
                             logger.info("The application is not installed: " + applicationGson.getPackageName());
-                            // Download the APK file and install it
-                            downloadAndInstallApk(applicationVersionGson);
+
+                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                                // Download the APK file and install it
+                                downloadAndInstallApk(applicationVersionGson);
+                            }
                         }
                     }
                     publishProgress("Synchronization complete!");
@@ -198,6 +209,40 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
             } catch (InterruptedException e) {
                 logger.error("InterruptedException: " + command, e);
             }
+        }
+    }
+
+    private void uninstallApk(ApplicationGson applicationGson) {
+        logger.info("uninstallApk");
+
+        publishProgress("Uninstalling APK: " + applicationGson.getPackageName());
+        String command = "pm uninstall " + applicationGson.getPackageName();
+        logger.info("command: " + command);
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+            process.waitFor();
+
+            InputStream inputStreamSuccess = process.getInputStream();
+            if (inputStreamSuccess != null) {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
+                String successMessage = bufferedReader.readLine();
+                logger.info("successMessage: " + successMessage);
+                if (!"Success".equals(successMessage)) {
+                    publishProgress("APK uninstallation failed: " + applicationGson.getPackageName());
+                    logger.error("APK uninstallation failed: " + applicationGson.getPackageName());
+                }
+            }
+
+            InputStream inputStreamError = process.getErrorStream();
+            if (inputStreamError != null) {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
+                String errorMessage = bufferedReader.readLine();
+                logger.warn("errorMessage: " + errorMessage);
+            }
+        } catch (IOException e) {
+            logger.error("IOException: " + command, e);
+        } catch (InterruptedException e) {
+            logger.error("InterruptedException: " + command, e);
         }
     }
 
