@@ -1,9 +1,6 @@
 package org.literacyapp.appstore;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -22,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.log4j.Logger;
-import org.literacyapp.appstore.receiver.AlarmReceiver;
 import org.literacyapp.appstore.task.DownloadApplicationsAsyncTask;
 import org.literacyapp.appstore.util.ConnectivityHelper;
 import org.literacyapp.appstore.util.RootHelper;
@@ -101,23 +97,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(passwordIntent);
             return;
         }
-
-        // 5. Start alarm
-        Intent alarmReceiverIntent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        Calendar calendarDaily = Calendar.getInstance();
-        calendarDaily.set(Calendar.HOUR_OF_DAY, 15);
-        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 15) {
-            // Make sure the alarm doesn't trigger until tomorrow
-            calendarDaily.add(Calendar.DAY_OF_MONTH, 1);
-        }
-        calendarDaily.set(Calendar.MINUTE, 0);
-        calendarDaily.set(Calendar.SECOND, 0);
-        logger.info("calendarDaily.getTime(): " + calendarDaily.getTime());
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendarDaily.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
         long timeOfLastSynchronizationInMillis = sharedPreferences.getLong(PREF_LAST_SYNCHRONIZATION, 0);
         if (timeOfLastSynchronizationInMillis > 0) {
