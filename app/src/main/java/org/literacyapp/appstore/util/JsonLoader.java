@@ -1,6 +1,6 @@
 package org.literacyapp.appstore.util;
 
-import org.apache.log4j.Logger;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,12 +13,10 @@ import java.net.URL;
 
 public class JsonLoader {
 
-    private static Logger logger = Logger.getLogger(JsonLoader.class);
-
     public static String loadJson(String urlValue) {
-        logger.info("loadJson");
+        Log.i(JsonLoader.class.getName(), "loadJson");
 
-        logger.info("Downloading from " + urlValue + "...");
+        Log.i(JsonLoader.class.getName(), "Downloading from " + urlValue + "...");
 
         String jsonResponse = null;
 
@@ -30,7 +28,7 @@ public class JsonLoader {
             httpURLConnection.connect();
 
             int responseCode = httpURLConnection.getResponseCode();
-            logger.info("responseCode: " + responseCode);
+            Log.i(JsonLoader.class.getName(), "responseCode: " + responseCode);
             InputStream inputStream = null;
             if (responseCode == 200) {
                 inputStream = httpURLConnection.getInputStream();
@@ -40,11 +38,11 @@ public class JsonLoader {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             jsonResponse = bufferedReader.readLine();
         } catch (MalformedURLException e) {
-            logger.error("MalformedURLException", e);
+            Log.e(JsonLoader.class.getName(), "MalformedURLException", e);
         } catch (ProtocolException e) {
-            logger.error("ProtocolException", e);
+            Log.e(JsonLoader.class.getName(), "ProtocolException", e);
         } catch (IOException e) {
-            logger.error("IOException", e);
+            Log.e(JsonLoader.class.getName(), "IOException", e);
         }
 
         return jsonResponse;

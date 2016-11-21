@@ -12,13 +12,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.log4j.Logger;
 import org.literacyapp.appstore.task.DownloadApplicationsAsyncTask;
 import org.literacyapp.appstore.util.ConnectivityHelper;
 import org.literacyapp.appstore.util.RootHelper;
@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";
 
-    private Logger logger = Logger.getLogger(getClass());
-
     private TextView mTextViewMain;
 
     private TextView mTextViewLastSynchronization;
@@ -43,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        logger.info("onCreate");
+        Log.i(getClass().getName(), "onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        logger.info("onStart");
+        Log.i(getClass().getName(), "onStart");
         super.onStart();
 
         // 1. Write permission is needed for storing Log4J files
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 "echo \"Do I have root?\" >/system/sd/temporary.txt\n",
                 "exit\n"
         });
-        logger.info("isSuccessRoot: " + isSuccessRoot);
+        Log.i(getClass().getName(), "isSuccessRoot: " + isSuccessRoot);
         if (!isSuccessRoot) {
             finish();
             return;
@@ -111,16 +109,16 @@ public class MainActivity extends AppCompatActivity {
         mButtonSynchronization.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                logger.info("mButtonSynchronization onClick");
+                Log.i(getClass().getName(), "mButtonSynchronization onClick");
 
                 mTextViewLastSynchronization.setText(getString(R.string.synchronizing) + "...");
                 mButtonSynchronization.setVisibility(View.GONE);
                 mProgressBarSynchronization.setVisibility(View.VISIBLE);
 
                 boolean isWifiEnabled = ConnectivityHelper.isWifiEnabled(getApplicationContext());
-                logger.info("isWifiEnabled: " + isWifiEnabled);
+                Log.i(getClass().getName(), "isWifiEnabled: " + isWifiEnabled);
                 boolean isWifiConnected = ConnectivityHelper.isWifiConnected(getApplicationContext());
-                logger.info("isWifiConnected: " + isWifiConnected);
+                Log.i(getClass().getName(), "isWifiConnected: " + isWifiConnected);
                 if (!isWifiEnabled) {
                     Toast.makeText(getApplicationContext(), getString(R.string.wifi_needs_to_be_enabled), Toast.LENGTH_SHORT).show();
                 } else if (!isWifiConnected) {

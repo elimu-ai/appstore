@@ -2,9 +2,9 @@ package org.literacyapp.appstore.util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,22 +18,20 @@ import java.net.URL;
 
 public class ApkLoader {
 
-    private static Logger logger = Logger.getLogger(ApkLoader.class);
-
     public static File loadApk(String urlValue, String fileName, Context context) {
-        logger.info("loadApk");
+        Log.i(ApkLoader.class.getName(), "loadApk");
 
-        logger.info("Downloading from " + urlValue + "...");
+        Log.i(ApkLoader.class.getName(), "Downloading from " + urlValue + "...");
 
         File apkDirectory = new File(Environment.getExternalStorageDirectory() + File.separator + "Appstore" + File.separator + "apks");
-        logger.info("apkDirectory: " + apkDirectory);
+        Log.i(ApkLoader.class.getName(), "apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {
             apkDirectory.mkdirs();
         }
 
         File apkFile = new File(apkDirectory, fileName);
-        logger.info("apkFile: " + apkFile);
-        logger.info("apkFile.exists(): " + apkFile.exists());
+        Log.i(ApkLoader.class.getName(), "apkFile: " + apkFile);
+        Log.i(ApkLoader.class.getName(), "apkFile.exists(): " + apkFile.exists());
 
         if (!apkFile.exists()) {
             FileOutputStream fileOutputStream = null;
@@ -45,7 +43,7 @@ public class ApkLoader {
                 httpURLConnection.connect();
 
                 int responseCode = httpURLConnection.getResponseCode();
-                logger.info("responseCode: " + responseCode);
+                Log.i(ApkLoader.class.getName(), "responseCode: " + responseCode);
                 InputStream inputStream = null;
                 if (responseCode == 200) {
                     inputStream = httpURLConnection.getInputStream();
@@ -57,7 +55,7 @@ public class ApkLoader {
                     while ((line = bufferedReader.readLine()) != null) {
                         errorResponse += line;
                     }
-                    logger.warn("errorResponse: " + errorResponse);
+                    Log.w(ApkLoader.class.getName(), "errorResponse: " + errorResponse);
                     return null;
                 }
 
@@ -66,15 +64,15 @@ public class ApkLoader {
                 fileOutputStream.write(bytes);
                 fileOutputStream.flush();
             } catch (MalformedURLException e) {
-                logger.error("MalformedURLException", e);
+                Log.e(ApkLoader.class.getName(), "MalformedURLException", e);
             } catch (IOException e) {
-                logger.error("IOException", e);
+                Log.e(ApkLoader.class.getName(), "IOException", e);
             } finally {
                 if (fileOutputStream != null) {
                     try {
                         fileOutputStream.close();
                     } catch (IOException e) {
-                        logger.error("IOException", e);
+                        Log.e(ApkLoader.class.getName(), "IOException", e);
                     }
                 }
             }

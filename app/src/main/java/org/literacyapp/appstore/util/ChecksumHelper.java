@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 
-import org.apache.log4j.Logger;
 import org.literacyapp.appstore.PasswordActivity;
 
 import java.io.UnsupportedEncodingException;
@@ -14,8 +14,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ChecksumHelper {
-
-    private static Logger logger = Logger.getLogger(ChecksumHelper.class);
 
     public static String getChecksum(Context context) {
         String checksum = null;
@@ -32,9 +30,9 @@ public class ChecksumHelper {
                 byte[] md5AsBytes = messageDigest.digest(input.getBytes("UTF-8"));
                 checksum = new BigInteger(1, md5AsBytes).toString(16);
             } catch (NoSuchAlgorithmException e) {
-                logger.error(null, e);
+                Log.e(ChecksumHelper.class.getName(), null, e);
             } catch (UnsupportedEncodingException e) {
-                logger.error(null, e);
+                Log.e(ChecksumHelper.class.getName(), null, e);
             }
         }
 

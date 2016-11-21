@@ -5,13 +5,13 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.apache.log4j.Logger;
 import org.literacyapp.appstore.util.RootHelper;
 import org.literacyapp.model.enums.Locale;
 
@@ -23,15 +23,13 @@ public class LocaleActivity extends AppCompatActivity {
 
     public static final String PREF_LOCALE = "pref_locale";
 
-    private Logger logger = Logger.getLogger(getClass());
-
     private Spinner mSpinnerLocale;
 
     private Button mButtonLocale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        logger.info("onCreate");
+        Log.i(getClass().getName(), "onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_locale);
@@ -42,7 +40,7 @@ public class LocaleActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        logger.info("onStart");
+        Log.i(getClass().getName(), "onStart");
         super.onStart();
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item);
@@ -56,17 +54,17 @@ public class LocaleActivity extends AppCompatActivity {
         mButtonLocale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                logger.info("onClick");
+                Log.i(getClass().getName(), "onClick");
 
                 String localeAsString = mSpinnerLocale.getSelectedItem().toString();
-                logger.info("localeAsString: " + localeAsString);
+                Log.i(getClass().getName(), "localeAsString: " + localeAsString);
                 Locale locale = Locale.valueOf(localeAsString);
 
                 // Obtain permission to change system configuration
                 boolean isSuccessConfigPermission = RootHelper.runAsRoot(new String[] {
                         "pm grant org.literacyapp.appstore android.permission.CHANGE_CONFIGURATION"
                 });
-                logger.info("isSuccessConfigPermission: " + isSuccessConfigPermission);
+                Log.i(getClass().getName(), "isSuccessConfigPermission: " + isSuccessConfigPermission);
                 if (!isSuccessConfigPermission) {
                     finish();
                     return;
@@ -74,13 +72,13 @@ public class LocaleActivity extends AppCompatActivity {
 
                 // Set locale of device
                 String language = locale.getLanguage();
-                logger.info("language: " + language);
+                Log.i(getClass().getName(), "language: " + language);
                 java.util.Locale deviceLocale = new java.util.Locale(language);
                 if ("en".equals(language)) {
                     // Use "en_US" instead of "en_AU"
                     deviceLocale = new java.util.Locale(language, "US");
                 }
-                logger.info("deviceLocale: " + deviceLocale);
+                Log.i(getClass().getName(), "deviceLocale: " + deviceLocale);
                 try {
                     Class activityManagerNativeClass = Class.forName("android.app.ActivityManagerNative");
 
@@ -106,7 +104,7 @@ public class LocaleActivity extends AppCompatActivity {
                     sharedPreferences.edit().putString(PREF_LOCALE, locale.toString()).commit();
                     Toast.makeText(getApplicationContext(), "Changing locale of device to: " + deviceLocale, Toast.LENGTH_LONG).show();
                 } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
-                    logger.error(null, e);
+                    Log.e(getClass().getName(), null, e);
                 }
 
                 finish();
