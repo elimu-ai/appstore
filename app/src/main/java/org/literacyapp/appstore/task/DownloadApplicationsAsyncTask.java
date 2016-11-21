@@ -8,12 +8,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,8 +40,6 @@ import java.util.Calendar;
 
 public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Void> {
 
-    private Logger logger = Logger.getLogger(getClass());
-
     private Context context;
 
     public DownloadApplicationsAsyncTask(Context context) {
@@ -50,20 +48,20 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 
     @Override
     protected Void doInBackground(Object... objects) {
-        logger.info("doInBackground");
+        Log.i(getClass().getName(), "doInBackground");
 
         boolean isWifiEnabled = ConnectivityHelper.isWifiEnabled(context);
-        logger.info("isWifiEnabled: " + isWifiEnabled);
+        Log.i(getClass().getName(), "isWifiEnabled: " + isWifiEnabled);
         boolean isWifiConnected = ConnectivityHelper.isWifiConnected(context);
-        logger.info("isWifiConnected: " + isWifiConnected);
+        Log.i(getClass().getName(), "isWifiConnected: " + isWifiConnected);
         boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
-        logger.info("isServerReachable: " + isServerReachable);
+        Log.i(getClass().getName(), "isServerReachable: " + isServerReachable);
         if (!isWifiEnabled) {
-            logger.warn(context.getString(R.string.wifi_needs_to_be_enabled));
+            Log.w(getClass().getName(), context.getString(R.string.wifi_needs_to_be_enabled));
         } else if (!isWifiConnected) {
-            logger.warn(context.getString(R.string.wifi_needs_to_be_connected));
+            Log.w(getClass().getName(), context.getString(R.string.wifi_needs_to_be_connected));
         } else if (!isServerReachable) {
-            logger.warn(context.getString(R.string.server_is_not_reachable));
+            Log.w(getClass().getName(), context.getString(R.string.server_is_not_reachable));
         } else {
             // Download List of applications
             String url = EnvironmentSettings.getBaseRestUrl() + "/admin/application/list" +
@@ -75,11 +73,11 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                     "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
                     "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
             String jsonResponse = JsonLoader.loadJson(url);
-            logger.info("jsonResponse: " + jsonResponse);
+            Log.i(getClass().getName(), "jsonResponse: " + jsonResponse);
             try {
                 JSONObject jsonObject = new JSONObject(jsonResponse);
                 if (!"success".equals(jsonObject.getString("result"))) {
-                    logger.warn("Download failed");
+                    Log.w(getClass().getName(), "Download failed");
                     String errorDescription = jsonObject.getString("description");
                     publishProgress("error: " + errorDescription);
                 } else {
@@ -87,7 +85,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                     for (int i = 0; i < jsonArrayApplications.length(); i++) {
                         Type type = new TypeToken<ApplicationGson>() {}.getType();
                         ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
-                        logger.info("applicationGson.getPackageName(): " + applicationGson.getPackageName());
+                        Log.i(getClass().getName(), "applicationGson.getPackageName(): " + applicationGson.getPackageName());
 
                         ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
 
@@ -97,7 +95,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                         PackageManager packageManager = context.getPackageManager();
                         try {
                             PackageInfo packageInfo = packageManager.getPackageInfo(applicationGson.getPackageName(), PackageManager.GET_ACTIVITIES);
-                            logger.info("The application is already installed: " + applicationGson.getPackageName());
+                            Log.i(getClass().getName(), "The application is already installed: " + applicationGson.getPackageName());
 
                             // Check if the Application has been deleted/deactivated on the website
                             if (applicationGson.getApplicationStatus() != ApplicationStatus.ACTIVE) {
@@ -105,15 +103,15 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                                 uninstallApk(applicationGson);
                             } else {
                                 // Check if a newer version is available for download
-                                logger.info("packageInfo.versionCode: " + packageInfo.versionCode);
-                                logger.info("Newest version available for download: " + applicationVersionGson.getVersionCode());
+                                Log.i(getClass().getName(), "packageInfo.versionCode: " + packageInfo.versionCode);
+                                Log.i(getClass().getName(), "Newest version available for download: " + applicationVersionGson.getVersionCode());
                                 if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
                                     // Download the APK and install it
                                     downloadAndInstallApk(applicationVersionGson);
                                 }
                             }
                         } catch (PackageManager.NameNotFoundException e) {
-                            logger.info("The application is not installed: " + applicationGson.getPackageName());
+                            Log.i(getClass().getName(), "The application is not installed: " + applicationGson.getPackageName());
 
                             if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
                                 // Download the APK file and install it
@@ -128,7 +126,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                     sharedPreferences.edit().putLong(MainActivity.PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
                 }
             } catch (JSONException e) {
-                logger.error(null, e);
+                Log.e(getClass().getName(), null, e);
             }
         }
 
@@ -136,7 +134,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
     }
 
     private void downloadAndInstallApk(ApplicationVersionGson applicationVersionGson) {
-        logger.info("downloadAndInstallApk");
+        Log.i(getClass().getName(), "downloadAndInstallApk");
 
         String fileUrl = EnvironmentSettings.getBaseUrl() + applicationVersionGson.getFileUrl() +
                 "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
@@ -146,16 +144,16 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 "&osVersion=" + Build.VERSION.SDK_INT +
                 "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
                 "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
-        logger.info("fileUrl: " + fileUrl);
+        Log.i(getClass().getName(), "fileUrl: " + fileUrl);
 
         String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
-        logger.info("fileName: " + fileName);
+        Log.i(getClass().getName(), "fileName: " + fileName);
 
         publishProgress("Downloading APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ", " + applicationVersionGson.getFileSizeInKb() + "kB)");
         File apkFile = ApkLoader.loadApk(fileUrl, fileName, context);
-        logger.info("apkFile: " + apkFile);
+        Log.i(getClass().getName(), "apkFile: " + apkFile);
         if ((apkFile == null) || !apkFile.exists()) {
-            logger.error("APK download failed: " + fileUrl);
+            Log.i(getClass().getName(), "APK download failed: " + fileUrl);
         } else {
             publishProgress("Installing APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
             String command = "pm install -r -g " + apkFile.getAbsolutePath(); // https://developer.android.com/studio/command-line/shell.html#pm
@@ -163,7 +161,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 // The '-g' command does not work on Amazon Fire: "Error: Unknown option: -g"
                 command = "pm install -r " + apkFile.getAbsolutePath();
             }
-            logger.info("command: " + command);
+            Log.i(getClass().getName(), "command: " + command);
             try {
                 Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
                 process.waitFor();
@@ -172,16 +170,16 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 if (inputStreamSuccess != null) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
                     String successMessage = bufferedReader.readLine();
-                    logger.info("successMessage: " + successMessage);
+                    Log.i(getClass().getName(), "successMessage: " + successMessage);
                     if (!"Success".equals(successMessage)) {
                         publishProgress("APK installation failed: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
-                        logger.error("APK installation failed: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
+                        Log.i(getClass().getName(), "APK installation failed: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
                     }
 
                     String startCommand = applicationVersionGson.getStartCommand();
                     if (!TextUtils.isEmpty(startCommand)) {
                         // Expected format: "adb shell <startCommand>"
-                        logger.info("startCommand: " + startCommand);
+                        Log.i(getClass().getName(), "startCommand: " + startCommand);
 
                         process = Runtime.getRuntime().exec(new String[]{"su", "-c", startCommand});
                         process.waitFor();
@@ -190,14 +188,14 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                         if (inputStreamSuccess != null) {
                             bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
                             successMessage = bufferedReader.readLine();
-                            logger.info("startCommand successMessage: " + successMessage);
+                            Log.i(getClass().getName(), "startCommand successMessage: " + successMessage);
                         }
 
                         InputStream inputStreamError = process.getErrorStream();
                         if (inputStreamError != null) {
                             bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
                             String errorMessage = bufferedReader.readLine();
-                            logger.warn("startCommand errorMessage: " + errorMessage);
+                            Log.w(getClass().getName(), "startCommand errorMessage: " + errorMessage);
                         }
                     }
                 }
@@ -206,22 +204,22 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 if (inputStreamError != null) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
                     String errorMessage = bufferedReader.readLine();
-                    logger.warn("errorMessage: " + errorMessage);
+                    Log.w(getClass().getName(), "errorMessage: " + errorMessage);
                 }
             } catch (IOException e) {
-                logger.error("IOException: " + command, e);
+                Log.e(getClass().getName(), "IOException: " + command, e);
             } catch (InterruptedException e) {
-                logger.error("InterruptedException: " + command, e);
+                Log.e(getClass().getName(), "InterruptedException: " + command, e);
             }
         }
     }
 
     private void uninstallApk(ApplicationGson applicationGson) {
-        logger.info("uninstallApk");
+        Log.i(getClass().getName(), "uninstallApk");
 
         publishProgress("Uninstalling APK: " + applicationGson.getPackageName());
         String command = "pm uninstall " + applicationGson.getPackageName();
-        logger.info("command: " + command);
+        Log.i(getClass().getName(), "command: " + command);
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
             process.waitFor();
@@ -230,10 +228,10 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
             if (inputStreamSuccess != null) {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
                 String successMessage = bufferedReader.readLine();
-                logger.info("successMessage: " + successMessage);
+                Log.i(getClass().getName(), "successMessage: " + successMessage);
                 if (!"Success".equals(successMessage)) {
                     publishProgress("APK uninstallation failed: " + applicationGson.getPackageName());
-                    logger.error("APK uninstallation failed: " + applicationGson.getPackageName());
+                    Log.e(getClass().getName(), "APK uninstallation failed: " + applicationGson.getPackageName());
                 }
             }
 
@@ -241,28 +239,28 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
             if (inputStreamError != null) {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
                 String errorMessage = bufferedReader.readLine();
-                logger.warn("errorMessage: " + errorMessage);
+                Log.w(getClass().getName(), "errorMessage: " + errorMessage);
             }
         } catch (IOException e) {
-            logger.error("IOException: " + command, e);
+            Log.e(getClass().getName(), "IOException: " + command, e);
         } catch (InterruptedException e) {
-            logger.error("InterruptedException: " + command, e);
+            Log.e(getClass().getName(), "InterruptedException: " + command, e);
         }
     }
 
     @Override
     protected void onProgressUpdate(String... updateMessages) {
-        logger.info("onProgressUpdate");
+        Log.i(getClass().getName(), "onProgressUpdate");
         super.onProgressUpdate(updateMessages);
 
         String message = updateMessages[0];
-        logger.info(message);
+        Log.i(getClass().getName(), message);
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
     protected void onPostExecute(Void v) {
-        logger.info("onPostExecute");
+        Log.i(getClass().getName(), "onPostExecute");
         super.onPostExecute(v);
     }
 }
