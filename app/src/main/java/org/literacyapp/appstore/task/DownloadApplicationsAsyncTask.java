@@ -52,11 +52,15 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
     protected Void doInBackground(Object... objects) {
         logger.info("doInBackground");
 
+        boolean isWifiEnabled = ConnectivityHelper.isWifiEnabled(context);
+        logger.info("isWifiEnabled: " + isWifiEnabled);
         boolean isWifiConnected = ConnectivityHelper.isWifiConnected(context);
         logger.info("isWifiConnected: " + isWifiConnected);
         boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
         logger.info("isServerReachable: " + isServerReachable);
-        if (!isWifiConnected) {
+        if (!isWifiEnabled) {
+            logger.warn(context.getString(R.string.wifi_needs_to_be_enabled));
+        } else if (!isWifiConnected) {
             logger.warn(context.getString(R.string.wifi_needs_to_be_connected));
         } else if (!isServerReachable) {
             logger.warn(context.getString(R.string.server_is_not_reachable));
