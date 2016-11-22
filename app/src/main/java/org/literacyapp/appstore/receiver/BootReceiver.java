@@ -19,7 +19,7 @@ public class BootReceiver extends BroadcastReceiver {
         // Initiate background job for synchronizing applications
         ComponentName componentName = new ComponentName(context, ApplicationSynchronizationService.class);
         JobInfo.Builder builder = new JobInfo.Builder(1, componentName);
-        builder.setRequiresDeviceIdle(true);
+        builder.setPeriodic(1000 * 60 * 60); // Every hour
         JobInfo jobInfo = builder.build();
 
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
