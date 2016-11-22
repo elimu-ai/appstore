@@ -9,7 +9,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -79,7 +78,6 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 if (!"success".equals(jsonObject.getString("result"))) {
                     Log.w(getClass().getName(), "Download failed");
                     String errorDescription = jsonObject.getString("description");
-                    publishProgress("error: " + errorDescription);
                 } else {
                     JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
                     for (int i = 0; i < jsonArrayApplications.length(); i++) {
@@ -89,7 +87,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 
                         ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
 
-                        publishProgress("Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
+                        Log.i(getClass().getName(), "Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
 
                         // Delete/update/install application
                         PackageManager packageManager = context.getPackageManager();
@@ -119,7 +117,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             }
                         }
                     }
-                    publishProgress("Synchronization complete!");
+                    Log.i(getClass().getName(), "Synchronization complete!");
 
                     // Update time of last synchronization
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -149,13 +147,13 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
         String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
         Log.i(getClass().getName(), "fileName: " + fileName);
 
-        publishProgress("Downloading APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ", " + applicationVersionGson.getFileSizeInKb() + "kB)");
+        Log.i(getClass().getName(), "Downloading APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ", " + applicationVersionGson.getFileSizeInKb() + "kB)");
         File apkFile = ApkLoader.loadApk(fileUrl, fileName, context);
         Log.i(getClass().getName(), "apkFile: " + apkFile);
         if ((apkFile == null) || !apkFile.exists()) {
             Log.i(getClass().getName(), "APK download failed: " + fileUrl);
         } else {
-            publishProgress("Installing APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
+            Log.i(getClass().getName(), "Installing APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
             String command = "pm install -r -g " + apkFile.getAbsolutePath(); // https://developer.android.com/studio/command-line/shell.html#pm
             if ("KFFOWI".equals(DeviceInfoHelper.getDeviceModel(context))) {
                 // The '-g' command does not work on Amazon Fire: "Error: Unknown option: -g"
@@ -172,7 +170,6 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                     String successMessage = bufferedReader.readLine();
                     Log.i(getClass().getName(), "successMessage: " + successMessage);
                     if (!"Success".equals(successMessage)) {
-                        publishProgress("APK installation failed: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
                         Log.i(getClass().getName(), "APK installation failed: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
                     }
 
@@ -217,7 +214,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
     private void uninstallApk(ApplicationGson applicationGson) {
         Log.i(getClass().getName(), "uninstallApk");
 
-        publishProgress("Uninstalling APK: " + applicationGson.getPackageName());
+        Log.i(getClass().getName(), "Uninstalling APK: " + applicationGson.getPackageName());
         String command = "pm uninstall " + applicationGson.getPackageName();
         Log.i(getClass().getName(), "command: " + command);
         try {
@@ -230,7 +227,6 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 String successMessage = bufferedReader.readLine();
                 Log.i(getClass().getName(), "successMessage: " + successMessage);
                 if (!"Success".equals(successMessage)) {
-                    publishProgress("APK uninstallation failed: " + applicationGson.getPackageName());
                     Log.e(getClass().getName(), "APK uninstallation failed: " + applicationGson.getPackageName());
                 }
             }
@@ -246,16 +242,6 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
         } catch (InterruptedException e) {
             Log.e(getClass().getName(), "InterruptedException: " + command, e);
         }
-    }
-
-    @Override
-    protected void onProgressUpdate(String... updateMessages) {
-        Log.i(getClass().getName(), "onProgressUpdate");
-        super.onProgressUpdate(updateMessages);
-
-        String message = updateMessages[0];
-        Log.i(getClass().getName(), message);
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
