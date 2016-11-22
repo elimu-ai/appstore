@@ -13,8 +13,8 @@ android {
         applicationId "org.literacyapp.appstore"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 1002000
-        versionName "1.2.0"
+        versionCode 1002001
+        versionName "1.2.1-SNAPSHOT"
     }
 
     lintOptions {
