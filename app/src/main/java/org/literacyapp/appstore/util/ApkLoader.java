@@ -23,7 +23,7 @@ public class ApkLoader {
 
         Log.i(ApkLoader.class.getName(), "Downloading from " + urlValue + "...");
 
-        File apkDirectory = new File(Environment.getExternalStorageDirectory() + File.separator + "Appstore" + File.separator + "apks");
+        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.literacyapp-appstore/apks");
         Log.i(ApkLoader.class.getName(), "apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {
             apkDirectory.mkdirs();
