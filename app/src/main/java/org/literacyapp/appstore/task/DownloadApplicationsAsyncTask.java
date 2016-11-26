@@ -83,11 +83,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                     for (int i = 0; i < jsonArrayApplications.length(); i++) {
                         Type type = new TypeToken<ApplicationGson>() {}.getType();
                         ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
-                        Log.i(getClass().getName(), "applicationGson.getPackageName(): " + applicationGson.getPackageName() + " (" + applicationGson.getApplicationStatus() + ")");
-
-                        ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-
-                        Log.i(getClass().getName(), "Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
+                        Log.i(getClass().getName(), "Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (status " + applicationGson.getApplicationStatus() + ")");
 
                         // Delete/update/install application
                         PackageManager packageManager = context.getPackageManager();
@@ -103,6 +99,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             } else if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
                                 // Check if a newer version is available for download
                                 Log.i(getClass().getName(), "packageInfo.versionCode: " + packageInfo.versionCode);
+                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
                                 Log.i(getClass().getName(), "Newest version available for download: " + applicationVersionGson.getVersionCode());
                                 if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
                                     // Download the APK and install it
@@ -114,6 +111,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 
                             if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
                                 // Download the APK file and install it
+                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
                                 downloadAndInstallApk(applicationVersionGson);
                             }
                         }
