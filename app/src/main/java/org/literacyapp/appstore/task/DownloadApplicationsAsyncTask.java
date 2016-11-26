@@ -83,7 +83,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                     for (int i = 0; i < jsonArrayApplications.length(); i++) {
                         Type type = new TypeToken<ApplicationGson>() {}.getType();
                         ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
-                        Log.i(getClass().getName(), "applicationGson.getPackageName(): " + applicationGson.getPackageName());
+                        Log.i(getClass().getName(), "applicationGson.getPackageName(): " + applicationGson.getPackageName() + " (" + applicationGson.getApplicationStatus() + ")");
 
                         ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
 
@@ -96,10 +96,11 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             Log.i(getClass().getName(), "The application is already installed: " + applicationGson.getPackageName());
 
                             // Check if the Application has been deleted/deactivated on the website
-                            if (applicationGson.getApplicationStatus() != ApplicationStatus.ACTIVE) {
+                            if ((applicationGson.getApplicationStatus() == ApplicationStatus.DELETED)
+                                    || (applicationGson.getApplicationStatus() == ApplicationStatus.INACTIVE)) {
                                 // Delete application
                                 uninstallApk(applicationGson);
-                            } else {
+                            } else if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
                                 // Check if a newer version is available for download
                                 Log.i(getClass().getName(), "packageInfo.versionCode: " + packageInfo.versionCode);
                                 Log.i(getClass().getName(), "Newest version available for download: " + applicationVersionGson.getVersionCode());
