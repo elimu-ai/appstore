@@ -10,9 +10,11 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
 
 import java.util.Set;
+import org.literacyapp.appstore.dao.converter.ApplicationStatusConverter;
 import org.literacyapp.appstore.dao.converter.LocaleConverter;
 import org.literacyapp.appstore.dao.converter.StringSetConverter;
 import org.literacyapp.model.enums.Locale;
+import org.literacyapp.model.enums.admin.ApplicationStatus;
 
 import org.literacyapp.appstore.model.Application;
 
@@ -34,11 +36,13 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         public final static Property PackageName = new Property(2, String.class, "packageName", false, "PACKAGE_NAME");
         public final static Property LiteracySkills = new Property(3, String.class, "literacySkills", false, "LITERACY_SKILLS");
         public final static Property NumeracySkills = new Property(4, String.class, "numeracySkills", false, "NUMERACY_SKILLS");
+        public final static Property ApplicationStatus = new Property(5, String.class, "applicationStatus", false, "APPLICATION_STATUS");
     }
 
     private final LocaleConverter localeConverter = new LocaleConverter();
     private final StringSetConverter literacySkillsConverter = new StringSetConverter();
     private final StringSetConverter numeracySkillsConverter = new StringSetConverter();
+    private final ApplicationStatusConverter applicationStatusConverter = new ApplicationStatusConverter();
 
     public ApplicationDao(DaoConfig config) {
         super(config);
@@ -56,7 +60,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
                 "\"LOCALE\" TEXT NOT NULL ," + // 1: locale
                 "\"PACKAGE_NAME\" TEXT NOT NULL ," + // 2: packageName
                 "\"LITERACY_SKILLS\" TEXT," + // 3: literacySkills
-                "\"NUMERACY_SKILLS\" TEXT);"); // 4: numeracySkills
+                "\"NUMERACY_SKILLS\" TEXT," + // 4: numeracySkills
+                "\"APPLICATION_STATUS\" TEXT NOT NULL );"); // 5: applicationStatus
     }
 
     /** Drops the underlying database table. */
@@ -85,6 +90,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         if (numeracySkills != null) {
             stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
         }
+        stmt.bindString(6, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
     }
 
     @Override
@@ -107,6 +113,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         if (numeracySkills != null) {
             stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
         }
+        stmt.bindString(6, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
     }
 
     @Override
@@ -121,7 +128,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             localeConverter.convertToEntityProperty(cursor.getString(offset + 1)), // locale
             cursor.getString(offset + 2), // packageName
             cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)), // literacySkills
-            cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)) // numeracySkills
+            cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)), // numeracySkills
+            applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)) // applicationStatus
         );
         return entity;
     }
@@ -133,6 +141,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         entity.setPackageName(cursor.getString(offset + 2));
         entity.setLiteracySkills(cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)));
         entity.setNumeracySkills(cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)));
+        entity.setApplicationStatus(applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)));
      }
     
     @Override

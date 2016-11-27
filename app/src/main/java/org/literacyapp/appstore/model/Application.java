@@ -5,9 +5,11 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
+import org.literacyapp.appstore.dao.converter.ApplicationStatusConverter;
 import org.literacyapp.appstore.dao.converter.LocaleConverter;
 import org.literacyapp.appstore.dao.converter.StringSetConverter;
 import org.literacyapp.model.enums.Locale;
+import org.literacyapp.model.enums.admin.ApplicationStatus;
 import org.literacyapp.model.enums.content.LiteracySkill;
 import org.literacyapp.model.enums.content.NumeracySkill;
 
@@ -32,16 +34,20 @@ public class Application {
     @Convert(converter = StringSetConverter.class, columnType = String.class)
     private Set<NumeracySkill> numeracySkills;
     
-//    applicationStatus
+    @NotNull
+    @Convert(converter = ApplicationStatusConverter.class, columnType = String.class)
+    private ApplicationStatus applicationStatus;
 
-    @Generated(hash = 812288879)
+    @Generated(hash = 2022782533)
     public Application(Long id, @NotNull Locale locale, @NotNull String packageName,
-            Set<LiteracySkill> literacySkills, Set<NumeracySkill> numeracySkills) {
+            Set<LiteracySkill> literacySkills, Set<NumeracySkill> numeracySkills,
+            @NotNull ApplicationStatus applicationStatus) {
         this.id = id;
         this.locale = locale;
         this.packageName = packageName;
         this.literacySkills = literacySkills;
         this.numeracySkills = numeracySkills;
+        this.applicationStatus = applicationStatus;
     }
 
     @Generated(hash = 312658882)
@@ -86,5 +92,13 @@ public class Application {
 
     public void setNumeracySkills(Set<NumeracySkill> numeracySkills) {
         this.numeracySkills = numeracySkills;
+    }
+
+    public ApplicationStatus getApplicationStatus() {
+        return applicationStatus;
+    }
+
+    public void setApplicationStatus(ApplicationStatus applicationStatus) {
+        this.applicationStatus = applicationStatus;
     }
 }

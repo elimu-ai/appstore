@@ -141,7 +141,13 @@ public class MainActivity extends AppCompatActivity {
         List<Application> applications = applicationDao.loadAll();
         Log.i(getClass().getName(), "applications.size(): " + applications.size());
         for (Application application : applications) {
-            Log.i(getClass().getName(), "id: " + application.getId() + ", locale: " + application.getLocale() + ", packageName: " + application.getPackageName() + ", literacySkills: " + application.getLiteracySkills() + ", numeracySkills: " + application.getNumeracySkills());
+            Log.i(getClass().getName(), "id: " + application.getId() +
+                    ", locale: " + application.getLocale() +
+                    ", packageName: " + application.getPackageName() +
+                    ", literacySkills: " + application.getLiteracySkills() +
+                    ", numeracySkills: " + application.getNumeracySkills() +
+                    ", applicationStatus: " + application.getApplicationStatus()
+            );
         }
         // TODO: display the list of Applications in UI
     }
