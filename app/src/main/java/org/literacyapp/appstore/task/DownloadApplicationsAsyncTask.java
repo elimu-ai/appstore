@@ -16,8 +16,11 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.literacyapp.appstore.AppstoreApplication;
 import org.literacyapp.appstore.MainActivity;
 import org.literacyapp.appstore.R;
+import org.literacyapp.appstore.dao.ApplicationDao;
+import org.literacyapp.appstore.model.Application;
 import org.literacyapp.appstore.util.ApkLoader;
 import org.literacyapp.appstore.util.ChecksumHelper;
 import org.literacyapp.appstore.util.ConnectivityHelper;
@@ -41,8 +44,13 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 
     private Context context;
 
+    private ApplicationDao applicationDao;
+
     public DownloadApplicationsAsyncTask(Context context) {
         this.context = context;
+
+        AppstoreApplication appstoreApplication = (AppstoreApplication) context;
+        applicationDao = appstoreApplication.getDaoSession().getApplicationDao();
     }
 
     @Override
@@ -84,6 +92,22 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                         Type type = new TypeToken<ApplicationGson>() {}.getType();
                         ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
                         Log.i(getClass().getName(), "Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (status " + applicationGson.getApplicationStatus() + ")");
+
+                        Application application = applicationDao.load(applicationGson.getId());
+                        if (application == null) {
+                            // Store new Application in database
+                            application = new Application();
+                            application.setId(applicationGson.getId());
+                            application.setPackageName(applicationGson.getPackageName());
+                            long id = applicationDao.insert(application);
+                            Log.i(getClass().getName(), "Stored Application in database with id " + id);
+                        } else {
+                            // Update existing Application in database
+                            application.setId(applicationGson.getId());
+                            application.setPackageName(applicationGson.getPackageName());
+                            applicationDao.update(application);
+                            Log.i(getClass().getName(), "Updated Application in database with id " + application.getId());
+                        }
 
                         // Delete/update/install application
                         PackageManager packageManager = context.getPackageManager();

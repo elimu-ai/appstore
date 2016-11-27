@@ -38,4 +38,8 @@ public class AppstoreApplication extends Application {
             sharedPreferences.edit().putInt(PREF_APP_VERSION_CODE, newVersionCode).commit();
         }
     }
+
+    public DaoSession getDaoSession() {
+        return daoSession;
+    }
 }
