@@ -1,9 +1,12 @@
 package org.literacyapp.appstore.model;
 
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
+import org.literacyapp.appstore.dao.converter.LocaleConverter;
+import org.literacyapp.model.enums.Locale;
 
 @Entity
 public class Application {
@@ -12,7 +15,8 @@ public class Application {
     private Long id;
 
 //    @NotNull
-//    private Locale locale;
+    @Convert(converter = LocaleConverter.class, columnType = String.class)
+    private Locale locale;
 
     @NotNull
     private String packageName;
@@ -23,9 +27,10 @@ public class Application {
 //
 //    applicationStatus
 
-    @Generated(hash = 1213546295)
-    public Application(Long id, @NotNull String packageName) {
+    @Generated(hash = 2022574067)
+    public Application(Long id, Locale locale, @NotNull String packageName) {
         this.id = id;
+        this.locale = locale;
         this.packageName = packageName;
     }
 
@@ -39,6 +44,14 @@ public class Application {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     public String getPackageName() {

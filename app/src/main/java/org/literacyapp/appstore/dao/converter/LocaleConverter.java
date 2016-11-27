@@ -3,21 +3,21 @@ package org.literacyapp.appstore.dao.converter;
 import android.util.Log;
 
 import org.greenrobot.greendao.converter.PropertyConverter;
-import org.literacyapp.model.enums.content.NumeracySkill;
+import org.literacyapp.model.enums.Locale;
 
-public class LocaleConverter implements PropertyConverter<NumeracySkill, String> {
+public class LocaleConverter implements PropertyConverter<Locale, String> {
 
     @Override
-    public NumeracySkill convertToEntityProperty(String databaseValue) {
+    public Locale convertToEntityProperty(String databaseValue) {
         Log.i(getClass().getName(), "convertToEntityProperty");
 
-        NumeracySkill entityProperty = NumeracySkill.valueOf(databaseValue);
+        Locale entityProperty = Locale.valueOf(databaseValue);
         Log.i(getClass().getName(), "entityProperty: " + entityProperty);
         return entityProperty;
     }
 
     @Override
-    public String convertToDatabaseValue(NumeracySkill entityProperty) {
+    public String convertToDatabaseValue(Locale entityProperty) {
         Log.i(getClass().getName(), "convertToDatabaseValue");
 
         String databaseValue = entityProperty.toString();
