@@ -14,7 +14,7 @@ public class Application {
     @Id
     private Long id;
 
-//    @NotNull
+    @NotNull
     @Convert(converter = LocaleConverter.class, columnType = String.class)
     private Locale locale;
 
@@ -27,8 +27,9 @@ public class Application {
 //
 //    applicationStatus
 
-    @Generated(hash = 2022574067)
-    public Application(Long id, Locale locale, @NotNull String packageName) {
+    @Generated(hash = 1986685702)
+    public Application(Long id, @NotNull Locale locale,
+            @NotNull String packageName) {
         this.id = id;
         this.locale = locale;
         this.packageName = packageName;

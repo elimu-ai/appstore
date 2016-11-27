@@ -47,7 +47,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"APPLICATION\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
-                "\"LOCALE\" TEXT," + // 1: locale
+                "\"LOCALE\" TEXT NOT NULL ," + // 1: locale
                 "\"PACKAGE_NAME\" TEXT NOT NULL );"); // 2: packageName
     }
 
@@ -65,11 +65,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         if (id != null) {
             stmt.bindLong(1, id);
         }
- 
-        Locale locale = entity.getLocale();
-        if (locale != null) {
-            stmt.bindString(2, localeConverter.convertToDatabaseValue(locale));
-        }
+        stmt.bindString(2, localeConverter.convertToDatabaseValue(entity.getLocale()));
         stmt.bindString(3, entity.getPackageName());
     }
 
@@ -81,11 +77,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         if (id != null) {
             stmt.bindLong(1, id);
         }
- 
-        Locale locale = entity.getLocale();
-        if (locale != null) {
-            stmt.bindString(2, localeConverter.convertToDatabaseValue(locale));
-        }
+        stmt.bindString(2, localeConverter.convertToDatabaseValue(entity.getLocale()));
         stmt.bindString(3, entity.getPackageName());
     }
 
@@ -98,7 +90,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
     public Application readEntity(Cursor cursor, int offset) {
         Application entity = new Application( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : localeConverter.convertToEntityProperty(cursor.getString(offset + 1)), // locale
+            localeConverter.convertToEntityProperty(cursor.getString(offset + 1)), // locale
             cursor.getString(offset + 2) // packageName
         );
         return entity;
@@ -107,7 +99,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
     @Override
     public void readEntity(Cursor cursor, Application entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setLocale(cursor.isNull(offset + 1) ? null : localeConverter.convertToEntityProperty(cursor.getString(offset + 1)));
+        entity.setLocale(localeConverter.convertToEntityProperty(cursor.getString(offset + 1)));
         entity.setPackageName(cursor.getString(offset + 2));
      }
     
