@@ -19,11 +19,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.literacyapp.appstore.dao.ApplicationDao;
+import org.literacyapp.appstore.model.Application;
 import org.literacyapp.appstore.task.DownloadApplicationsAsyncTask;
 import org.literacyapp.appstore.util.ConnectivityHelper;
 import org.literacyapp.appstore.util.RootHelper;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressBar mProgressBarSynchronization;
 
+    private ApplicationDao applicationDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getName(), "onCreate");
@@ -50,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
         mTextViewLastSynchronization = (TextView) findViewById(R.id.textViewLastSynchronization);
         mButtonSynchronization = (Button) findViewById(R.id.buttonSynchronization);
         mProgressBarSynchronization = (ProgressBar) findViewById(R.id.progressBarSynchronization);
+
+        AppstoreApplication appstoreApplication = (AppstoreApplication) getApplication();
+        applicationDao = appstoreApplication.getDaoSession().getApplicationDao();
     }
 
     @Override
@@ -128,6 +136,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // Fetch list of Applications already stored in database
+        List<Application> applications = applicationDao.loadAll();
+        Log.i(getClass().getName(), "applications.size(): " + applications.size());
+        for (Application application : applications) {
+            Log.i(getClass().getName(), "id: " + application.getId() + ", packageName: " + application.getPackageName());
+        }
+        // TODO: display the list of Applications in UI
     }
 
     @Override
