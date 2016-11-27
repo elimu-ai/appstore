@@ -30,7 +30,11 @@ public class AppstoreApplication extends Application {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int oldVersionCode = sharedPreferences.getInt(PREF_APP_VERSION_CODE, 0);
         int newVersionCode = VersionHelper.getAppVersionCode(getApplicationContext());
-        if ((oldVersionCode > 0) && (oldVersionCode < newVersionCode)) {
+        if (oldVersionCode == 0) {
+            sharedPreferences.edit().putInt(PREF_APP_VERSION_CODE, newVersionCode).commit();
+            oldVersionCode = newVersionCode;
+        }
+        if (oldVersionCode < newVersionCode) {
             Log.i(getClass().getName(), "Upgrading application from version " + oldVersionCode + " to " + newVersionCode);
 //            if (newVersionCode == ???) {
 //                // Put relevant tasks required for upgrading here

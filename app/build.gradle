@@ -14,8 +14,8 @@ android {
         applicationId "org.literacyapp.appstore"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 1002004
-        versionName "1.2.4-SNAPSHOT"
+        versionCode 1002009
+        versionName "1.2.9-SNAPSHOT"
     }
 
     lintOptions {
@@ -24,7 +24,7 @@ android {
 }
 
 greendao {
-    schemaVersion 1002004
+    schemaVersion 1002009
     daoPackage 'org.literacyapp.appstore.dao'
     targetGenDir '../app/src/main/java'
 }

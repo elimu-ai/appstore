@@ -100,6 +100,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             application.setId(applicationGson.getId());
                             application.setLocale(applicationGson.getLocale());
                             application.setPackageName(applicationGson.getPackageName());
+                            application.setLiteracySkills(applicationGson.getLiteracySkills());
                             long id = applicationDao.insert(application);
                             Log.i(getClass().getName(), "Stored Application in database with id " + id);
                         } else {
@@ -107,6 +108,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             application.setId(applicationGson.getId());
                             application.setLocale(applicationGson.getLocale());
                             application.setPackageName(applicationGson.getPackageName());
+                            application.setLiteracySkills(applicationGson.getLiteracySkills());
                             applicationDao.update(application);
                             Log.i(getClass().getName(), "Updated Application in database with id " + application.getId());
                         }

@@ -9,7 +9,9 @@ import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
 
+import java.util.Set;
 import org.literacyapp.appstore.dao.converter.LocaleConverter;
+import org.literacyapp.appstore.dao.converter.StringSetConverter;
 import org.literacyapp.model.enums.Locale;
 
 import org.literacyapp.appstore.model.Application;
@@ -30,9 +32,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Locale = new Property(1, String.class, "locale", false, "LOCALE");
         public final static Property PackageName = new Property(2, String.class, "packageName", false, "PACKAGE_NAME");
+        public final static Property LiteracySkills = new Property(3, String.class, "literacySkills", false, "LITERACY_SKILLS");
     }
 
     private final LocaleConverter localeConverter = new LocaleConverter();
+    private final StringSetConverter literacySkillsConverter = new StringSetConverter();
 
     public ApplicationDao(DaoConfig config) {
         super(config);
@@ -48,7 +52,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"APPLICATION\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"LOCALE\" TEXT NOT NULL ," + // 1: locale
-                "\"PACKAGE_NAME\" TEXT NOT NULL );"); // 2: packageName
+                "\"PACKAGE_NAME\" TEXT NOT NULL ," + // 2: packageName
+                "\"LITERACY_SKILLS\" TEXT);"); // 3: literacySkills
     }
 
     /** Drops the underlying database table. */
@@ -67,6 +72,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         }
         stmt.bindString(2, localeConverter.convertToDatabaseValue(entity.getLocale()));
         stmt.bindString(3, entity.getPackageName());
+ 
+        Set literacySkills = entity.getLiteracySkills();
+        if (literacySkills != null) {
+            stmt.bindString(4, literacySkillsConverter.convertToDatabaseValue(literacySkills));
+        }
     }
 
     @Override
@@ -79,6 +89,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         }
         stmt.bindString(2, localeConverter.convertToDatabaseValue(entity.getLocale()));
         stmt.bindString(3, entity.getPackageName());
+ 
+        Set literacySkills = entity.getLiteracySkills();
+        if (literacySkills != null) {
+            stmt.bindString(4, literacySkillsConverter.convertToDatabaseValue(literacySkills));
+        }
     }
 
     @Override
@@ -91,7 +106,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         Application entity = new Application( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             localeConverter.convertToEntityProperty(cursor.getString(offset + 1)), // locale
-            cursor.getString(offset + 2) // packageName
+            cursor.getString(offset + 2), // packageName
+            cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)) // literacySkills
         );
         return entity;
     }
@@ -101,6 +117,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setLocale(localeConverter.convertToEntityProperty(cursor.getString(offset + 1)));
         entity.setPackageName(cursor.getString(offset + 2));
+        entity.setLiteracySkills(cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)));
      }
     
     @Override
