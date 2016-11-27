@@ -33,10 +33,12 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         public final static Property Locale = new Property(1, String.class, "locale", false, "LOCALE");
         public final static Property PackageName = new Property(2, String.class, "packageName", false, "PACKAGE_NAME");
         public final static Property LiteracySkills = new Property(3, String.class, "literacySkills", false, "LITERACY_SKILLS");
+        public final static Property NumeracySkills = new Property(4, String.class, "numeracySkills", false, "NUMERACY_SKILLS");
     }
 
     private final LocaleConverter localeConverter = new LocaleConverter();
     private final StringSetConverter literacySkillsConverter = new StringSetConverter();
+    private final StringSetConverter numeracySkillsConverter = new StringSetConverter();
 
     public ApplicationDao(DaoConfig config) {
         super(config);
@@ -53,7 +55,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"LOCALE\" TEXT NOT NULL ," + // 1: locale
                 "\"PACKAGE_NAME\" TEXT NOT NULL ," + // 2: packageName
-                "\"LITERACY_SKILLS\" TEXT);"); // 3: literacySkills
+                "\"LITERACY_SKILLS\" TEXT," + // 3: literacySkills
+                "\"NUMERACY_SKILLS\" TEXT);"); // 4: numeracySkills
     }
 
     /** Drops the underlying database table. */
@@ -77,6 +80,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         if (literacySkills != null) {
             stmt.bindString(4, literacySkillsConverter.convertToDatabaseValue(literacySkills));
         }
+ 
+        Set numeracySkills = entity.getNumeracySkills();
+        if (numeracySkills != null) {
+            stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
+        }
     }
 
     @Override
@@ -94,6 +102,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         if (literacySkills != null) {
             stmt.bindString(4, literacySkillsConverter.convertToDatabaseValue(literacySkills));
         }
+ 
+        Set numeracySkills = entity.getNumeracySkills();
+        if (numeracySkills != null) {
+            stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
+        }
     }
 
     @Override
@@ -107,7 +120,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             localeConverter.convertToEntityProperty(cursor.getString(offset + 1)), // locale
             cursor.getString(offset + 2), // packageName
-            cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)) // literacySkills
+            cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)), // literacySkills
+            cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)) // numeracySkills
         );
         return entity;
     }
@@ -118,6 +132,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         entity.setLocale(localeConverter.convertToEntityProperty(cursor.getString(offset + 1)));
         entity.setPackageName(cursor.getString(offset + 2));
         entity.setLiteracySkills(cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)));
+        entity.setNumeracySkills(cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)));
      }
     
     @Override
