@@ -98,13 +98,21 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             // Store new Application in database
                             application = new Application();
                             application.setId(applicationGson.getId());
+                            application.setLocale(applicationGson.getLocale());
                             application.setPackageName(applicationGson.getPackageName());
+                            application.setLiteracySkills(applicationGson.getLiteracySkills());
+                            application.setNumeracySkills(applicationGson.getNumeracySkills());
+                            application.setApplicationStatus(applicationGson.getApplicationStatus());
                             long id = applicationDao.insert(application);
                             Log.i(getClass().getName(), "Stored Application in database with id " + id);
                         } else {
                             // Update existing Application in database
                             application.setId(applicationGson.getId());
+                            application.setLocale(applicationGson.getLocale());
                             application.setPackageName(applicationGson.getPackageName());
+                            application.setLiteracySkills(applicationGson.getLiteracySkills());
+                            application.setNumeracySkills(applicationGson.getNumeracySkills());
+                            application.setApplicationStatus(applicationGson.getApplicationStatus());
                             applicationDao.update(application);
                             Log.i(getClass().getName(), "Updated Application in database with id " + application.getId());
                         }
