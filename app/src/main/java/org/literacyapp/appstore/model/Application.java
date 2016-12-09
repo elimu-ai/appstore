@@ -6,8 +6,9 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.literacyapp.appstore.dao.converter.ApplicationStatusConverter;
+import org.literacyapp.appstore.dao.converter.LiteracySkillSetConverter;
 import org.literacyapp.appstore.dao.converter.LocaleConverter;
-import org.literacyapp.appstore.dao.converter.StringSetConverter;
+import org.literacyapp.appstore.dao.converter.NumeracySkillSetConverter;
 import org.literacyapp.model.enums.Locale;
 import org.literacyapp.model.enums.admin.ApplicationStatus;
 import org.literacyapp.model.enums.content.LiteracySkill;
@@ -28,10 +29,10 @@ public class Application {
     @NotNull
     private String packageName;
 
-    @Convert(converter = StringSetConverter.class, columnType = String.class)
+    @Convert(converter = LiteracySkillSetConverter.class, columnType = String.class)
     private Set<LiteracySkill> literacySkills;
 
-    @Convert(converter = StringSetConverter.class, columnType = String.class)
+    @Convert(converter = NumeracySkillSetConverter.class, columnType = String.class)
     private Set<NumeracySkill> numeracySkills;
     
     @NotNull
