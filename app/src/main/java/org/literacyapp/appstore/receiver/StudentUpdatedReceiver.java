@@ -128,6 +128,21 @@ public class StudentUpdatedReceiver extends BroadcastReceiver {
                         }
                     }
                 }
+
+                // No filter
+                if (application.getLiteracySkills().isEmpty() && application.getNumeracySkills().isEmpty()) {
+                    if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                        // Show Application
+                        Log.i(getClass().getName(), "No skills required. Showing Application: " + application.getPackageName() + ", numeracySkills: " + application.getNumeracySkills());
+                        try {
+                            runAsRoot(new String[]{
+                                    "pm enable " + application.getPackageName()
+                            });
+                        } catch (IOException | InterruptedException e) {
+                            Log.e(getClass().getName(), null, e);
+                        }
+                    }
+                }
             }
         }
     }
