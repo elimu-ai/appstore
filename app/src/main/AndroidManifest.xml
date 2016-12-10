@@ -37,6 +37,16 @@
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name=".receiver.StudentUpdatedReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="literacyapp.intent.action.STUDENT_UPDATED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

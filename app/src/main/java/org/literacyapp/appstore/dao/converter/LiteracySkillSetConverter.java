@@ -5,17 +5,18 @@ import android.util.Log;
 import org.greenrobot.greendao.converter.PropertyConverter;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.literacyapp.model.enums.content.LiteracySkill;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class StringSetConverter implements PropertyConverter<Set, String> {
+public class LiteracySkillSetConverter implements PropertyConverter<Set<LiteracySkill>, String> {
 
     @Override
-    public Set convertToEntityProperty(String databaseValue) {
+    public Set<LiteracySkill> convertToEntityProperty(String databaseValue) {
         Log.d(getClass().getName(), "convertToEntityProperty");
 
-        Set<String> set = new HashSet<>();
+        Set<LiteracySkill> set = new HashSet<>();
 
         try {
             JSONArray jsonArray = new JSONArray(databaseValue);
@@ -23,7 +24,8 @@ public class StringSetConverter implements PropertyConverter<Set, String> {
             for (int i = 0; i < jsonArray.length(); i++) {
                 String value = jsonArray.getString(i);
                 Log.d(getClass().getName(), "value: " + value);
-                set.add(value);
+                LiteracySkill literacySkill = LiteracySkill.valueOf(value);
+                set.add(literacySkill);
             }
         } catch (JSONException e) {
             Log.e(getClass().getName(), null, e);
@@ -33,7 +35,7 @@ public class StringSetConverter implements PropertyConverter<Set, String> {
     }
 
     @Override
-    public String convertToDatabaseValue(Set entityProperty) {
+    public String convertToDatabaseValue(Set<LiteracySkill> entityProperty) {
         Log.d(getClass().getName(), "convertToDatabaseValue");
 
         String databaseValue = entityProperty.toString();

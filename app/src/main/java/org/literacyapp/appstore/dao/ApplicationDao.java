@@ -11,8 +11,9 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 
 import java.util.Set;
 import org.literacyapp.appstore.dao.converter.ApplicationStatusConverter;
+import org.literacyapp.appstore.dao.converter.LiteracySkillSetConverter;
 import org.literacyapp.appstore.dao.converter.LocaleConverter;
-import org.literacyapp.appstore.dao.converter.StringSetConverter;
+import org.literacyapp.appstore.dao.converter.NumeracySkillSetConverter;
 import org.literacyapp.model.enums.Locale;
 import org.literacyapp.model.enums.admin.ApplicationStatus;
 
@@ -40,8 +41,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
     }
 
     private final LocaleConverter localeConverter = new LocaleConverter();
-    private final StringSetConverter literacySkillsConverter = new StringSetConverter();
-    private final StringSetConverter numeracySkillsConverter = new StringSetConverter();
+    private final LiteracySkillSetConverter literacySkillsConverter = new LiteracySkillSetConverter();
+    private final NumeracySkillSetConverter numeracySkillsConverter = new NumeracySkillSetConverter();
     private final ApplicationStatusConverter applicationStatusConverter = new ApplicationStatusConverter();
 
     public ApplicationDao(DaoConfig config) {

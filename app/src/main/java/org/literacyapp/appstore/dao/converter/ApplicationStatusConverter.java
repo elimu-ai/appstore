@@ -9,19 +9,19 @@ public class ApplicationStatusConverter implements PropertyConverter<Application
 
     @Override
     public ApplicationStatus convertToEntityProperty(String databaseValue) {
-        Log.i(getClass().getName(), "convertToEntityProperty");
+        Log.d(getClass().getName(), "convertToEntityProperty");
 
         ApplicationStatus entityProperty = ApplicationStatus.valueOf(databaseValue);
-        Log.i(getClass().getName(), "entityProperty: " + entityProperty);
+        Log.d(getClass().getName(), "entityProperty: " + entityProperty);
         return entityProperty;
     }
 
     @Override
     public String convertToDatabaseValue(ApplicationStatus entityProperty) {
-        Log.i(getClass().getName(), "convertToDatabaseValue");
+        Log.d(getClass().getName(), "convertToDatabaseValue");
 
         String databaseValue = entityProperty.toString();
-        Log.i(getClass().getName(), "databaseValue: " + databaseValue);
+        Log.d(getClass().getName(), "databaseValue: " + databaseValue);
         return databaseValue;
     }
 }
