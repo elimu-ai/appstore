@@ -16,6 +16,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Downloads APK files from the web server.
+ */
 public class ApkLoader {
 
     public static File loadApk(String urlValue, String fileName, Context context) {
