@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -117,6 +118,19 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             Log.i(getClass().getName(), "Updated Application in database with id " + application.getId());
                         }
 
+                        // Download APK if missing from SD card
+                        if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.literacyapp-appstore/apks");
+                            ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+                            String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
+                            File apkFile = new File(apkDirectory, fileName);
+                            Log.i(getClass().getName(), "apkFile: " + apkFile);
+                            Log.i(getClass().getName(), "apkFile.exists(): " + apkFile.exists());
+                            if (!apkFile.exists()) {
+                                downloadApk(applicationVersionGson);
+                            }
+                        }
+
                         // Delete/update/install application
                         PackageManager packageManager = context.getPackageManager();
                         try {
@@ -129,22 +143,22 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                                 // Delete application
                                 uninstallApk(applicationGson);
                             } else if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                                // Check if a newer version is available for download
+                                // Check if a newer version is available
                                 Log.i(getClass().getName(), "packageInfo.versionCode: " + packageInfo.versionCode);
                                 ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                                Log.i(getClass().getName(), "Newest version available for download: " + applicationVersionGson.getVersionCode());
+                                Log.i(getClass().getName(), "Newest version available: " + applicationVersionGson.getVersionCode());
                                 if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
                                     // Download the APK and install it
-                                    downloadAndInstallApk(applicationVersionGson);
+                                    installApk(applicationVersionGson);
                                 }
                             }
                         } catch (PackageManager.NameNotFoundException e) {
                             Log.i(getClass().getName(), "The application is not installed: " + applicationGson.getPackageName());
 
                             if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                                // Download the APK file and install it
+                                // Install the APK
                                 ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                                downloadAndInstallApk(applicationVersionGson);
+                                installApk(applicationVersionGson);
                             }
                         }
                     }
@@ -162,8 +176,8 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
         return null;
     }
 
-    private void downloadAndInstallApk(ApplicationVersionGson applicationVersionGson) {
-        Log.i(getClass().getName(), "downloadAndInstallApk");
+    private File downloadApk(ApplicationVersionGson applicationVersionGson) {
+        Log.i(getClass().getName(), "downloadApk");
 
         String fileUrl = EnvironmentSettings.getBaseUrl() + applicationVersionGson.getFileUrl() +
                 "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
@@ -182,7 +196,32 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
         File apkFile = ApkLoader.loadApk(fileUrl, fileName, context);
         Log.i(getClass().getName(), "apkFile: " + apkFile);
         if ((apkFile == null) || !apkFile.exists()) {
-            Log.i(getClass().getName(), "APK download failed: " + fileUrl);
+            Log.w(getClass().getName(), "APK download failed: " + fileUrl);
+        } else {
+            Log.i(getClass().getName(), "APK downloaded: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
+        }
+
+        return apkFile;
+    }
+
+    private void installApk(ApplicationVersionGson applicationVersionGson) {
+        Log.i(getClass().getName(), "installApk");
+
+        String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
+        Log.i(getClass().getName(), "fileName: " + fileName);
+
+        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.literacyapp-appstore/apks");
+        Log.i(ApkLoader.class.getName(), "apkDirectory: " + apkDirectory);
+        if (!apkDirectory.exists()) {
+            apkDirectory.mkdirs();
+        }
+
+        File apkFile = new File(apkDirectory, fileName);
+        Log.i(ApkLoader.class.getName(), "apkFile: " + apkFile);
+        Log.i(ApkLoader.class.getName(), "apkFile.exists(): " + apkFile.exists());
+
+        if ((apkFile == null) || !apkFile.exists()) {
+            Log.w(getClass().getName(), "APK installation failed: " + apkFile);
         } else {
             Log.i(getClass().getName(), "Installing APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ")");
             String command = "pm install -r -g " + apkFile.getAbsolutePath(); // https://developer.android.com/studio/command-line/shell.html#pm
