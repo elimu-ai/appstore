@@ -127,6 +127,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             Log.i(getClass().getName(), "apkFile: " + apkFile);
                             Log.i(getClass().getName(), "apkFile.exists(): " + apkFile.exists());
                             if (!apkFile.exists()) {
+                                Log.i(getClass().getName(), "APK file (" + fileName + ") missing from SD card. Downloading...");
                                 downloadApk(applicationVersionGson);
                             }
                         }
