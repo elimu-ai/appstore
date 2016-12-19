@@ -146,7 +146,8 @@ public class MainActivity extends AppCompatActivity {
                     ", packageName: " + application.getPackageName() +
                     ", literacySkills: " + application.getLiteracySkills() +
                     ", numeracySkills: " + application.getNumeracySkills() +
-                    ", applicationStatus: " + application.getApplicationStatus()
+                    ", applicationStatus: " + application.getApplicationStatus() +
+                    ", versionCode: " + application.getVersionCode()
             );
         }
         // TODO: display the list of Applications in UI

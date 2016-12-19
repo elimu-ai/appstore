@@ -38,6 +38,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         public final static Property LiteracySkills = new Property(3, String.class, "literacySkills", false, "LITERACY_SKILLS");
         public final static Property NumeracySkills = new Property(4, String.class, "numeracySkills", false, "NUMERACY_SKILLS");
         public final static Property ApplicationStatus = new Property(5, String.class, "applicationStatus", false, "APPLICATION_STATUS");
+        public final static Property VersionCode = new Property(6, Integer.class, "versionCode", false, "VERSION_CODE");
+        public final static Property StartCommand = new Property(7, String.class, "startCommand", false, "START_COMMAND");
     }
 
     private final LocaleConverter localeConverter = new LocaleConverter();
@@ -62,7 +64,9 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
                 "\"PACKAGE_NAME\" TEXT NOT NULL ," + // 2: packageName
                 "\"LITERACY_SKILLS\" TEXT," + // 3: literacySkills
                 "\"NUMERACY_SKILLS\" TEXT," + // 4: numeracySkills
-                "\"APPLICATION_STATUS\" TEXT NOT NULL );"); // 5: applicationStatus
+                "\"APPLICATION_STATUS\" TEXT NOT NULL ," + // 5: applicationStatus
+                "\"VERSION_CODE\" INTEGER," + // 6: versionCode
+                "\"START_COMMAND\" TEXT);"); // 7: startCommand
     }
 
     /** Drops the underlying database table. */
@@ -92,6 +96,16 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
         }
         stmt.bindString(6, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
+ 
+        Integer versionCode = entity.getVersionCode();
+        if (versionCode != null) {
+            stmt.bindLong(7, versionCode);
+        }
+ 
+        String startCommand = entity.getStartCommand();
+        if (startCommand != null) {
+            stmt.bindString(8, startCommand);
+        }
     }
 
     @Override
@@ -115,6 +129,16 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
         }
         stmt.bindString(6, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
+ 
+        Integer versionCode = entity.getVersionCode();
+        if (versionCode != null) {
+            stmt.bindLong(7, versionCode);
+        }
+ 
+        String startCommand = entity.getStartCommand();
+        if (startCommand != null) {
+            stmt.bindString(8, startCommand);
+        }
     }
 
     @Override
@@ -130,7 +154,9 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             cursor.getString(offset + 2), // packageName
             cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)), // literacySkills
             cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)), // numeracySkills
-            applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)) // applicationStatus
+            applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)), // applicationStatus
+            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // versionCode
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7) // startCommand
         );
         return entity;
     }
@@ -143,6 +169,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         entity.setLiteracySkills(cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)));
         entity.setNumeracySkills(cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)));
         entity.setApplicationStatus(applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)));
+        entity.setVersionCode(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
+        entity.setStartCommand(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
      }
     
     @Override
