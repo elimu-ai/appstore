@@ -4,7 +4,7 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.util.Log;
 
-import org.literacyapp.appstore.task.DownloadApplicationsAsyncTask;
+import org.literacyapp.appstore.task.InstallApplicationsAsyncTask;
 
 public class ApplicationInstallService extends JobService {
 
@@ -13,7 +13,7 @@ public class ApplicationInstallService extends JobService {
         Log.i(getClass().getName(), "onStartJob");
 
         // Start processing work
-        new DownloadApplicationsAsyncTask(getApplicationContext()).execute();
+        new InstallApplicationsAsyncTask(getApplicationContext()).execute();
         // TODO: call jobFinished once AsyncTask completes
 
         boolean isWorkProcessingPending = false;

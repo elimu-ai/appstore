@@ -38,17 +38,24 @@ public class Application {
     @NotNull
     @Convert(converter = ApplicationStatusConverter.class, columnType = String.class)
     private ApplicationStatus applicationStatus;
+    
+    private Integer versionCode;
 
-    @Generated(hash = 2022782533)
+    private String startCommand;
+
+    @Generated(hash = 932730884)
     public Application(Long id, @NotNull Locale locale, @NotNull String packageName,
             Set<LiteracySkill> literacySkills, Set<NumeracySkill> numeracySkills,
-            @NotNull ApplicationStatus applicationStatus) {
+            @NotNull ApplicationStatus applicationStatus, Integer versionCode,
+            String startCommand) {
         this.id = id;
         this.locale = locale;
         this.packageName = packageName;
         this.literacySkills = literacySkills;
         this.numeracySkills = numeracySkills;
         this.applicationStatus = applicationStatus;
+        this.versionCode = versionCode;
+        this.startCommand = startCommand;
     }
 
     @Generated(hash = 312658882)
@@ -101,5 +108,21 @@ public class Application {
 
     public void setApplicationStatus(ApplicationStatus applicationStatus) {
         this.applicationStatus = applicationStatus;
+    }
+
+    public Integer getVersionCode() {
+        return this.versionCode;
+    }
+
+    public void setVersionCode(Integer versionCode) {
+        this.versionCode = versionCode;
+    }
+
+    public String getStartCommand() {
+        return this.startCommand;
+    }
+
+    public void setStartCommand(String startCommand) {
+        this.startCommand = startCommand;
     }
 }

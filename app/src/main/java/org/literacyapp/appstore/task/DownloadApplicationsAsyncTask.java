@@ -104,6 +104,11 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             application.setLiteracySkills(applicationGson.getLiteracySkills());
                             application.setNumeracySkills(applicationGson.getNumeracySkills());
                             application.setApplicationStatus(applicationGson.getApplicationStatus());
+                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+                                application.setVersionCode(applicationVersionGson.getVersionCode());
+                                application.setStartCommand(applicationVersionGson.getStartCommand());
+                            }
                             long id = applicationDao.insert(application);
                             Log.i(getClass().getName(), "Stored Application in database with id " + id);
                         } else {
@@ -114,6 +119,11 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                             application.setLiteracySkills(applicationGson.getLiteracySkills());
                             application.setNumeracySkills(applicationGson.getNumeracySkills());
                             application.setApplicationStatus(applicationGson.getApplicationStatus());
+                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+                                application.setVersionCode(applicationVersionGson.getVersionCode());
+                                application.setStartCommand(applicationVersionGson.getStartCommand());
+                            }
                             applicationDao.update(application);
                             Log.i(getClass().getName(), "Updated Application in database with id " + application.getId());
                         }
