@@ -14,5 +14,5 @@ android:
     - android-23
     - extra-android-m2repository
 
-#notifications:
-#  slack: literacyapp:HLjtHJdZ7DYJV2DlnDLrG6Gl
+notifications:
+  email: false
