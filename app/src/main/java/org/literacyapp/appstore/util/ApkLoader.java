@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedReader;
@@ -38,7 +37,8 @@ public class ApkLoader {
         Log.i(ApkLoader.class.getName(), "apkFile.exists(): " + apkFile.exists());
 
         if (!apkFile.exists()) {
-             try {
+            FileOutputStream fileOutputStream = null;
+            try {
                 URL url = new URL(urlValue);
 
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -47,13 +47,11 @@ public class ApkLoader {
 
                 int responseCode = httpURLConnection.getResponseCode();
                 Log.i(ApkLoader.class.getName(), "responseCode: " + responseCode);
+                InputStream inputStream = null;
                 if (responseCode == 200) {
-                    //read file's chunks and write them to file, instead of writing file to variable
-                    //there isn't file size limit
-                    //for details visit apache-commons documentation
-                    FileUtils.copyURLToFile(url, apkFile);
+                    inputStream = httpURLConnection.getInputStream();
                 } else {
-                    InputStream inputStream = httpURLConnection.getErrorStream();
+                    inputStream = httpURLConnection.getErrorStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                     String errorResponse = "";
                     String line;
@@ -63,12 +61,26 @@ public class ApkLoader {
                     Log.w(ApkLoader.class.getName(), "errorResponse: " + errorResponse);
                     return null;
                 }
+
+                byte[] bytes = IOUtils.toByteArray(inputStream);
+                fileOutputStream = new FileOutputStream(apkFile);
+                fileOutputStream.write(bytes);
+                fileOutputStream.flush();
             } catch (MalformedURLException e) {
                 Log.e(ApkLoader.class.getName(), "MalformedURLException", e);
             } catch (IOException e) {
                 Log.e(ApkLoader.class.getName(), "IOException", e);
+            } finally {
+                if (fileOutputStream != null) {
+                    try {
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        Log.e(ApkLoader.class.getName(), "IOException", e);
+                    }
+                }
             }
         }
+
         return apkFile;
     }
 }
