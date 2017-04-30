@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Locale;
 
 public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void> {
 
@@ -62,7 +63,8 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
         String fileName = application.getPackageName() + "-" + application.getVersionCode() + ".apk";
         Log.i(getClass().getName(), "fileName: " + fileName);
 
-        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.literacyapp-appstore/apks");
+        String language = Locale.getDefault().getLanguage();
+        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.literacyapp-appstore/apks/" + language);
         Log.i(ApkLoader.class.getName(), "apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {
             apkDirectory.mkdirs();

@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * Downloads APK files from the web server.
@@ -26,7 +27,8 @@ public class ApkLoader {
 
         Log.i(ApkLoader.class.getName(), "Downloading from " + urlValue + "...");
 
-        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.literacyapp-appstore/apks");
+        String language = Locale.getDefault().getLanguage();
+        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.literacyapp-appstore/apks/" + language);
         Log.i(ApkLoader.class.getName(), "apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {
             apkDirectory.mkdirs();
