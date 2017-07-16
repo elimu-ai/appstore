@@ -1,7 +1,7 @@
-# literacyapp-appstore
+# appstore
 
-[![Build Status](https://travis-ci.org/literacyapp-org/literacyapp-appstore.svg?branch=master)](https://travis-ci.org/literacyapp-org/literacyapp-appstore)
+[![Build Status](https://travis-ci.org/elimu-ai/appstore.svg?branch=master)](https://travis-ci.org/elimu-ai/appstore)
 
 ## Start command
 
-`am startservice org.literacyapp.appstore/.service.ApplicationSynchronizationService`
+`am startservice ai.elimu.appstore/.service.ApplicationSynchronizationService`

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.literacyapp.appstore">
+    package="ai.elimu.appstore">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
@@ -53,7 +53,7 @@
             android:exported="true">
 
             <intent-filter>
-                <action android:name="literacyapp.intent.action.STUDENT_UPDATED" />
+                <action android:name="ai.elimu.intent.action.STUDENT_UPDATED" />
             </intent-filter>
         </receiver>
     </application>

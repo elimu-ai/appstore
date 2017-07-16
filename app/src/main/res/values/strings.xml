@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Appstore (LiteracyApp)</string>
+    <string name="app_name">Appstore (elimu.ai)</string>
     <string name="language_ar">Arabic</string>
     <string name="language_en">English</string>
     <string name="language_es">Spanish</string>
-    <string name="language_sw">Kiswahili</string>
+    <string name="language_sw">Swahili</string>
     <string name="last_synchronization">Last synchronization</string>
     <string name="locale_selected">Locale selected</string>
     <string name="never">Never</string>
