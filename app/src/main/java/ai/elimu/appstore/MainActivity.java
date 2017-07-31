@@ -78,10 +78,10 @@ public class MainActivity extends AppCompatActivity {
                 "exit\n"
         });
         Log.i(getClass().getName(), "isSuccessRoot: " + isSuccessRoot);
-        if (!isSuccessRoot) {
-            finish();
-            return;
-        }
+//        if (!isSuccessRoot) {
+//            finish();
+//            return;
+//        }
 
         // 3. Select locale
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
