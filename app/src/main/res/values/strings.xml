@@ -1,19 +1,30 @@
 <resources>
     <string name="app_name">Appstore (elimu.ai)</string>
+    <string name="do_you_have_a_license_number">Do you have a license number?</string>
+    <string name="email_address">E-mail addresss</string>
+    <string name="language_am">Amharic</string>
     <string name="language_ar">Arabic</string>
     <string name="language_en">English</string>
+    <string name="language_hi">Hindi</string>
+    <string name="language_km">Khmer</string>
+    <string name="language_ml">Malayalam</string>
     <string name="language_es">Spanish</string>
+    <string name="language_so">Somali</string>
     <string name="language_sw">Swahili</string>
+    <string name="language_th">Thai</string>
     <string name="last_synchronization">Last synchronization</string>
+    <string name="license_number">License number</string>
     <string name="locale_selected">Locale selected</string>
     <string name="never">Never</string>
+    <string name="no">No</string>
     <string name="save">Save</string>
     <string name="select_locale">Select locale</string>
     <string name="select_the_students_native_language">Select the student\'s native language</string>
     <string name="server_is_not_reachable">Server is not reachable</string>
     <string name="start_synchronization">Start synchronization</string>
     <string name="synchronizing">Synchronizing</string>
-    <string name="wifi_needs_to_be_enabled">Wi-Fi needs to be enabled</string>
     <string name="type_the_password">Type the password</string>
+    <string name="wifi_needs_to_be_enabled">Wi-Fi needs to be enabled</string>
     <string name="wifi_needs_to_be_connected">Wi-Fi needs to be connected</string>
+    <string name="yes">Yes</string>
 </resources>

@@ -44,6 +44,8 @@ import java.util.Locale;
 
 public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Void> {
 
+    public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";
+
     private Context context;
 
     private ApplicationDao applicationDao;
@@ -179,7 +181,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 
                     // Update time of last synchronization
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-                    sharedPreferences.edit().putLong(MainActivity.PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
+                    sharedPreferences.edit().putLong(PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
                 }
             } catch (JSONException e) {
                 Log.e(getClass().getName(), null, e);
