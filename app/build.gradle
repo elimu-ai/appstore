@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -13,9 +13,11 @@ android {
     defaultConfig {
         applicationId "ai.elimu.appstore"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 2000000
         versionName "2.0.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
@@ -38,13 +40,23 @@ buildscript {
     }
 }
 
+ext {
+    supportLibVersion = "26.0.1"
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'ai.elimu:model:1.1.58'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-annotations:23.4.0'
-    compile 'commons-io:commons-io:2.5'
-    compile 'org.greenrobot:greendao:3.2.0'
-    compile 'com.kofigyan.stateprogressbar:stateprogressbar:0.0.6'
-    testCompile 'junit:junit:4.12'
+
+    compile "ai.elimu:model:1.1.58"
+    compile "com.android.support:appcompat-v7:$supportLibVersion"
+    compile "com.android.support:support-annotations:$supportLibVersion"
+    compile "commons-io:commons-io:2.5"
+    compile "org.greenrobot:greendao:3.2.2"
+    compile "com.kofigyan.stateprogressbar:stateprogressbar:0.0.6"
+
+    testCompile "junit:junit:4.12"
+    androidTestCompile "com.android.support:support-annotations:$supportLibVersion"
+    androidTestCompile "com.android.support.test:runner:1.0.0"
+    androidTestCompile "com.android.support.test:rules:1.0.0"
+    androidTestCompile "com.android.support.test.espresso:espresso-core:3.0.0"
 }
