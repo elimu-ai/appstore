@@ -15,7 +15,7 @@ android:
     - extra-android-m2repository
 
     # System image needed to run emulator
-    #- android-22
+    - android-22
     - sys-img-armeabi-v7a-android-22
     #- sys-img-armeabi-v7a-addon-google_apis-google-22
 
