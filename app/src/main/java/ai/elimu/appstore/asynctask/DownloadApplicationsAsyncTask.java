@@ -17,7 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ai.elimu.appstore.AppstoreApplication;
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
@@ -52,8 +52,8 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
     public DownloadApplicationsAsyncTask(Context context) {
         this.context = context;
 
-        AppstoreApplication appstoreApplication = (AppstoreApplication) context;
-        applicationDao = appstoreApplication.getDaoSession().getApplicationDao();
+        BaseApplication baseApplication = (BaseApplication) context;
+        applicationDao = baseApplication.getDaoSession().getApplicationDao();
     }
 
     @Override

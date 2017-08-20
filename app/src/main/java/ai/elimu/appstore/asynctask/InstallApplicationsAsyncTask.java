@@ -8,7 +8,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import ai.elimu.appstore.AppstoreApplication;
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.util.ApkLoader;
@@ -32,8 +32,8 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
     public InstallApplicationsAsyncTask(Context context) {
         this.context = context;
 
-        AppstoreApplication appstoreApplication = (AppstoreApplication) context;
-        applicationDao = appstoreApplication.getDaoSession().getApplicationDao();
+        BaseApplication baseApplication = (BaseApplication) context;
+        applicationDao = baseApplication.getDaoSession().getApplicationDao();
     }
 
     @Override

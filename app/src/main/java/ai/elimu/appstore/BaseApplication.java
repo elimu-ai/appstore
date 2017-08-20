@@ -10,7 +10,7 @@ import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.util.VersionHelper;
 
-public class AppstoreApplication extends Application {
+public class BaseApplication extends Application {
 
     public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
 

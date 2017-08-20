@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
-import ai.elimu.appstore.AppstoreApplication;
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.model.enums.admin.ApplicationStatus;
@@ -51,8 +51,8 @@ public class StudentUpdatedReceiver extends BroadcastReceiver {
         Log.i(getClass().getName(), "availableNumeracySkills: " + availableNumeracySkills);
 
         if (!availableLiteracySkills.isEmpty() || !availableNumeracySkills.isEmpty()) {
-            AppstoreApplication appstoreApplication = (AppstoreApplication) context.getApplicationContext();
-            ApplicationDao applicationDao = appstoreApplication.getDaoSession().getApplicationDao();
+            BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
+            ApplicationDao applicationDao = baseApplication.getDaoSession().getApplicationDao();
             List<Application> applications = applicationDao.loadAll();
             for (Application application : applications) {
                 Log.i(getClass().getName(), "packageName: " + application.getPackageName() + ", literacySkills: " + application.getLiteracySkills() + ", numeracySkills: " + application.getNumeracySkills());
