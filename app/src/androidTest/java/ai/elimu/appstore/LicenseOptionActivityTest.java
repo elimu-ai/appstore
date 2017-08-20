@@ -20,13 +20,13 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class MainActivityTest {
+public class LicenseOptionActivityTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<MainActivity>(MainActivity.class);
+    public ActivityTestRule<LicenseOptionActivity> activityTestRule = new ActivityTestRule<LicenseOptionActivity>(LicenseOptionActivity.class);
 
-    @Rule
-    public GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//    @Rule
+//    public GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     @Test
     public void testAskForWritePermission() {

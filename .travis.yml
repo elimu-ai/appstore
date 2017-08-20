@@ -8,6 +8,9 @@ language: android
 jdk:
   - oraclejdk8
 
+env:
+ - EMULATOR_API=24
+
 android:
   components:
     - tools
@@ -16,12 +19,12 @@ android:
     - extra-android-m2repository
 
     # System image needed to run emulator
-    - android-22
-    - sys-img-armeabi-v7a-android-22
+    - android-$EMULATOR_API
+    - sys-img-armeabi-v7a-android-$EMULATOR_API
 
 before_script:
  # Create emulator
- - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+ - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi armeabi-v7a
 
  # Start emulator
  - emulator -avd test -no-audio -no-window &
