@@ -6,12 +6,12 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import ai.elimu.appstore.PasswordActivity;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import ai.elimu.appstore.LicenseNumberActivity;
 
 public class ChecksumHelper {
 
@@ -19,12 +19,12 @@ public class ChecksumHelper {
         String checksum = null;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String password = sharedPreferences.getString(PasswordActivity.PREF_PASSWORD, null);
-        if (TextUtils.isEmpty(password)) {
-            throw new RuntimeException("Password needs to be set before calling this method");
+        String licenseNumber = sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_NUMBER, null);
+        if (TextUtils.isEmpty(licenseNumber)) {
+            throw new RuntimeException("License number needs to be set before calling this method");
         } else {
             String deviceId = DeviceInfoHelper.getDeviceId(context);
-            String input = deviceId + password;
+            String input = deviceId + licenseNumber;
             try {
                 MessageDigest messageDigest = MessageDigest.getInstance("MD5");
                 byte[] md5AsBytes = messageDigest.digest(input.getBytes("UTF-8"));

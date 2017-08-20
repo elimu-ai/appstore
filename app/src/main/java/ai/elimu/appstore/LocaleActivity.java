@@ -71,6 +71,8 @@ public class LocaleActivity extends AppCompatActivity {
                 Locale localeSelected = Locale.values()[spinnerLocale.getSelectedItemPosition()];
                 Log.i(getClass().getName(), "localeSelected: " + localeSelected);
 
+                // TODO: if root, set locale of device?
+
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 sharedPreferences.edit().putString(PREF_LOCALE, localeSelected.toString()).commit();
 

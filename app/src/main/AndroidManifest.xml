@@ -28,7 +28,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".LocaleActivity" />
-        <activity android:name=".PasswordActivity" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>

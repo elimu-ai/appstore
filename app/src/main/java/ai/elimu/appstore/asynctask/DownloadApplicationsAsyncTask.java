@@ -1,4 +1,4 @@
-package ai.elimu.appstore.task;
+package ai.elimu.appstore.asynctask;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,7 +18,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ai.elimu.appstore.AppstoreApplication;
-import ai.elimu.appstore.MainActivity;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;

@@ -1,4 +1,4 @@
-package ai.elimu.appstore.task;
+package ai.elimu.appstore.asynctask;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

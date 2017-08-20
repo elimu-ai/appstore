@@ -4,7 +4,7 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.util.Log;
 
-import ai.elimu.appstore.task.DownloadApplicationsAsyncTask;
+import ai.elimu.appstore.asynctask.DownloadApplicationsAsyncTask;
 
 public class ApplicationSynchronizationService extends JobService {
 

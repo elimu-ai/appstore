@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Process;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -13,20 +12,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import ai.elimu.appstore.dao.ApplicationDao;
-import ai.elimu.appstore.model.Application;
-import ai.elimu.appstore.task.DownloadApplicationsAsyncTask;
-import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.RootHelper;
-
-import java.util.Calendar;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,23 +59,22 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else if ("no".equals(licenseOption)) {
-            Intent intent = new Intent(this, LocaleActivity.class);
-            startActivity(intent);
-            finish();
+            // Ask for locale (only apps for the selected locale will be downloaded)
+            String localeAsString = sharedPreferences.getString(LocaleActivity.PREF_LOCALE, null);
+            Log.i(getClass().getName(), "localeAsString: " + localeAsString);
+            if (TextUtils.isEmpty(localeAsString)) {
+                Intent intent = new Intent(this, LocaleActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                // Start downloading apps
+                // TODO
+            }
         } else if ("yes".equals(licenseOption)) {
             Intent intent = new Intent(this, LicenseNumberActivity.class);
             startActivity(intent);
             finish();
         }
-
-
-//        // Ask for locale (only apps for the selected locale will be downloaded)
-//        String localeAsString = sharedPreferences.getString(LocaleActivity.PREF_LOCALE, null);
-//        if (TextUtils.isEmpty(localeAsString)) {
-//            Intent intent = new Intent(this, LocaleActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
     }
 
     @Override
