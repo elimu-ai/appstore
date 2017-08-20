@@ -23,9 +23,9 @@ public class LocaleActivity extends AppCompatActivity {
 
     public static final String PREF_LOCALE = "pref_locale";
 
-    private Spinner mSpinnerLocale;
+    private Spinner spinnerLocale;
 
-    private Button mButtonLocale;
+    private Button buttonLocale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +34,8 @@ public class LocaleActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_locale);
 
-        mSpinnerLocale = (Spinner) findViewById(R.id.spinnerLocale);
-        mButtonLocale = (Button) findViewById(R.id.buttonLocale);
+        spinnerLocale = (Spinner) findViewById(R.id.spinnerLocale);
+        buttonLocale = (Button) findViewById(R.id.buttonLocale);
     }
 
     @Override
@@ -46,66 +46,33 @@ public class LocaleActivity extends AppCompatActivity {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         for (Locale locale : Locale.values()) {
-            arrayAdapter.add(locale.toString());
+            int resourceIdentifier = getResources().getIdentifier("language_" + locale.toString().toLowerCase(), "string", getPackageName());
+            String language = getString(resourceIdentifier);
+            arrayAdapter.add(locale.toString().toLowerCase() + " - " + language);
         }
 
-        mSpinnerLocale.setAdapter(arrayAdapter);
+        spinnerLocale.setAdapter(arrayAdapter);
 
-        mButtonLocale.setOnClickListener(new View.OnClickListener() {
+        // Auto-select locale of device
+        java.util.Locale localeOfDevice = java.util.Locale.getDefault();
+        Log.i(getClass().getName(), "localeOfDevice: " + localeOfDevice);
+        for (Locale locale : Locale.values()) {
+            if (locale.getLanguage().equals(localeOfDevice.getLanguage())) {
+                spinnerLocale.setSelection(locale.ordinal());
+            }
+        }
+
+        buttonLocale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.i(getClass().getName(), "onClick");
 
-                String localeAsString = mSpinnerLocale.getSelectedItem().toString();
-                Log.i(getClass().getName(), "localeAsString: " + localeAsString);
-                Locale locale = Locale.valueOf(localeAsString);
+                Log.i(getClass().getName(), "spinnerLocale.getSelectedItem(): " + spinnerLocale.getSelectedItem());
+                Locale localeSelected = Locale.values()[spinnerLocale.getSelectedItemPosition()];
+                Log.i(getClass().getName(), "localeSelected: " + localeSelected);
 
-                // Obtain permission to change system configuration
-                boolean isSuccessConfigPermission = RootHelper.runAsRoot(new String[] {
-                        "pm grant ai.elimu.appstore android.permission.CHANGE_CONFIGURATION"
-                });
-                Log.i(getClass().getName(), "isSuccessConfigPermission: " + isSuccessConfigPermission);
-                if (!isSuccessConfigPermission) {
-                    finish();
-                    return;
-                }
-
-                // Set locale of device
-                String language = locale.getLanguage();
-                Log.i(getClass().getName(), "language: " + language);
-                java.util.Locale deviceLocale = new java.util.Locale(language);
-                if ("en".equals(language)) {
-                    // Use "en_US" instead of "en_AU"
-                    deviceLocale = new java.util.Locale(language, "US");
-                }
-                Log.i(getClass().getName(), "deviceLocale: " + deviceLocale);
-                try {
-                    Class activityManagerNativeClass = Class.forName("android.app.ActivityManagerNative");
-
-                    Method defaultMethod = activityManagerNativeClass.getMethod("getDefault");
-                    defaultMethod.setAccessible(true);
-                    Object activityManagerNative = defaultMethod.invoke(activityManagerNativeClass);
-
-                    Method configurationMethod = activityManagerNativeClass.getMethod("getConfiguration");
-                    configurationMethod.setAccessible(true);
-
-                    Configuration configuration = (Configuration) configurationMethod.invoke(activityManagerNative);
-                    Class configurationClass = configuration.getClass();
-                    Field field = configurationClass.getField("userSetLocale");
-                    field.setBoolean(configuration, true);
-
-                    configuration.locale = deviceLocale;
-
-                    Method updateConfigurationMethod = activityManagerNativeClass.getMethod("updateConfiguration", Configuration.class);
-                    updateConfigurationMethod.setAccessible(true);
-                    updateConfigurationMethod.invoke(activityManagerNative, configuration);
-
-                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    sharedPreferences.edit().putString(PREF_LOCALE, locale.toString()).commit();
-                    Toast.makeText(getApplicationContext(), "Changing locale of device to: " + deviceLocale, Toast.LENGTH_LONG).show();
-                } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
-                    Log.e(getClass().getName(), null, e);
-                }
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPreferences.edit().putString(PREF_LOCALE, localeSelected.toString()).commit();
 
                 finish();
             }
