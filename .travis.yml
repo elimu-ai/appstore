@@ -1,6 +1,7 @@
 script:
   # By default Travis CI executes './gradlew build connectedCheck' if no 'script:' section found.
-  - ./gradlew clean build connectedCheck
+  - ./gradlew build
+  - ./gradlew connectedAndroidTest
 
 language: android
 
@@ -15,12 +16,12 @@ android:
     - extra-android-m2repository
 
     # System image needed to run emulator
-    - android-24
-    - sys-img-armeabi-v7a-android-24
+    - android-22
+    - sys-img-armeabi-v7a-android-22
 
 before_script:
  # Create emulator
- - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
+ - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
 
  # Start emulator
  - emulator -avd test -no-audio -no-window &
