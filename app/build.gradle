@@ -20,6 +20,22 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            buildConfigField("String", "DOMAIN", '"test.elimu.ai"')
+            buildConfigField("String", "BASE_URL", '"http://test.elimu.ai"')
+            buildConfigField("String", "REST_URL", '"http://test.elimu.ai/rest/v1"')
+        }
+
+        release {
+            buildConfigField("String", "DOMAIN", '"elimu.ai"')
+            buildConfigField("String", "BASE_URL", '"http://elimu.ai"')
+            buildConfigField("String", "REST_URL", '"http://elimu.ai/rest/v1"')
+        }
+    }
+
     lintOptions {
         abortOnError false
     }
@@ -47,16 +63,17 @@ ext {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile "ai.elimu:model:1.1.58"
     compile "com.android.support:appcompat-v7:$supportLibVersion"
     compile "com.android.support:support-annotations:$supportLibVersion"
-    compile "commons-io:commons-io:2.5"
-    compile "org.greenrobot:greendao:3.2.2"
-    compile "com.kofigyan.stateprogressbar:stateprogressbar:0.0.6"
 
-    testCompile "junit:junit:4.12"
     androidTestCompile "com.android.support:support-annotations:$supportLibVersion"
-    androidTestCompile "com.android.support.test:runner:1.0.0"
-    androidTestCompile "com.android.support.test:rules:1.0.0"
-    androidTestCompile "com.android.support.test.espresso:espresso-core:3.0.0"
+    compile 'ai.elimu:model:1.1.58'
+    compile 'commons-io:commons-io:2.5'
+    compile 'org.greenrobot:greendao:3.2.2'
+    compile 'com.kofigyan.stateprogressbar:stateprogressbar:0.0.6'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test:runner:1.0.0'
+    androidTestCompile 'com.android.support.test:rules:1.0.0'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.0'
 }

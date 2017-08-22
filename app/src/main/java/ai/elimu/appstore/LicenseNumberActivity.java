@@ -79,6 +79,9 @@ public class LicenseNumberActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Keep submit button disabled until all required fields have been filled
+     */
     private void updateSubmitButton() {
         if (TextUtils.isEmpty(editTextLicenseEmail.getText().toString())
                 || TextUtils.isEmpty(editTextLicenseNumber.getText().toString())) {

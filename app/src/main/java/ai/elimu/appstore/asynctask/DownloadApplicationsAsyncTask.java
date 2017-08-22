@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ai.elimu.appstore.BaseApplication;
+import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
@@ -25,7 +26,6 @@ import ai.elimu.appstore.util.ApkLoader;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
-import ai.elimu.appstore.util.EnvironmentSettings;
 import ai.elimu.appstore.util.JsonLoader;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.model.enums.admin.ApplicationStatus;
@@ -74,7 +74,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
             Log.w(getClass().getName(), context.getString(R.string.server_is_not_reachable));
         } else {
             // Download List of applications
-            String url = EnvironmentSettings.getBaseRestUrl() + "/admin/application/list" +
+            String url = BuildConfig.REST_URL + "/admin/application/list" +
                     "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
                     "&checksum=" + ChecksumHelper.getChecksum(context) +
                     "&locale=" + UserPrefsHelper.getLocale(context) +
@@ -193,7 +193,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
     private File downloadApk(ApplicationVersionGson applicationVersionGson) {
         Log.i(getClass().getName(), "downloadApk");
 
-        String fileUrl = EnvironmentSettings.getBaseUrl() + applicationVersionGson.getFileUrl() +
+        String fileUrl = BuildConfig.BASE_URL + applicationVersionGson.getFileUrl() +
                 "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
                 "&checksum=" + ChecksumHelper.getChecksum(context) +
                 "&locale=" + UserPrefsHelper.getLocale(context) +

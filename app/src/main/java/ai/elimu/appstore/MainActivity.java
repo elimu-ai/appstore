@@ -67,8 +67,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             } else {
-                // Start downloading apps
-                // TODO
+                // Register device
+                boolean isRegistered = sharedPreferences.getBoolean(DeviceRegistrationActivity.PREF_IS_REGISTERED, false);
+                Log.i(getClass().getName(), "isRegistered: " + isRegistered);
+                if (!isRegistered) {
+                    Intent intent = new Intent(this, DeviceRegistrationActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    // Start downloading list of apps
+
+                }
             }
         } else if ("yes".equals(licenseOption)) {
             Intent intent = new Intent(this, LicenseNumberActivity.class);

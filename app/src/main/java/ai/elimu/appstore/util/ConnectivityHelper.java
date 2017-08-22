@@ -9,6 +9,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import ai.elimu.appstore.BuildConfig;
+
 public class ConnectivityHelper {
 
     public static boolean isWifiEnabled(Context context) {
@@ -23,10 +25,9 @@ public class ConnectivityHelper {
     }
 
     public static boolean isServerReachable(Context context) {
-        String domain = EnvironmentSettings.getDomain();
-        Log.i(ConnectivityHelper.class.getName(), "Checking if server is reachable: " + domain);
+        Log.i(ConnectivityHelper.class.getName(), "Checking if server is reachable: " + BuildConfig.DOMAIN);
         try {
-            return InetAddress.getByName(domain).isReachable(5000);
+            return InetAddress.getByName(BuildConfig.DOMAIN).isReachable(5000);
         } catch (IOException e) {
             return false;
         }

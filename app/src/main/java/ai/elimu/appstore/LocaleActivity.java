@@ -1,5 +1,6 @@
 package ai.elimu.appstore;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -76,7 +77,10 @@ public class LocaleActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 sharedPreferences.edit().putString(PREF_LOCALE, localeSelected.toString()).commit();
 
-                finish();
+                // Restart application
+                Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
         });
     }

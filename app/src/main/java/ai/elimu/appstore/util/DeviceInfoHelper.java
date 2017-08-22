@@ -16,6 +16,16 @@ public class DeviceInfoHelper {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
+    public static String getDeviceManufacturer(Context context) {
+        String deviceManufacturer = "";
+        try {
+            deviceManufacturer = URLEncoder.encode(Build.MANUFACTURER, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(DeviceInfoHelper.class.getName(), "Build.MANUFACTURER: " + Build.MANUFACTURER, e);
+        }
+        return deviceManufacturer;
+    }
+
     public static String getDeviceModel(Context context) {
         String deviceModel = "";
         try {
@@ -24,6 +34,16 @@ public class DeviceInfoHelper {
             Log.e(DeviceInfoHelper.class.getName(), "Build.MODEL: " + Build.MODEL, e);
         }
         return deviceModel;
+    }
+
+    public static String getDeviceSerialNumber(Context context) {
+        String deviceSerial = "";
+        try {
+            deviceSerial = URLEncoder.encode(Build.SERIAL, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(DeviceInfoHelper.class.getName(), "Build.SERIAL: " + Build.SERIAL, e);
+        }
+        return deviceSerial;
     }
 
     public static String getApplicationId(Context context) {

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Appstore (elimu.ai)</string>
+    <string name="device_registration_failed">Device registration failed</string>
     <string name="do_you_have_a_license_number">Do you have a license number?</string>
     <string name="email_address">E-mail addresss</string>
     <string name="language_am">Amharic</string>
@@ -17,6 +18,7 @@
     <string name="locale_selected">Locale selected</string>
     <string name="never">Never</string>
     <string name="no">No</string>
+    <string name="registering_device">Registering device...</string>
     <string name="save">Save</string>
     <string name="select_locale">Select locale</string>
     <string name="select_the_students_native_language">Select the student\'s native language</string>
