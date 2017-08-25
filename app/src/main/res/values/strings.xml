@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Appstore (elimu.ai)</string>
+    <string name="checking_for_app_updates">Checking for app updates...</string>
     <string name="device_registration_failed">Device registration failed</string>
     <string name="do_you_have_a_license_number">Do you have a license number?</string>
     <string name="email_address">E-mail addresss</string>

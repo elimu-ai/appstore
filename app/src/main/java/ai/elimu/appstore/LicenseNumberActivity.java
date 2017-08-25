@@ -13,6 +13,8 @@ import android.widget.EditText;
 
 import org.w3c.dom.Text;
 
+import timber.log.Timber;
+
 public class LicenseNumberActivity extends AppCompatActivity {
 
     public static final String PREF_LICENSE_EMAIL = "pref_license_email";
@@ -26,7 +28,7 @@ public class LicenseNumberActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(getClass().getName(), "onCreate");
+        Timber.i("onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_license_number);
 
@@ -37,13 +39,13 @@ public class LicenseNumberActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        Log.i(getClass().getName(), "onStart");
+        Timber.i("onStart");
         super.onStart();
 
         editTextLicenseEmail.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.i(getClass().getName(), "editTextLicenseEmail onKey");
+                Timber.i("editTextLicenseEmail onKey");
 
                 updateSubmitButton();
 
@@ -54,7 +56,7 @@ public class LicenseNumberActivity extends AppCompatActivity {
         editTextLicenseNumber.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.i(getClass().getName(), "editTextLicenseNumber onKey");
+                Timber.i("editTextLicenseNumber onKey");
 
                 updateSubmitButton();
 
@@ -65,7 +67,7 @@ public class LicenseNumberActivity extends AppCompatActivity {
         buttonLicenseNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(getClass().getName(), "onClick");
+                Timber.i("onClick");
 
                 String licenseEmail = editTextLicenseEmail.getText().toString();
                 String licenseNumber = editTextLicenseNumber.getText().toString();

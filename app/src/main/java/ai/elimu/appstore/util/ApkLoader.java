@@ -17,26 +17,28 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 /**
  * Downloads APK files from the web server.
  */
 public class ApkLoader {
 
     public static File loadApk(String urlValue, String fileName, Context context) {
-        Log.i(ApkLoader.class.getName(), "loadApk");
+        Timber.i("loadApk");
 
-        Log.i(ApkLoader.class.getName(), "Downloading from " + urlValue + "...");
+        Timber.i("Downloading from " + urlValue + "...");
 
         String language = Locale.getDefault().getLanguage();
         File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
-        Log.i(ApkLoader.class.getName(), "apkDirectory: " + apkDirectory);
+        Timber.i("apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {
             apkDirectory.mkdirs();
         }
 
         File apkFile = new File(apkDirectory, fileName);
-        Log.i(ApkLoader.class.getName(), "apkFile: " + apkFile);
-        Log.i(ApkLoader.class.getName(), "apkFile.exists(): " + apkFile.exists());
+        Timber.i("apkFile: " + apkFile);
+        Timber.i("apkFile.exists(): " + apkFile.exists());
 
         if (!apkFile.exists()) {
             FileOutputStream fileOutputStream = null;
@@ -48,7 +50,7 @@ public class ApkLoader {
                 httpURLConnection.connect();
 
                 int responseCode = httpURLConnection.getResponseCode();
-                Log.i(ApkLoader.class.getName(), "responseCode: " + responseCode);
+                Timber.i("responseCode: " + responseCode);
                 InputStream inputStream = null;
                 if (responseCode == 200) {
                     inputStream = httpURLConnection.getInputStream();
@@ -60,7 +62,7 @@ public class ApkLoader {
                     while ((line = bufferedReader.readLine()) != null) {
                         errorResponse += line;
                     }
-                    Log.w(ApkLoader.class.getName(), "errorResponse: " + errorResponse);
+                    Timber.w("errorResponse: " + errorResponse);
                     return null;
                 }
 
@@ -69,15 +71,15 @@ public class ApkLoader {
                 fileOutputStream.write(bytes);
                 fileOutputStream.flush();
             } catch (MalformedURLException e) {
-                Log.e(ApkLoader.class.getName(), "MalformedURLException", e);
+                Timber.e(e, "MalformedURLException");
             } catch (IOException e) {
-                Log.e(ApkLoader.class.getName(), "IOException", e);
+                Timber.e(e, "IOException");
             } finally {
                 if (fileOutputStream != null) {
                     try {
                         fileOutputStream.close();
                     } catch (IOException e) {
-                        Log.e(ApkLoader.class.getName(), "IOException", e);
+                        Timber.i(e, "IOException");
                     }
                 }
             }

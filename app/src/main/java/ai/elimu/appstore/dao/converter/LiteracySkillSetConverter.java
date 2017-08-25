@@ -6,6 +6,7 @@ import org.greenrobot.greendao.converter.PropertyConverter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import ai.elimu.model.enums.content.LiteracySkill;
+import timber.log.Timber;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,16 +15,16 @@ public class LiteracySkillSetConverter implements PropertyConverter<Set<Literacy
 
     @Override
     public Set<LiteracySkill> convertToEntityProperty(String databaseValue) {
-        Log.d(getClass().getName(), "convertToEntityProperty");
+        Timber.d("convertToEntityProperty");
 
         Set<LiteracySkill> set = new HashSet<>();
 
         try {
             JSONArray jsonArray = new JSONArray(databaseValue);
-            Log.d(getClass().getName(), "jsonArray: " + jsonArray);
+            Timber.d("jsonArray: " + jsonArray);
             for (int i = 0; i < jsonArray.length(); i++) {
                 String value = jsonArray.getString(i);
-                Log.d(getClass().getName(), "value: " + value);
+                Timber.d("value: " + value);
                 LiteracySkill literacySkill = LiteracySkill.valueOf(value);
                 set.add(literacySkill);
             }
@@ -36,10 +37,10 @@ public class LiteracySkillSetConverter implements PropertyConverter<Set<Literacy
 
     @Override
     public String convertToDatabaseValue(Set<LiteracySkill> entityProperty) {
-        Log.d(getClass().getName(), "convertToDatabaseValue");
+        Timber.d("convertToDatabaseValue");
 
         String databaseValue = entityProperty.toString();
-        Log.d(getClass().getName(), "databaseValue: " + databaseValue);
+        Timber.d("databaseValue: " + databaseValue);
         return databaseValue;
     }
 }

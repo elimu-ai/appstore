@@ -35,3 +35,4 @@ before_script:
 
 notifications:
   email: false
+  slack: elimu-ai:5hNcmHPFkAETjJZjrkBlNTxr

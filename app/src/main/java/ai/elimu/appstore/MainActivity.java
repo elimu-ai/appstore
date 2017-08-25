@@ -11,9 +11,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 
 import ai.elimu.appstore.util.RootHelper;
+import ai.elimu.appstore.util.RootUtil;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(getClass().getName(), "onCreate");
+        Timber.i("onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        Log.i(getClass().getName(), "onStart");
+        Timber.i("onStart");
         super.onStart();
 
 
@@ -42,18 +43,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Ask for root access (to automate app installations)
-        boolean isSuccessRoot = RootHelper.runAsRoot(new String[] {
-                "echo \"Do I have root?\" >/system/sd/temporary.txt\n",
-                "exit\n"
-        });
-        Log.i(getClass().getName(), "isSuccessRoot: " + isSuccessRoot);
-        // TODO: require root permission if rooted device?
+        boolean isDeviceRooted = RootUtil.isDeviceRooted();
+        Timber.i("isDeviceRooted: " + isDeviceRooted);
+        if (isDeviceRooted) {
+            // Ask for root access
+            // TODO
+//            RootHelper.runAsRoot(new String[] {
+//                    "echo \"Do I have root?\" >/system/sd/temporary.txt\n",
+//                    "exit\n"
+//            });
+
+        }
 
 
         // Ask for license number (used in custom projects)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String licenseOption = sharedPreferences.getString(LicenseOptionActivity.PREF_LICENSE_OPTION, null);
-        Log.i(getClass().getName(), "licenseOption: " + licenseOption);
+        Timber.i("licenseOption: " + licenseOption);
         if (TextUtils.isEmpty(licenseOption)) {
             Intent intent = new Intent(this, LicenseOptionActivity.class);
             startActivity(intent);
@@ -61,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         } else if ("no".equals(licenseOption)) {
             // Ask for locale (only apps for the selected locale will be downloaded)
             String localeAsString = sharedPreferences.getString(LocaleActivity.PREF_LOCALE, null);
-            Log.i(getClass().getName(), "localeAsString: " + localeAsString);
+            Timber.i("localeAsString: " + localeAsString);
             if (TextUtils.isEmpty(localeAsString)) {
                 Intent intent = new Intent(this, LocaleActivity.class);
                 startActivity(intent);
@@ -69,14 +75,16 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // Register device
                 boolean isRegistered = sharedPreferences.getBoolean(DeviceRegistrationActivity.PREF_IS_REGISTERED, false);
-                Log.i(getClass().getName(), "isRegistered: " + isRegistered);
+                Timber.i("isRegistered: " + isRegistered);
                 if (!isRegistered) {
                     Intent intent = new Intent(this, DeviceRegistrationActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
                     // Start downloading list of apps
-
+                    Intent intent = new Intent(this, AppListDownloadActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
             }
         } else if ("yes".equals(licenseOption)) {
@@ -88,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i(getClass().getName(), "onRequestPermissionsResult");
+        Timber.i("onRequestPermissionsResult");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) {

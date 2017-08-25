@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import ai.elimu.appstore.util.RootHelper;
 import ai.elimu.model.enums.Locale;
+import timber.log.Timber;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -30,7 +31,7 @@ public class LocaleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(getClass().getName(), "onCreate");
+        Timber.i("onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_locale);
@@ -41,7 +42,7 @@ public class LocaleActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        Log.i(getClass().getName(), "onStart");
+        Timber.i("onStart");
         super.onStart();
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item);
@@ -56,7 +57,7 @@ public class LocaleActivity extends AppCompatActivity {
 
         // Auto-select locale of device
         java.util.Locale localeOfDevice = java.util.Locale.getDefault();
-        Log.i(getClass().getName(), "localeOfDevice: " + localeOfDevice);
+        Timber.i("localeOfDevice: " + localeOfDevice);
         for (Locale locale : Locale.values()) {
             if (locale.getLanguage().equals(localeOfDevice.getLanguage())) {
                 spinnerLocale.setSelection(locale.ordinal());
@@ -66,11 +67,11 @@ public class LocaleActivity extends AppCompatActivity {
         buttonLocale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(getClass().getName(), "onClick");
+                Timber.i("onClick");
 
-                Log.i(getClass().getName(), "spinnerLocale.getSelectedItem(): " + spinnerLocale.getSelectedItem());
+                Timber.i("spinnerLocale.getSelectedItem(): " + spinnerLocale.getSelectedItem());
                 Locale localeSelected = Locale.values()[spinnerLocale.getSelectedItemPosition()];
-                Log.i(getClass().getName(), "localeSelected: " + localeSelected);
+                Timber.i("localeSelected: " + localeSelected);
 
                 // TODO: if root, set locale of device?
 

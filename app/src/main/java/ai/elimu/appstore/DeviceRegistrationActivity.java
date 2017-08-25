@@ -20,6 +20,7 @@ import ai.elimu.appstore.util.DeviceInfoHelper;
 import ai.elimu.appstore.util.JsonLoader;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.appstore.util.VersionHelper;
+import timber.log.Timber;
 
 public class DeviceRegistrationActivity extends AppCompatActivity {
 
@@ -27,7 +28,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(getClass().getName(), "onCreate");
+        Timber.i("onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_device_registration);
@@ -35,7 +36,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        Log.i(getClass().getName(), "onStart");
+        Timber.i("onStart");
         super.onStart();
 
         new RegisterDeviceAsyncTask(this).execute();
@@ -52,10 +53,10 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... voids) {
-            Log.i(getClass().getName(), "doInBackground");
+            Timber.i("doInBackground");
 
             boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
-            Log.i(getClass().getName(), "isServerReachable: " + isServerReachable);
+            Timber.i("isServerReachable: " + isServerReachable);
             if (!isServerReachable) {
                 return null;
             } else {
@@ -69,14 +70,14 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         "&osVersion=" + Build.VERSION.SDK_INT +
                         "&locale=" + UserPrefsHelper.getLocale(context);
                 String jsonResponse = JsonLoader.loadJson(url);
-                Log.i(getClass().getName(), "jsonResponse: " + jsonResponse);
+                Timber.i("jsonResponse: " + jsonResponse);
                 return jsonResponse;
             }
         }
 
         @Override
         protected void onPostExecute(String jsonResponse) {
-            Log.i(getClass().getName(), "onPostExecute");
+            Timber.i("onPostExecute");
             super.onPostExecute(jsonResponse);
 
             if (TextUtils.isEmpty(jsonResponse)) {
@@ -86,7 +87,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(jsonResponse);
                     if ("success".equals(jsonObject.getString("result"))) {
                         // Device was successfully registered
-                        Log.i(getClass().getName(), "Device was successfully registered");
+                        Timber.i("Device was successfully registered");
 
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         sharedPreferences.edit().putBoolean(PREF_IS_REGISTERED, true).commit();
@@ -97,7 +98,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         startActivity(intent);
                     } else if ("error".equals(jsonObject.getString("result")) && "Device already exists".equals(jsonObject.getString("description"))) {
                         // Device has already been registered
-                        Log.i(getClass().getName(), "Device has already been registered");
+                        Timber.i("Device has already been registered");
 
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         sharedPreferences.edit().putBoolean(PREF_IS_REGISTERED, true).commit();

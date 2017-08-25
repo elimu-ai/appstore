@@ -10,12 +10,13 @@ import android.util.Log;
 
 import ai.elimu.appstore.service.ApplicationInstallService;
 import ai.elimu.appstore.service.ApplicationSynchronizationService;
+import timber.log.Timber;
 
 public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(getClass().getName(), "onReceive");
+        Timber.i("onReceive");
 
         // Initiate background job for synchronizing applications with web server
         ComponentName componentName = new ComponentName(context, ApplicationSynchronizationService.class);
@@ -26,7 +27,7 @@ public class BootReceiver extends BroadcastReceiver {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         int resultId = jobScheduler.schedule(jobInfo);
         if (resultId > 0) {
-            Log.i(getClass().getName(), "Job 1 scheduled with id: " + resultId);
+            Timber.i("Job 1 scheduled with id: " + resultId);
         } else {
             Log.w(getClass().getName(), "Job 1 scheduling failed. Error id: " + resultId);
         }
@@ -40,7 +41,7 @@ public class BootReceiver extends BroadcastReceiver {
         JobScheduler jobScheduler2 = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         int resultId2 = jobScheduler2.schedule(jobInfo2);
         if (resultId2 > 0) {
-            Log.i(getClass().getName(), "Job 2 scheduled with id: " + resultId2);
+            Timber.i("Job 2 scheduled with id: " + resultId2);
         } else {
             Log.w(getClass().getName(), "Job 2 scheduling failed. Error id: " + resultId2);
         }

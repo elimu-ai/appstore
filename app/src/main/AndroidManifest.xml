@@ -57,7 +57,8 @@
 
         <activity android:name=".LicenseOptionActivity" />
         <activity android:name=".LicenseNumberActivity" />
-        <activity android:name=".DeviceRegistrationActivity"></activity>
+        <activity android:name=".DeviceRegistrationActivity" />
+        <activity android:name=".AppListDownloadActivity"></activity>
     </application>
 
 </manifest>

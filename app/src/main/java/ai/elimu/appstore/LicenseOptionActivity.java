@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import timber.log.Timber;
+
 public class LicenseOptionActivity extends AppCompatActivity {
 
     public static final String PREF_LICENSE_OPTION = "pref_license_option";
@@ -19,7 +21,7 @@ public class LicenseOptionActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(getClass().getName(), "onCreate");
+        Timber.i("onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_license_option);
 
@@ -29,7 +31,7 @@ public class LicenseOptionActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        Log.i(getClass().getName(), "onStart");
+        Timber.i("onStart");
         super.onStart();
 
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -37,7 +39,7 @@ public class LicenseOptionActivity extends AppCompatActivity {
         buttonOptionNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(getClass().getName(), "buttonOptionNo onClick");
+                Timber.i("buttonOptionNo onClick");
 
                 sharedPreferences.edit().putString(PREF_LICENSE_OPTION, "no").commit();
 
@@ -51,7 +53,7 @@ public class LicenseOptionActivity extends AppCompatActivity {
         buttonOptionYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(getClass().getName(), "buttonOptionYes onClick");
+                Timber.i("buttonOptionYes onClick");
 
                 sharedPreferences.edit().putString(PREF_LICENSE_OPTION, "yes").commit();
 

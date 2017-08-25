@@ -5,10 +5,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
-import android.util.Log;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import timber.log.Timber;
 
 public class DeviceInfoHelper {
 
@@ -21,7 +21,7 @@ public class DeviceInfoHelper {
         try {
             deviceManufacturer = URLEncoder.encode(Build.MANUFACTURER, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            Log.e(DeviceInfoHelper.class.getName(), "Build.MANUFACTURER: " + Build.MANUFACTURER, e);
+            Timber.e(e, "Build.MANUFACTURER: " + Build.MANUFACTURER);
         }
         return deviceManufacturer;
     }
@@ -31,7 +31,7 @@ public class DeviceInfoHelper {
         try {
             deviceModel = URLEncoder.encode(Build.MODEL, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            Log.e(DeviceInfoHelper.class.getName(), "Build.MODEL: " + Build.MODEL, e);
+            Timber.d(e, "Build.MODEL: " + Build.MODEL);
         }
         return deviceModel;
     }
@@ -41,7 +41,7 @@ public class DeviceInfoHelper {
         try {
             deviceSerial = URLEncoder.encode(Build.SERIAL, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            Log.e(DeviceInfoHelper.class.getName(), "Build.SERIAL: " + Build.SERIAL, e);
+            Timber.d(e, "Build.SERIAL: " + Build.SERIAL);
         }
         return deviceSerial;
     }
@@ -55,7 +55,7 @@ public class DeviceInfoHelper {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             return packageInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(DeviceInfoHelper.class.getName(), "Could not get package name", e);
+            Timber.d(e, "Could not get package name");
             return -1;
         }
     }

@@ -16,7 +16,6 @@
         app:spb_currentStateNumber="one"
         app:spb_maxStateNumber="three"
         app:spb_stateForegroundColor="@color/colorAccent"
-        app:spb_animateToCurrentProgressState="true"
         app:spb_checkStateCompleted="true" />
 
     <LinearLayout

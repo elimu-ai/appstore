@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -12,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import ai.elimu.appstore.LicenseNumberActivity;
+import timber.log.Timber;
 
 public class ChecksumHelper {
 
@@ -30,9 +30,9 @@ public class ChecksumHelper {
                 byte[] md5AsBytes = messageDigest.digest(input.getBytes("UTF-8"));
                 checksum = new BigInteger(1, md5AsBytes).toString(16);
             } catch (NoSuchAlgorithmException e) {
-                Log.e(ChecksumHelper.class.getName(), null, e);
+                Timber.e(e);
             } catch (UnsupportedEncodingException e) {
-                Log.e(ChecksumHelper.class.getName(), null, e);
+                Timber.e(e);
             }
         }
 

@@ -3,24 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:gravity="center">
 
-    <com.kofigyan.stateprogressbar.StateProgressBar
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        app:spb_currentStateNumber="three"
-        app:spb_maxStateNumber="three"
-        app:spb_stateForegroundColor="@color/colorAccent"
-        app:spb_checkStateCompleted="true" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
 
@@ -33,6 +20,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/registering_device" />
+            android:text="@string/checking_for_app_updates" />
     </LinearLayout>
 </RelativeLayout>

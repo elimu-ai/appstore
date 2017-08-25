@@ -5,12 +5,13 @@ import android.app.job.JobService;
 import android.util.Log;
 
 import ai.elimu.appstore.asynctask.InstallApplicationsAsyncTask;
+import timber.log.Timber;
 
 public class ApplicationInstallService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
-        Log.i(getClass().getName(), "onStartJob");
+        Timber.i("onStartJob");
 
         // Start processing work
         new InstallApplicationsAsyncTask(getApplicationContext()).execute();
@@ -22,7 +23,7 @@ public class ApplicationInstallService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
-        Log.i(getClass().getName(), "onStopJob");
+        Timber.i("onStopJob");
 
         // Job execution stopped, even before jobFinished was called.
         // TODO: stop processing work?
