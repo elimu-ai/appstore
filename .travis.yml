@@ -1,7 +1,7 @@
 script:
   # By default Travis CI executes './gradlew build connectedCheck' if no 'script:' section found.
   - ./gradlew build
-#  - ./gradlew connectedAndroidTest
+  - ./gradlew connectedAndroidTest
 
 language: android
 
