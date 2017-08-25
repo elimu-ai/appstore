@@ -24,26 +24,27 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <TextView
+        <android.support.design.widget.TextInputLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/email_address" />
+            android:layout_height="wrap_content">
 
-        <EditText android:id="@+id/editTextLicenseEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="20" />
+            <EditText android:id="@+id/editTextLicenseEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="20"
+                android:hint="@string/email_address"/>
+        </android.support.design.widget.TextInputLayout>
 
-        <TextView
+        <android.support.design.widget.TextInputLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/license_number" />
+            android:layout_height="wrap_content">
 
-        <EditText android:id="@+id/editTextLicenseNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="20" />
+            <EditText android:id="@+id/editTextLicenseNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="20"
+                android:hint="@string/license_number"/>
+        </android.support.design.widget.TextInputLayout>
 
         <Button android:id="@+id/buttonLicenseNumber"
             android:layout_width="wrap_content"
