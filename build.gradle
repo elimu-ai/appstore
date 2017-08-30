@@ -13,6 +13,11 @@ buildscript {
     }
 }
 
+ext {
+    supportLibVersion = "26.0.1"
+    greenDaoVersion = "3.2.2"
+}
+
 allprojects {
     repositories {
         mavenLocal()

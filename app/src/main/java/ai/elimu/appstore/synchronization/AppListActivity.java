@@ -62,7 +62,7 @@ public class AppListActivity extends AppCompatActivity {
         // Load the list of Applications stored in the local database
         applications = applicationDao.loadAll();
         Timber.i("applications.size(): " + applications.size());
-        arrayAdapter = new AppListArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, applications);
+        arrayAdapter = new AppListArrayAdapter(getBaseContext(), R.layout.activity_app_list_item, applications);
         listViewApplications.setAdapter(arrayAdapter);
 
 

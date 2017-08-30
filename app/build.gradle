@@ -49,19 +49,6 @@ greendao {
     targetGenDir '../app/src/main/java'
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.1'
-    }
-}
-
-ext {
-    supportLibVersion = "26.0.1"
-}
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -72,7 +59,7 @@ dependencies {
     androidTestCompile "com.android.support:support-annotations:$supportLibVersion"
     compile 'ai.elimu:model:1.1.58'
     compile 'commons-io:commons-io:2.5'
-    compile 'org.greenrobot:greendao:3.2.2'
+    compile "org.greenrobot:greendao:$greenDaoVersion"
     compile 'com.kofigyan.stateprogressbar:stateprogressbar:0.0.6'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.jakewharton.timber:timber:4.5.1'
