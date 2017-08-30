@@ -12,7 +12,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
-import ai.elimu.appstore.util.RootHelper;
+import ai.elimu.appstore.onboarding.DeviceRegistrationActivity;
+import ai.elimu.appstore.onboarding.LicenseNumberActivity;
+import ai.elimu.appstore.onboarding.LicenseOptionActivity;
+import ai.elimu.appstore.onboarding.LocaleActivity;
+import ai.elimu.appstore.synchronization.AppSynchronizationActivity;
 import ai.elimu.appstore.util.RootUtil;
 import timber.log.Timber;
 
@@ -81,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
-                    // Start downloading list of apps
-                    Intent intent = new Intent(this, AppListDownloadActivity.class);
+                    // Synchronize with list of apps stored on server
+                    Intent intent = new Intent(this, AppSynchronizationActivity.class);
                     startActivity(intent);
                     finish();
                 }

@@ -1,12 +1,10 @@
-package ai.elimu.appstore;
+package ai.elimu.appstore.synchronization;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,11 +17,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Calendar;
-import java.util.Locale;
 
+import ai.elimu.appstore.BaseApplication;
+import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
@@ -37,14 +35,14 @@ import ai.elimu.model.gson.admin.ApplicationGson;
 import ai.elimu.model.gson.admin.ApplicationVersionGson;
 import timber.log.Timber;
 
-public class AppListDownloadActivity extends AppCompatActivity {
+public class AppSynchronizationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_app_list_download);
+        setContentView(R.layout.activity_app_synchronization);
     }
 
     @Override
@@ -52,10 +50,13 @@ public class AppListDownloadActivity extends AppCompatActivity {
         Timber.i("onStart");
         super.onStart();
 
-        new DownloadAppListAsyncTask(this).execute();
+        new DownloadAppListAsyncTask(getApplicationContext()).execute();
     }
 
 
+    /**
+     * Downloads a list of apps from the server and stores them in an SQLite database.
+     */
     public class DownloadAppListAsyncTask extends AsyncTask<Void, Void, Void> {
 
         public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";
@@ -89,7 +90,7 @@ public class AppListDownloadActivity extends AppCompatActivity {
                 Timber.w(context.getString(R.string.server_is_not_reachable));
             } else {
                 // Download List of applications
-                String url = BuildConfig.REST_URL + "/admin/application/list" +
+                String url = BuildConfig.REST_URL + "/application/list" +
                         "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
                         "&checksum=" + ChecksumHelper.getChecksum(context) +
                         "&locale=" + UserPrefsHelper.getLocale(context) +
@@ -165,7 +166,10 @@ public class AppListDownloadActivity extends AppCompatActivity {
             Timber.i("onPostExecute");
             super.onPostExecute(v);
 
-
+            // Display list of apps
+            Intent intent = new Intent(getApplicationContext(), AppListActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 }

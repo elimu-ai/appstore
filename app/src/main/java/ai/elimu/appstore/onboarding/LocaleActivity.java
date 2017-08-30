@@ -1,4 +1,4 @@
-package ai.elimu.appstore;
+package ai.elimu.appstore.onboarding;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import ai.elimu.appstore.R;
 import ai.elimu.appstore.util.RootHelper;
 import ai.elimu.model.enums.Locale;
 import timber.log.Timber;

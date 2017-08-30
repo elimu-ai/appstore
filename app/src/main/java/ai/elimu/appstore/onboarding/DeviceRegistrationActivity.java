@@ -1,4 +1,4 @@
-package ai.elimu.appstore;
+package ai.elimu.appstore.onboarding;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ai.elimu.appstore.BuildConfig;
+import ai.elimu.appstore.R;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
 import ai.elimu.appstore.util.JsonLoader;

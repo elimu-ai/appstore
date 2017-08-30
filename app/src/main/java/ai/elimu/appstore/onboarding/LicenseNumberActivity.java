@@ -1,4 +1,4 @@
-package ai.elimu.appstore;
+package ai.elimu.appstore.onboarding;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import org.w3c.dom.Text;
 
+import ai.elimu.appstore.R;
 import timber.log.Timber;
 
 public class LicenseNumberActivity extends AppCompatActivity {
