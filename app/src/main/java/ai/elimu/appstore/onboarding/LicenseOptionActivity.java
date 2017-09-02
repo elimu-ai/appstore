@@ -26,8 +26,8 @@ public class LicenseOptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_license_option);
 
-        buttonOptionNo = (Button) findViewById(R.id.buttonOptionNo);
-        buttonOptionYes = (Button) findViewById(R.id.buttonOptionYes);
+        buttonOptionNo = findViewById(R.id.buttonOptionNo);
+        buttonOptionYes = findViewById(R.id.buttonOptionYes);
     }
 
     @Override

@@ -21,6 +21,8 @@ import timber.log.Timber;
 
 /**
  * Downloads APK files from the web server.
+ *
+ * TODO: verify file by its checksum.
  */
 public class ApkLoader {
 

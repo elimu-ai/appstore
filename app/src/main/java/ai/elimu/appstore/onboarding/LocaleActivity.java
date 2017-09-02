@@ -37,8 +37,8 @@ public class LocaleActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_locale);
 
-        spinnerLocale = (Spinner) findViewById(R.id.spinnerLocale);
-        buttonLocale = (Button) findViewById(R.id.buttonLocale);
+        spinnerLocale = findViewById(R.id.spinnerLocale);
+        buttonLocale = findViewById(R.id.buttonLocale);
     }
 
     @Override

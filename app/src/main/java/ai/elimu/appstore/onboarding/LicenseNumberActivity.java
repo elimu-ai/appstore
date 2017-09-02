@@ -33,9 +33,9 @@ public class LicenseNumberActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_license_number);
 
-        editTextLicenseEmail = (EditText) findViewById(R.id.editTextLicenseEmail);
-        editTextLicenseNumber = (EditText) findViewById(R.id.editTextLicenseNumber);
-        buttonLicenseNumber = (Button) findViewById(R.id.buttonLicenseNumber);
+        editTextLicenseEmail = findViewById(R.id.editTextLicenseEmail);
+        editTextLicenseNumber = findViewById(R.id.editTextLicenseNumber);
+        buttonLicenseNumber = findViewById(R.id.buttonLicenseNumber);
     }
 
     @Override
