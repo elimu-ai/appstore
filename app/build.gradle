@@ -5,11 +5,6 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
     defaultConfig {
         applicationId "ai.elimu.appstore"
         minSdkVersion 21
