@@ -26,7 +26,7 @@ allprojects {
             url "https://maven.google.com"
         }
         maven {
-            url "http://archiva.educativo.eu:8081/repository/internal/"
+            url "http://maven.elimu.ai:8081/repository/internal/"
         }
     }
 }

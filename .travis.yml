@@ -8,8 +8,8 @@ language: android
 jdk:
   - oraclejdk8
 
-env:
- - EMULATOR_API=24
+#env:
+# - EMULATOR_API=24
 
 android:
   components:
