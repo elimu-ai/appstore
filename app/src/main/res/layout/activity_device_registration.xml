@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        app:spb_currentStateNumber="two"
+        app:spb_currentStateNumber="three"
         app:spb_maxStateNumber="three"
         app:spb_stateForegroundColor="@color/colorAccent"
         app:spb_checkStateCompleted="true" />
@@ -24,20 +24,15 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <TextView android:id="@+id/textViewLocale"
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/select_the_students_native_language" />
+            android:layout_marginBottom="@dimen/activity_vertical_margin" />
 
-        <Spinner android:id="@+id/spinnerLocale"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin" />
-
-        <Button android:id="@+id/buttonLocale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/save"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:text="@string/registering_device" />
     </LinearLayout>
 </RelativeLayout>

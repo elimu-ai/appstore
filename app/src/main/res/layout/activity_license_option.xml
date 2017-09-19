@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        app:spb_currentStateNumber="two"
+        app:spb_currentStateNumber="one"
         app:spb_maxStateNumber="three"
         app:spb_stateForegroundColor="@color/colorAccent"
         app:spb_checkStateCompleted="true" />
@@ -24,20 +24,31 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <TextView android:id="@+id/textViewLocale"
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/select_the_students_native_language" />
+            android:src="@drawable/logo_with_tagline"
+            android:layout_marginBottom="64dp" />
 
-        <Spinner android:id="@+id/spinnerLocale"
+        <TextView android:id="@+id/textViewLicenseQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin" />
+            android:text="@string/do_you_have_a_license_number" />
 
-        <Button android:id="@+id/buttonLocale"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/save"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:layout_height="wrap_content">
+
+            <Button android:id="@+id/buttonOptionNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no" />
+
+            <Button android:id="@+id/buttonOptionYes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/yes"
+                style="?android:attr/buttonBarButtonStyle" />
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

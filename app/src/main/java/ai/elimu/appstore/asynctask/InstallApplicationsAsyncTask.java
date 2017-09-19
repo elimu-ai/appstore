@@ -1,4 +1,4 @@
-package ai.elimu.appstore.task;
+package ai.elimu.appstore.asynctask;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -8,12 +8,13 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import ai.elimu.appstore.AppstoreApplication;
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.util.ApkLoader;
 import ai.elimu.appstore.util.DeviceInfoHelper;
 import ai.elimu.model.enums.admin.ApplicationStatus;
+import timber.log.Timber;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,13 +33,13 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
     public InstallApplicationsAsyncTask(Context context) {
         this.context = context;
 
-        AppstoreApplication appstoreApplication = (AppstoreApplication) context;
-        applicationDao = appstoreApplication.getDaoSession().getApplicationDao();
+        BaseApplication baseApplication = (BaseApplication) context;
+        applicationDao = baseApplication.getDaoSession().getApplicationDao();
     }
 
     @Override
     protected Void doInBackground(Object... objects) {
-        Log.i(getClass().getName(), "doInBackground");
+        Timber.i("doInBackground");
 
         List<Application> applications = applicationDao.loadAll();
         for (Application application : applications) {
@@ -47,7 +48,7 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
                 try {
                     PackageInfo packageInfo = packageManager.getPackageInfo(application.getPackageName(), PackageManager.GET_ACTIVITIES);
                 } catch (PackageManager.NameNotFoundException e) {
-                    Log.i(getClass().getName(), "The application is not installed: " + application.getPackageName());
+                    Timber.i("The application is not installed: " + application.getPackageName());
 //                    ApplicationVersion applicationVersion = application.getApplicationVersions().get(0);
 //                    installApk(applicationVersion);
                 }
@@ -58,10 +59,10 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
     }
 
     private void installApk(Application application) {
-        Log.i(getClass().getName(), "installApk");
+        Timber.i("installApk");
 
         String fileName = application.getPackageName() + "-" + application.getVersionCode() + ".apk";
-        Log.i(getClass().getName(), "fileName: " + fileName);
+        Timber.i("fileName: " + fileName);
 
         String language = Locale.getDefault().getLanguage();
         File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
@@ -77,13 +78,13 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
         if ((apkFile == null) || !apkFile.exists()) {
             Log.w(getClass().getName(), "APK installation failed: " + apkFile);
         } else {
-            Log.i(getClass().getName(), "Installing APK: " + application.getPackageName() + " (version " + application.getVersionCode() + ")");
+            Timber.i("Installing APK: " + application.getPackageName() + " (version " + application.getVersionCode() + ")");
             String command = "pm install -r -g " + apkFile.getAbsolutePath(); // https://developer.android.com/studio/command-line/shell.html#pm
             if ("KFFOWI".equals(DeviceInfoHelper.getDeviceModel(context))) {
                 // The '-g' command does not work on Amazon Fire: "Error: Unknown option: -g"
                 command = "pm install -r " + apkFile.getAbsolutePath();
             }
-            Log.i(getClass().getName(), "command: " + command);
+            Timber.i("command: " + command);
             try {
                 Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
                 process.waitFor();
@@ -92,15 +93,15 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
                 if (inputStreamSuccess != null) {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
                     String successMessage = bufferedReader.readLine();
-                    Log.i(getClass().getName(), "successMessage: " + successMessage);
+                    Timber.i("successMessage: " + successMessage);
                     if (!"Success".equals(successMessage)) {
-                        Log.i(getClass().getName(), "APK installation failed: " + application.getPackageName() + " (version " + application.getVersionCode() + ")");
+                        Timber.i("APK installation failed: " + application.getPackageName() + " (version " + application.getVersionCode() + ")");
                     }
 
                     String startCommand = application.getStartCommand();
                     if (!TextUtils.isEmpty(startCommand)) {
                         // Expected format: "adb shell <startCommand>"
-                        Log.i(getClass().getName(), "startCommand: " + startCommand);
+                        Timber.i("startCommand: " + startCommand);
 
                         process = Runtime.getRuntime().exec(new String[]{"su", "-c", startCommand});
                         process.waitFor();
@@ -109,7 +110,7 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
                         if (inputStreamSuccess != null) {
                             bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
                             successMessage = bufferedReader.readLine();
-                            Log.i(getClass().getName(), "startCommand successMessage: " + successMessage);
+                            Timber.i("startCommand successMessage: " + successMessage);
                         }
 
                         InputStream inputStreamError = process.getErrorStream();
@@ -137,7 +138,7 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
 
     @Override
     protected void onPostExecute(Void v) {
-        Log.i(getClass().getName(), "onPostExecute");
+        Timber.i("onPostExecute");
         super.onPostExecute(v);
     }
 }

@@ -9,8 +9,9 @@ import org.greenrobot.greendao.database.Database;
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.util.VersionHelper;
+import timber.log.Timber;
 
-public class AppstoreApplication extends Application {
+public class BaseApplication extends Application {
 
     public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
 
@@ -18,8 +19,26 @@ public class AppstoreApplication extends Application {
 
     @Override
     public void onCreate() {
-        Log.i(getClass().getName(), "onCreate");
         super.onCreate();
+
+        // Log config
+        if (BuildConfig.DEBUG) {
+            // Log everything
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            // Only log warnings and errors
+            Timber.plant(new Timber.Tree() {
+                @Override
+                protected void log(int priority, String tag, String message, Throwable throwable) {
+                    if (priority == Log.WARN) {
+                        Timber.w(throwable, message);
+                    } else if (priority == Log.ERROR) {
+                        Timber.e(throwable, message);
+                    }
+                }
+            });
+        }
+        Timber.i("onCreate");
 
         // greenDAO config
         CustomDaoMaster.DevOpenHelper helper = new CustomDaoMaster.DevOpenHelper(this, "appstore-db");
@@ -35,7 +54,7 @@ public class AppstoreApplication extends Application {
             oldVersionCode = newVersionCode;
         }
         if (oldVersionCode < newVersionCode) {
-            Log.i(getClass().getName(), "Upgrading application from version " + oldVersionCode + " to " + newVersionCode);
+            Timber.i("Upgrading application from version " + oldVersionCode + " to " + newVersionCode);
 //            if (newVersionCode == ???) {
 //                // Put relevant tasks required for upgrading here
 //            }

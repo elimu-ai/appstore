@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ai.elimu.appstore">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -11,14 +12,14 @@
     <uses-permission android:name="android.permission.BIND_JOB_SERVICE" />
 
     <application
-        android:name=".AppstoreApplication"
-        android:allowBackup="true"
+        android:name=".BaseApplication"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:largeHeap="true">
-
+        tools:replace="android:allowBackup">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LocaleActivity" />
-        <activity android:name=".PasswordActivity" />
+        <activity android:name=".onboarding.LocaleActivity" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
@@ -40,7 +40,6 @@
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service
             android:name=".service.ApplicationInstallService"
             android:enabled="true"
@@ -51,11 +50,16 @@
             android:name=".receiver.StudentUpdatedReceiver"
             android:enabled="true"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="ai.elimu.intent.action.STUDENT_UPDATED" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".onboarding.LicenseOptionActivity" />
+        <activity android:name=".onboarding.LicenseNumberActivity" />
+        <activity android:name=".onboarding.DeviceRegistrationActivity" />
+        <activity android:name=".synchronization.AppSynchronizationActivity" />
+        <activity android:name=".synchronization.AppListActivity"></activity>
     </application>
 
 </manifest>

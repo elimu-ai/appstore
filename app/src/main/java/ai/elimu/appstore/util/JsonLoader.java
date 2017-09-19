@@ -11,12 +11,14 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+import timber.log.Timber;
+
 public class JsonLoader {
 
     public static String loadJson(String urlValue) {
-        Log.i(JsonLoader.class.getName(), "loadJson");
+        Timber.i("loadJson");
 
-        Log.i(JsonLoader.class.getName(), "Downloading from " + urlValue + "...");
+        Timber.i("Downloading from " + urlValue + "...");
 
         String jsonResponse = null;
 
@@ -28,7 +30,7 @@ public class JsonLoader {
             httpURLConnection.connect();
 
             int responseCode = httpURLConnection.getResponseCode();
-            Log.i(JsonLoader.class.getName(), "responseCode: " + responseCode);
+            Timber.i("responseCode: " + responseCode);
             InputStream inputStream = null;
             if (responseCode == 200) {
                 inputStream = httpURLConnection.getInputStream();
@@ -38,11 +40,11 @@ public class JsonLoader {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             jsonResponse = bufferedReader.readLine();
         } catch (MalformedURLException e) {
-            Log.e(JsonLoader.class.getName(), "MalformedURLException", e);
+            Timber.e(e, "MalformedURLException");
         } catch (ProtocolException e) {
-            Log.e(JsonLoader.class.getName(), "ProtocolException", e);
+            Timber.e(e, "ProtocolException");
         } catch (IOException e) {
-            Log.e(JsonLoader.class.getName(), "IOException", e);
+            Timber.e(e, "IOException");
         }
 
         return jsonResponse;

@@ -4,13 +4,14 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.util.Log;
 
-import ai.elimu.appstore.task.DownloadApplicationsAsyncTask;
+import ai.elimu.appstore.asynctask.DownloadApplicationsAsyncTask;
+import timber.log.Timber;
 
 public class ApplicationSynchronizationService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
-        Log.i(getClass().getName(), "onStartJob");
+        Timber.i("onStartJob");
 
         // Start processing work
         new DownloadApplicationsAsyncTask(getApplicationContext()).execute();
@@ -22,7 +23,7 @@ public class ApplicationSynchronizationService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
-        Log.i(getClass().getName(), "onStopJob");
+        Timber.i("onStopJob");
 
         // Job execution stopped, even before jobFinished was called.
         // TODO: stop processing work?

@@ -4,24 +4,25 @@ import android.util.Log;
 
 import org.greenrobot.greendao.converter.PropertyConverter;
 import ai.elimu.model.enums.admin.ApplicationStatus;
+import timber.log.Timber;
 
 public class ApplicationStatusConverter implements PropertyConverter<ApplicationStatus, String> {
 
     @Override
     public ApplicationStatus convertToEntityProperty(String databaseValue) {
-        Log.d(getClass().getName(), "convertToEntityProperty");
+        Timber.d("convertToEntityProperty");
 
         ApplicationStatus entityProperty = ApplicationStatus.valueOf(databaseValue);
-        Log.d(getClass().getName(), "entityProperty: " + entityProperty);
+        Timber.d("entityProperty: " + entityProperty);
         return entityProperty;
     }
 
     @Override
     public String convertToDatabaseValue(ApplicationStatus entityProperty) {
-        Log.d(getClass().getName(), "convertToDatabaseValue");
+        Timber.d("convertToDatabaseValue");
 
         String databaseValue = entityProperty.toString();
-        Log.d(getClass().getName(), "databaseValue: " + databaseValue);
+        Timber.d("databaseValue: " + databaseValue);
         return databaseValue;
     }
 }

@@ -5,13 +5,15 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import timber.log.Timber;
+
 public class VersionHelper {
 
     /**
      * @return Application's version code from the {@code PackageManager}.
      */
     public static int getAppVersionCode(Context context) {
-        Log.i(VersionHelper.class.getName(), "getAppVersionCode");
+        Timber.i("getAppVersionCode");
 
         try {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);

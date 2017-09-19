@@ -6,6 +6,7 @@ import org.greenrobot.greendao.converter.PropertyConverter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import ai.elimu.model.enums.content.NumeracySkill;
+import timber.log.Timber;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,16 +15,16 @@ public class NumeracySkillSetConverter implements PropertyConverter<Set<Numeracy
 
     @Override
     public Set<NumeracySkill> convertToEntityProperty(String databaseValue) {
-        Log.d(getClass().getName(), "convertToEntityProperty");
+        Timber.d("convertToEntityProperty");
 
         Set<NumeracySkill> set = new HashSet<>();
 
         try {
             JSONArray jsonArray = new JSONArray(databaseValue);
-            Log.d(getClass().getName(), "jsonArray: " + jsonArray);
+            Timber.d("jsonArray: " + jsonArray);
             for (int i = 0; i < jsonArray.length(); i++) {
                 String value = jsonArray.getString(i);
-                Log.d(getClass().getName(), "value: " + value);
+                Timber.d("value: " + value);
                 NumeracySkill numeracySkill = NumeracySkill.valueOf(value);
                 set.add(numeracySkill);
             }
@@ -36,10 +37,10 @@ public class NumeracySkillSetConverter implements PropertyConverter<Set<Numeracy
 
     @Override
     public String convertToDatabaseValue(Set<NumeracySkill> entityProperty) {
-        Log.d(getClass().getName(), "convertToDatabaseValue");
+        Timber.d("convertToDatabaseValue");
 
         String databaseValue = entityProperty.toString();
-        Log.d(getClass().getName(), "databaseValue: " + databaseValue);
+        Timber.d("databaseValue: " + databaseValue);
         return databaseValue;
     }
 }

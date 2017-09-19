@@ -9,34 +9,5 @@
     android:orientation="vertical"
     android:gravity="center">
 
-    <TextView android:id="@+id/textViewMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/select_locale" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:background="#22000000" />
-
-    <TextView android:id="@+id/textViewLastSynchronization"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/last_synchronization" />
-
-    <Button android:id="@+id/buttonSynchronization"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start_synchronization"
-        style="?android:attr/buttonBarButtonStyle" />
-    <ProgressBar android:id="@+id/progressBarSynchronization"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:indeterminate="true" />
 </LinearLayout>

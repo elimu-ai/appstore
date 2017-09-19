@@ -6,11 +6,13 @@ import android.util.Log;
 
 import org.greenrobot.greendao.database.Database;
 
+import timber.log.Timber;
+
 public class CustomDaoMaster extends DaoMaster {
 
     public CustomDaoMaster(Database db) {
         super(db);
-        Log.i(getClass().getName(), "CustomDaoMaster");
+        Timber.i("CustomDaoMaster");
     }
 
     public static class DevOpenHelper extends OpenHelper {
@@ -24,7 +26,7 @@ public class CustomDaoMaster extends DaoMaster {
 
         @Override
         public void onUpgrade(Database db, int oldVersion, int newVersion) {
-            Log.i(getClass().getName(), "Upgrading schema from version " + oldVersion + " to " + newVersion);
+            Timber.i("Upgrading schema from version " + oldVersion + " to " + newVersion);
 
             if (oldVersion < 1003002) {
                 // Upgrade to schemaVersion 1003002

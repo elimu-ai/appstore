@@ -6,12 +6,13 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
-import ai.elimu.appstore.AppstoreApplication;
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import ai.elimu.model.enums.content.LiteracySkill;
 import ai.elimu.model.enums.content.NumeracySkill;
+import timber.log.Timber;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -30,32 +31,32 @@ public class StudentUpdatedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(getClass().getName(), "onReceive");
+        Timber.i("onReceive");
 
         ArrayList<String> availableLiteracySkillsStringArray = intent.getStringArrayListExtra("availableLiteracySkills");
-        Log.i(getClass().getName(), "availableLiteracySkillsStringArray: " + availableLiteracySkillsStringArray);
+        Timber.i("availableLiteracySkillsStringArray: " + availableLiteracySkillsStringArray);
         Set<LiteracySkill> availableLiteracySkills = new HashSet<>();
         for (String literacySkillAsString : availableLiteracySkillsStringArray) {
             LiteracySkill literacySkill = LiteracySkill.valueOf(literacySkillAsString);
             availableLiteracySkills.add(literacySkill);
         }
-        Log.i(getClass().getName(), "availableLiteracySkills: " + availableLiteracySkills);
+        Timber.i("availableLiteracySkills: " + availableLiteracySkills);
 
         ArrayList<String> availableNumeracySkillsStringArray = intent.getStringArrayListExtra("availableNumeracySkills");
-        Log.i(getClass().getName(), "availableNumeracySkillsStringArray: " + availableNumeracySkillsStringArray);
+        Timber.i("availableNumeracySkillsStringArray: " + availableNumeracySkillsStringArray);
         Set<NumeracySkill> availableNumeracySkills = new HashSet<>();
         for (String numeracySkillAsString : availableNumeracySkillsStringArray) {
             NumeracySkill numeracySkill = NumeracySkill.valueOf(numeracySkillAsString);
             availableNumeracySkills.add(numeracySkill);
         }
-        Log.i(getClass().getName(), "availableNumeracySkills: " + availableNumeracySkills);
+        Timber.i("availableNumeracySkills: " + availableNumeracySkills);
 
         if (!availableLiteracySkills.isEmpty() || !availableNumeracySkills.isEmpty()) {
-            AppstoreApplication appstoreApplication = (AppstoreApplication) context.getApplicationContext();
-            ApplicationDao applicationDao = appstoreApplication.getDaoSession().getApplicationDao();
+            BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
+            ApplicationDao applicationDao = baseApplication.getDaoSession().getApplicationDao();
             List<Application> applications = applicationDao.loadAll();
             for (Application application : applications) {
-                Log.i(getClass().getName(), "packageName: " + application.getPackageName() + ", literacySkills: " + application.getLiteracySkills() + ", numeracySkills: " + application.getNumeracySkills());
+                Timber.i("packageName: " + application.getPackageName() + ", literacySkills: " + application.getLiteracySkills() + ", numeracySkills: " + application.getNumeracySkills());
 
                 // Filter by LiteracySkill
                 if (!application.getLiteracySkills().isEmpty() && !availableLiteracySkills.isEmpty()) {
@@ -81,7 +82,7 @@ public class StudentUpdatedReceiver extends BroadcastReceiver {
                     } else {
                         if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
                             // Show Application
-                            Log.i(getClass().getName(), "LiteracySkill(s) available. Showing Application: " + application.getPackageName() + ", literacySkills: " + application.getLiteracySkills());
+                            Timber.i("LiteracySkill(s) available. Showing Application: " + application.getPackageName() + ", literacySkills: " + application.getLiteracySkills());
                             try {
                                 runAsRoot(new String[]{
                                         "pm enable " + application.getPackageName()
@@ -117,7 +118,7 @@ public class StudentUpdatedReceiver extends BroadcastReceiver {
                     } else {
                         if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
                             // Show Application
-                            Log.i(getClass().getName(), "NumeracySkill(s) available. Showing Application: " + application.getPackageName() + ", numeracySkills: " + application.getNumeracySkills());
+                            Timber.i("NumeracySkill(s) available. Showing Application: " + application.getPackageName() + ", numeracySkills: " + application.getNumeracySkills());
                             try {
                                 runAsRoot(new String[]{
                                         "pm enable " + application.getPackageName()
@@ -133,7 +134,7 @@ public class StudentUpdatedReceiver extends BroadcastReceiver {
                 if (application.getLiteracySkills().isEmpty() && application.getNumeracySkills().isEmpty()) {
                     if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
                         // Show Application
-                        Log.i(getClass().getName(), "No skills required. Showing Application: " + application.getPackageName() + ", numeracySkills: " + application.getNumeracySkills());
+                        Timber.i("No skills required. Showing Application: " + application.getPackageName() + ", numeracySkills: " + application.getNumeracySkills());
                         try {
                             runAsRoot(new String[]{
                                     "pm enable " + application.getPackageName()
@@ -148,13 +149,13 @@ public class StudentUpdatedReceiver extends BroadcastReceiver {
     }
 
     private void runAsRoot(String[] commands) throws IOException, InterruptedException {
-        Log.i(getClass().getName(), "runAsRoot");
+        Timber.i("runAsRoot");
 
         Process process = Runtime.getRuntime().exec("su");
 
         DataOutputStream dataOutputStream = new DataOutputStream(process.getOutputStream());
         for (String command : commands) {
-            Log.i(getClass().getName(), "command: " + command);
+            Timber.i("command: " + command);
             dataOutputStream.writeBytes(command + "\n");
         }
         dataOutputStream.writeBytes("exit\n");
@@ -162,18 +163,18 @@ public class StudentUpdatedReceiver extends BroadcastReceiver {
 
         process.waitFor();
         int exitValue = process.exitValue();
-        Log.i(getClass().getName(), "exitValue: " + exitValue);
+        Timber.i("exitValue: " + exitValue);
 
         InputStream inputStreamSuccess = process.getInputStream();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
         String successMessage = bufferedReader.readLine();
-        Log.i(getClass().getName(), "successMessage: " + successMessage);
+        Timber.i("successMessage: " + successMessage);
 
         InputStream inputStreamError = process.getErrorStream();
         bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
         String errorMessage = bufferedReader.readLine();
         if (TextUtils.isEmpty(errorMessage)) {
-            Log.i(getClass().getName(), "errorMessage: " + errorMessage);
+            Timber.i("errorMessage: " + errorMessage);
         } else {
             Log.e(getClass().getName(), "errorMessage: " + errorMessage);
         }

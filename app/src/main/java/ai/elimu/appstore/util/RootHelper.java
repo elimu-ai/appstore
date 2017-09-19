@@ -1,7 +1,6 @@
 package ai.elimu.appstore.util;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -9,10 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import timber.log.Timber;
+
 public class RootHelper {
 
     public static boolean runAsRoot(String[] commands) {
-        Log.i(RootHelper.class.getName(), "runAsRoot");
+        Timber.i("runAsRoot");
 
         boolean isSuccess = false;
 
@@ -21,7 +22,7 @@ public class RootHelper {
 
             DataOutputStream dataOutputStream = new DataOutputStream(process.getOutputStream());
             for (String command : commands) {
-                Log.i(RootHelper.class.getName(), "command: " + command);
+                Timber.i("command: " + command);
                 dataOutputStream.writeBytes(command + "\n");
             }
             dataOutputStream.writeBytes("exit\n");
@@ -29,7 +30,7 @@ public class RootHelper {
 
             process.waitFor();
             int exitValue = process.exitValue();
-            Log.i(RootHelper.class.getName(), "exitValue: " + exitValue);
+            Timber.i("exitValue: " + exitValue);
             if (exitValue == 0) {
                 isSuccess = true;
             }
@@ -37,18 +38,18 @@ public class RootHelper {
             InputStream inputStreamSuccess = process.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStreamSuccess));
             String successMessage = bufferedReader.readLine();
-            Log.i(RootHelper.class.getName(), "successMessage: " + successMessage);
+            Timber.i("successMessage: " + successMessage);
 
             InputStream inputStreamError = process.getErrorStream();
             bufferedReader = new BufferedReader(new InputStreamReader(inputStreamError));
             String errorMessage = bufferedReader.readLine();
             if (TextUtils.isEmpty(errorMessage)) {
-                Log.i(RootHelper.class.getName(), "errorMessage: " + errorMessage);
+                Timber.i("errorMessage: " + errorMessage);
             } else {
-                Log.e(RootHelper.class.getName(), "errorMessage: " + errorMessage);
+                Timber.e("errorMessage: " + errorMessage);
             }
         } catch (IOException | InterruptedException e) {
-            Log.e(RootHelper.class.getName(), null, e);
+            Timber.e(e);
         }
 
         return isSuccess;

@@ -9,20 +9,22 @@ import org.json.JSONException;
 import java.util.HashSet;
 import java.util.Set;
 
+import timber.log.Timber;
+
 public class StringSetConverter implements PropertyConverter<Set, String> {
 
     @Override
     public Set convertToEntityProperty(String databaseValue) {
-        Log.d(getClass().getName(), "convertToEntityProperty");
+        Timber.d("convertToEntityProperty");
 
         Set<String> set = new HashSet<>();
 
         try {
             JSONArray jsonArray = new JSONArray(databaseValue);
-            Log.d(getClass().getName(), "jsonArray: " + jsonArray);
+            Timber.d("jsonArray: " + jsonArray);
             for (int i = 0; i < jsonArray.length(); i++) {
                 String value = jsonArray.getString(i);
-                Log.d(getClass().getName(), "value: " + value);
+                Timber.d("value: " + value);
                 set.add(value);
             }
         } catch (JSONException e) {
@@ -34,10 +36,10 @@ public class StringSetConverter implements PropertyConverter<Set, String> {
 
     @Override
     public String convertToDatabaseValue(Set entityProperty) {
-        Log.d(getClass().getName(), "convertToDatabaseValue");
+        Timber.d("convertToDatabaseValue");
 
         String databaseValue = entityProperty.toString();
-        Log.d(getClass().getName(), "databaseValue: " + databaseValue);
+        Timber.d("databaseValue: " + databaseValue);
         return databaseValue;
     }
 }

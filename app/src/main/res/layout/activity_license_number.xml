@@ -24,20 +24,35 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <TextView android:id="@+id/textViewLocale"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_the_students_native_language" />
+            android:layout_height="wrap_content">
 
-        <Spinner android:id="@+id/spinnerLocale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin" />
+            <EditText android:id="@+id/editTextLicenseEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="20"
+                android:hint="@string/email_address"
+                android:inputType="textEmailAddress" />
+        </android.support.design.widget.TextInputLayout>
 
-        <Button android:id="@+id/buttonLocale"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <EditText android:id="@+id/editTextLicenseNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="20"
+                android:hint="@string/license_number"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <Button android:id="@+id/buttonLicenseNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/save"
-            style="?android:attr/buttonBarButtonStyle" />
+            style="?android:attr/buttonBarButtonStyle"
+            android:enabled="false" />
     </LinearLayout>
 </RelativeLayout>

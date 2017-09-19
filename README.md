@@ -1,7 +1,5 @@
-# appstore
+# Appstore
 
 [![Build Status](https://travis-ci.org/elimu-ai/appstore.svg?branch=master)](https://travis-ci.org/elimu-ai/appstore)
 
-## Start command
-
-`am startservice ai.elimu.appstore/.service.ApplicationSynchronizationService`
+Android application which downloads educational apps stored on the elimu.ai platform.
