@@ -55,7 +55,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
 
         viewHolder.textViewPackageName.setText(application.getPackageName());
 
-        viewHolder.textViewVersion.setText("Version: " + application.getVersionCode());
+        viewHolder.textViewVersion.setText(context.getText(R.string.version) + ": " + application.getVersionCode());
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
             // Do not allow APK download
