@@ -82,11 +82,11 @@ public class AppSynchronizationActivity extends AppCompatActivity {
             Timber.i("isWifiConnected: " + isWifiConnected);
             boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
             Timber.i("isServerReachable: " + isServerReachable);
-            if (!isWifiEnabled) {
+            /*if (!isWifiEnabled) {
                 Timber.w(context.getString(R.string.wifi_needs_to_be_enabled));
             } else if (!isWifiConnected) {
                 Timber.w(context.getString(R.string.wifi_needs_to_be_connected));
-            } else if (!isServerReachable) {
+            } else */if (!isServerReachable) {
                 Timber.w(context.getString(R.string.server_is_not_reachable));
             } else {
                 // Download List of applications
