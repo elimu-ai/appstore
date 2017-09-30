@@ -38,7 +38,11 @@ public class Application {
     @NotNull
     @Convert(converter = ApplicationStatusConverter.class, columnType = String.class)
     private ApplicationStatus applicationStatus;
-    
+
+    /**
+     * This value represents the versionCode of the latest APK file
+     * ({@link ai.elimu.model.gson.admin.ApplicationVersionGson} uploaded for this Application.
+     */
     private Integer versionCode;
 
     private String startCommand;
