@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import java.io.BufferedReader;
@@ -30,16 +29,16 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.R;
+import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
-import ai.elimu.appstore.util.ApkLoader;
+import ai.elimu.appstore.model.ApplicationVersion;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.model.enums.admin.ApplicationStatus;
-import ai.elimu.model.gson.admin.ApplicationGson;
-import ai.elimu.model.gson.admin.ApplicationVersionGson;
 import timber.log.Timber;
 
 public class AppListArrayAdapter extends ArrayAdapter<Application> {
@@ -47,6 +46,8 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
     private Context context;
 
     private List<Application> applications;
+
+    private ApplicationVersionDao applicationVersionDao;
 
     static class ViewHolder {
         TextView textViewPackageName;
@@ -62,12 +63,15 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
 
         this.context = context;
         this.applications = applications;
+
+        BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
+        applicationVersionDao = baseApplication.getDaoSession().getApplicationVersionDao();
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Timber.i("getView");
+        Timber.d("getView");
 
         final Application application = applications.get(position);
 
@@ -94,23 +98,20 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                 public void onClick(View view) {
                     Timber.i("buttonDownload onClick");
 
-                    Timber.i("Downloading " + application.getPackageName() + " version " + application.getVersionCode());
+                    Timber.i("Downloading " + application.getPackageName() + " (version " + application.getVersionCode() + ")");
 
                     viewHolder.buttonDownload.setVisibility(View.GONE);
                     viewHolder.progressBarDownloadProgress.setVisibility(View.VISIBLE);
                     viewHolder.textViewDownloadProgress.setVisibility(View.VISIBLE);
 
-                    // Initiate APK download
-                    ApplicationVersionGson applicationVersionGson = new ApplicationVersionGson(); // TODO: use application.getApplicationVersions().get(0);
-                    // TODO: replace with application.getApplicationVersions().get(0)
-                    ApplicationGson applicationGson = new ApplicationGson();
-                    applicationGson.setPackageName(application.getPackageName());
-                    applicationVersionGson.setApplication(applicationGson);
-                    applicationVersionGson.setFileUrl("/apk/" + application.getPackageName() + "-" + application.getVersionCode() + ".apk");
-                    applicationVersionGson.setVersionCode(application.getVersionCode());
-                    applicationVersionGson.setFileSizeInKb(69437);
-
-                    new DownloadApplicationAsyncTask(viewHolder.progressBarDownloadProgress, viewHolder.textViewDownloadProgress).execute(applicationVersionGson);
+                    // Initiate download of the latest APK version
+                    List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
+                            .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
+                            .list();
+                    Timber.i("applicationVersions.size(): " + applicationVersions.size());
+                    ApplicationVersion applicationVersion = applicationVersions.get(0);
+                    Timber.i("applicationVersion: " + applicationVersion);
+                    new DownloadApplicationAsyncTask(viewHolder.progressBarDownloadProgress, viewHolder.textViewDownloadProgress).execute(applicationVersion);
                 }
             });
         }
@@ -122,9 +123,9 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
     /**
      * Downloads APK file and updates progress bar in the UI during the download.
      */
-    private class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersionGson, Integer, Integer> {
+    private class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, Integer, Integer> {
 
-        private ApplicationVersionGson applicationVersionGson;
+        private ApplicationVersion applicationVersion;
 
         private ProgressBar progressBarDownloadProgress;
         private TextView textViewDownloadProgress;
@@ -135,19 +136,23 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
         }
 
         @Override
-        protected Integer doInBackground(ApplicationVersionGson... applicationVersionGsons) {
+        protected Integer doInBackground(ApplicationVersion... applicationVersions) {
             Timber.i("doInBackground");
 
-            applicationVersionGson = applicationVersionGsons[0];
-            Timber.i("applicationVersionGson.getFileUrl(): " + applicationVersionGson.getFileUrl());
-            Timber.i("applicationVersionGson.getFileSizeInKb(): " + applicationVersionGson.getFileSizeInKb());
+            applicationVersion = applicationVersions[0];
+            Timber.i("applicationVersion.getApplication(): " + applicationVersion.getApplication());
+            Timber.i("applicationVersion.getFileSizeInKb(): " + applicationVersion.getFileSizeInKb());
+            Timber.i("applicationVersion.getFileUrl(): " + applicationVersion.getFileUrl());
+            Timber.i("applicationVersion.getContentType(): " + applicationVersion.getContentType());
+            Timber.i("applicationVersion.getVersionCode(): " + applicationVersion.getVersionCode());
+            Timber.i("applicationVersion.getStartCommand(): " + applicationVersion.getStartCommand());
 
             // Reset to initial state
             Integer fileSizeInKbsDownloaded = 0;
             publishProgress(fileSizeInKbsDownloaded);
 
             // Download APK file and store it on SD card
-            String fileUrl = BuildConfig.BASE_URL + applicationVersionGson.getFileUrl() +
+            String fileUrl = BuildConfig.BASE_URL + applicationVersion.getFileUrl() +
                     "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
                     "&checksum=" + ChecksumHelper.getChecksum(context) +
                     "&locale=" + UserPrefsHelper.getLocale(context) +
@@ -157,14 +162,14 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                     "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
             Timber.i("fileUrl: " + fileUrl);
 
-            String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
+            String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
             Timber.i("fileName: " + fileName);
 
-            Timber.i("Downloading APK: " + applicationVersionGson.getApplication().getPackageName() + " (version " + applicationVersionGson.getVersionCode() + ", " + applicationVersionGson.getFileSizeInKb() + "kB)");
+            Timber.i("Downloading APK: " + applicationVersion.getApplication().getPackageName() + " (version " + applicationVersion.getVersionCode() + ", " + applicationVersion.getFileSizeInKb() + "kB)");
 
 //            File apkFile = ApkLoader.loadApk(fileUrl, fileName, context);
+            // Copied from ApkLoader#loadApk:
             String urlValue = fileUrl;
-            // Copied from ApkLoader:
             Timber.i("Downloading from " + urlValue + "...");
 
             String language = Locale.getDefault().getLanguage();
@@ -241,19 +246,19 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
 
         @Override
         protected void onProgressUpdate(Integer... fileSizeInKbsDownloadeds) {
-            Timber.i("onProgressUpdate");
+            Timber.d("onProgressUpdate");
             super.onProgressUpdate(fileSizeInKbsDownloadeds);
 
             int fileSizeInKbsDownloaded = fileSizeInKbsDownloadeds[0];
-            Timber.i("fileSizeInKbsDownloaded: " + fileSizeInKbsDownloaded);
+            Timber.d("fileSizeInKbsDownloaded: " + fileSizeInKbsDownloaded);
 
-            int progress = (fileSizeInKbsDownloaded * 100) / applicationVersionGson.getFileSizeInKb();
-            Timber.i("progress: " + progress);
+            int progress = (fileSizeInKbsDownloaded * 100) / applicationVersion.getFileSizeInKb();
+            Timber.d("progress: " + progress);
             progressBarDownloadProgress.setProgress(progress);
 
             // E.g. "6.00 MB/12.00 MB   50%"
-            String progressText = (fileSizeInKbsDownloaded / 1024) + " MB/" + (applicationVersionGson.getFileSizeInKb() / 1024) + " MB   " + progress + "%";
-            Timber.i("progressText: " + progressText);
+            String progressText = (fileSizeInKbsDownloaded / 1024) + " MB/" + (applicationVersion.getFileSizeInKb() / 1024) + " MB   " + progress + "%";
+            Timber.d("progressText: " + progressText);
             textViewDownloadProgress.setText(progressText);
         }
 
@@ -262,6 +267,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             Timber.i("onPostExecute");
             super.onPostExecute(fileSizeInKbsDownloaded);
 
+            // Hide progress indicators
             progressBarDownloadProgress.setVisibility(View.GONE);
             textViewDownloadProgress.setVisibility(View.GONE);
 //            buttonDownload.setVisibility(View.VISIBLE);

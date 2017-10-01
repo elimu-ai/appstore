@@ -19,12 +19,15 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.Calendar;
+import java.util.List;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
+import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
+import ai.elimu.appstore.model.ApplicationVersion;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
@@ -65,11 +68,14 @@ public class AppSynchronizationActivity extends AppCompatActivity {
 
         private ApplicationDao applicationDao;
 
+        private ApplicationVersionDao applicationVersionDao;
+
         public DownloadAppListAsyncTask(Context context) {
             this.context = context;
 
             BaseApplication baseApplication = (BaseApplication) context;
             applicationDao = baseApplication.getDaoSession().getApplicationDao();
+            applicationVersionDao = baseApplication.getDaoSession().getApplicationVersionDao();
         }
 
         @Override
@@ -123,13 +129,31 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                 application.setLiteracySkills(applicationGson.getLiteracySkills());
                                 application.setNumeracySkills(applicationGson.getNumeracySkills());
                                 application.setApplicationStatus(applicationGson.getApplicationStatus());
-                                if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                                    ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                                    application.setVersionCode(applicationVersionGson.getVersionCode());
-                                    application.setStartCommand(applicationVersionGson.getStartCommand());
-                                }
                                 long id = applicationDao.insert(application);
                                 Timber.i("Stored Application in database with id " + id);
+
+                                if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                                    // Store ApplicationVersions
+                                    List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
+                                    Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size());
+                                    for (ApplicationVersionGson applicationVersionGson : applicationVersionGsons) {
+                                        ApplicationVersion applicationVersion = applicationVersionDao.load(applicationVersionGson.getId());
+                                        if (applicationVersion == null) {
+                                            // Store new ApplicationVersion in database
+                                            applicationVersion = new ApplicationVersion();
+                                            applicationVersion.setId(applicationVersionGson.getId());
+                                            applicationVersion.setApplication(application);
+                                            applicationVersion.setFileSizeInKb(applicationVersionGson.getFileSizeInKb());
+                                            applicationVersion.setFileUrl(applicationVersionGson.getFileUrl());
+                                            applicationVersion.setContentType(applicationVersionGson.getContentType());
+                                            applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
+                                            applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());
+                                            applicationVersion.setTimeUploaded(applicationVersionGson.getTimeUploaded());
+                                            long applicationVersionId = applicationVersionDao.insert(applicationVersion);
+                                            Timber.i("Stored ApplicationVersion in database with id " + applicationVersionId);
+                                        }
+                                    }
+                                }
                             } else {
                                 // Update existing Application in database
                                 application.setId(applicationGson.getId());
@@ -138,13 +162,32 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                 application.setLiteracySkills(applicationGson.getLiteracySkills());
                                 application.setNumeracySkills(applicationGson.getNumeracySkills());
                                 application.setApplicationStatus(applicationGson.getApplicationStatus());
-                                if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                                    ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                                    application.setVersionCode(applicationVersionGson.getVersionCode());
-                                    application.setStartCommand(applicationVersionGson.getStartCommand());
-                                }
                                 applicationDao.update(application);
                                 Timber.i("Updated Application in database with id " + application.getId());
+
+                                if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                                    // Update ApplicationVersions
+                                    List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
+                                    Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size());
+                                    for (ApplicationVersionGson applicationVersionGson : applicationVersionGsons) {
+                                        ApplicationVersion applicationVersion = applicationVersionDao.load(applicationVersionGson.getId());
+
+                                        if (applicationVersion == null) {
+                                            // Update existing ApplicationVersion in database
+                                            applicationVersion = new ApplicationVersion();
+                                            applicationVersion.setId(applicationVersionGson.getId());
+                                            applicationVersion.setApplication(application);
+                                            applicationVersion.setFileSizeInKb(applicationVersionGson.getFileSizeInKb());
+                                            applicationVersion.setFileUrl(applicationVersionGson.getFileUrl());
+                                            applicationVersion.setContentType(applicationVersionGson.getContentType());
+                                            applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
+                                            applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());
+                                            applicationVersion.setTimeUploaded(applicationVersionGson.getTimeUploaded());
+                                            applicationVersionDao.update(applicationVersion);
+                                            Timber.i("Updated ApplicationVersion in database with id " + applicationVersion.getId());
+                                        }
+                                    }
+                                }
                             }
                         }
                         Timber.i("Synchronization complete!");

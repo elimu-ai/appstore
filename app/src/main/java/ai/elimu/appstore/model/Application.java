@@ -43,8 +43,10 @@ public class Application {
      * This value represents the versionCode of the latest APK file
      * ({@link ai.elimu.model.gson.admin.ApplicationVersionGson} uploaded for this Application.
      */
+    @Deprecated
     private Integer versionCode;
 
+    @Deprecated
     private String startCommand;
 
     @Generated(hash = 932730884)
