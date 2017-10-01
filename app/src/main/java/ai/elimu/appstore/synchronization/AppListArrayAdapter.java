@@ -95,9 +95,28 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
         viewHolder.textViewVersion.setText(context.getText(R.string.version) + ": " + application.getVersionCode());
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
+            // TODO: hide applications that are not active?
             // Do not allow APK download
             viewHolder.buttonDownload.setEnabled(false);
         } else {
+            // Fetch the latest APK version
+            List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
+                    .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
+                    .list();
+            final ApplicationVersion applicationVersion = applicationVersions.get(0);
+
+            // Check if the APK file has already been downloaded to the SD card
+            String language = Locale.getDefault().getLanguage();
+            String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
+            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
+            File existingApkFile = new File(apkDirectory, fileName);
+            Timber.i("existingApkFile: " + existingApkFile);
+            Timber.i("existingApkFile.exists(): " + existingApkFile.exists());
+            if (existingApkFile.exists()) {
+                viewHolder.buttonDownload.setVisibility(View.GONE);
+                viewHolder.buttonInstall.setVisibility(View.VISIBLE);
+            }
+
             viewHolder.buttonDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -110,11 +129,6 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                     viewHolder.textViewDownloadProgress.setVisibility(View.VISIBLE);
 
                     // Initiate download of the latest APK version
-                    List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
-                            .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
-                            .list();
-                    Timber.i("applicationVersions.size(): " + applicationVersions.size());
-                    ApplicationVersion applicationVersion = applicationVersions.get(0);
                     Timber.i("applicationVersion: " + applicationVersion);
                     new DownloadApplicationAsyncTask(
                             viewHolder.progressBarDownloadProgress,
@@ -130,10 +144,6 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                     Timber.i("buttonInstall onClick");
 
                     // Initiate installation of the latest APK version
-                    List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
-                            .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
-                            .list();
-                    ApplicationVersion applicationVersion = applicationVersions.get(0);
                     Timber.i("Installing " + applicationVersion.getApplication().getPackageName() + " (version " + applicationVersion.getVersionCode() + ")...");
 
                     String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
