@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
-    public static final int PERMISSION_REQUEST_INSTALL_PACKAGES = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
@@ -44,14 +42,6 @@ public class MainActivity extends AppCompatActivity {
         int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
-            return;
-        }
-
-        // Ask for permission to install APK files
-        // See https://developer.android.com/guide/topics/permissions/requesting.html#install-unknown-apps
-        int permissionCheckInstallPackages = ContextCompat.checkSelfPermission(this, Manifest.permission.REQUEST_INSTALL_PACKAGES);
-        if (permissionCheckInstallPackages != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.REQUEST_INSTALL_PACKAGES}, PERMISSION_REQUEST_INSTALL_PACKAGES);
             return;
         }
 
@@ -113,19 +103,6 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) {
-            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // Permission granted
-
-                // Restart application
-                Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-            } else {
-                // Permission denied
-
-                finish();
-            }
-        } else if (requestCode == PERMISSION_REQUEST_INSTALL_PACKAGES) {
             if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 // Permission granted
 
