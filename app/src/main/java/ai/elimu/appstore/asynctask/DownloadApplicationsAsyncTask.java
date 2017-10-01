@@ -62,132 +62,132 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
     protected Void doInBackground(Object... objects) {
         Timber.i("doInBackground");
 
-        boolean isWifiEnabled = ConnectivityHelper.isWifiEnabled(context);
-        Timber.i("isWifiEnabled: " + isWifiEnabled);
-        boolean isWifiConnected = ConnectivityHelper.isWifiConnected(context);
-        Timber.i("isWifiConnected: " + isWifiConnected);
-        boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
-        Timber.i("isServerReachable: " + isServerReachable);
-        if (!isWifiEnabled) {
-            Timber.w(context.getString(R.string.wifi_needs_to_be_enabled));
-        } else if (!isWifiConnected) {
-            Timber.w(context.getString(R.string.wifi_needs_to_be_connected));
-        } else if (!isServerReachable) {
-            Timber.w(context.getString(R.string.server_is_not_reachable));
-        } else {
-            // Download List of applications
-            String url = BuildConfig.REST_URL + "/admin/application/list" +
-                    "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
-                    "&checksum=" + ChecksumHelper.getChecksum(context) +
-                    "&locale=" + UserPrefsHelper.getLocale(context) +
-                    "&deviceModel=" + DeviceInfoHelper.getDeviceModel(context) +
-                    "&osVersion=" + Build.VERSION.SDK_INT +
-                    "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
-                    "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
-            String jsonResponse = JsonLoader.loadJson(url);
-            Timber.i("jsonResponse: " + jsonResponse);
-            try {
-                JSONObject jsonObject = new JSONObject(jsonResponse);
-                if (!"success".equals(jsonObject.getString("result"))) {
-                    Timber.w("Download failed");
-                    String errorDescription = jsonObject.getString("description");
-                } else {
-                    JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
-                    for (int i = 0; i < jsonArrayApplications.length(); i++) {
-                        Type type = new TypeToken<ApplicationGson>() {}.getType();
-                        ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
-                        Timber.i("Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (status " + applicationGson.getApplicationStatus() + ")");
-
-                        Application application = applicationDao.load(applicationGson.getId());
-                        if (application == null) {
-                            // Store new Application in database
-                            application = new Application();
-                            application.setId(applicationGson.getId());
-                            application.setLocale(applicationGson.getLocale());
-                            application.setPackageName(applicationGson.getPackageName());
-                            application.setLiteracySkills(applicationGson.getLiteracySkills());
-                            application.setNumeracySkills(applicationGson.getNumeracySkills());
-                            application.setApplicationStatus(applicationGson.getApplicationStatus());
-                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                                application.setVersionCode(applicationVersionGson.getVersionCode());
-                                application.setStartCommand(applicationVersionGson.getStartCommand());
-                            }
-                            long id = applicationDao.insert(application);
-                            Timber.i("Stored Application in database with id " + id);
-                        } else {
-                            // Update existing Application in database
-                            application.setId(applicationGson.getId());
-                            application.setLocale(applicationGson.getLocale());
-                            application.setPackageName(applicationGson.getPackageName());
-                            application.setLiteracySkills(applicationGson.getLiteracySkills());
-                            application.setNumeracySkills(applicationGson.getNumeracySkills());
-                            application.setApplicationStatus(applicationGson.getApplicationStatus());
-                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                                application.setVersionCode(applicationVersionGson.getVersionCode());
-                                application.setStartCommand(applicationVersionGson.getStartCommand());
-                            }
-                            applicationDao.update(application);
-                            Timber.i("Updated Application in database with id " + application.getId());
-                        }
-
-                        // Download APK if missing from SD card
-                        if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                            String language = Locale.getDefault().getLanguage();
-                            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
-                            ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                            String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
-                            File apkFile = new File(apkDirectory, fileName);
-                            Timber.i("apkFile: " + apkFile);
-                            Timber.i("apkFile.exists(): " + apkFile.exists());
-                            if (!apkFile.exists()) {
-                                Timber.i("APK file (" + fileName + ") missing from SD card. Downloading...");
-                                downloadApk(applicationVersionGson);
-                            }
-                        }
-
-                        // Delete/update/install application
-                        PackageManager packageManager = context.getPackageManager();
-                        try {
-                            PackageInfo packageInfo = packageManager.getPackageInfo(applicationGson.getPackageName(), PackageManager.GET_ACTIVITIES);
-                            Timber.i("The application is already installed: " + applicationGson.getPackageName());
-
-                            // Check if the Application has been deleted/deactivated on the website
-                            if ((applicationGson.getApplicationStatus() == ApplicationStatus.DELETED)
-                                    || (applicationGson.getApplicationStatus() == ApplicationStatus.INACTIVE)) {
-                                // Delete application
-                                uninstallApk(applicationGson);
-                            } else if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                                // Check if a newer version is available
-                                Timber.i("packageInfo.versionCode: " + packageInfo.versionCode);
-                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                                Timber.i("Newest version available: " + applicationVersionGson.getVersionCode());
-                                if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
-                                    // Download the APK and install it
-                                    installApk(applicationVersionGson);
-                                }
-                            }
-                        } catch (PackageManager.NameNotFoundException e) {
-                            Timber.i("The application is not installed: " + applicationGson.getPackageName());
-
-                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                                // Install the APK
-                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
-                                installApk(applicationVersionGson);
-                            }
-                        }
-                    }
-                    Timber.i("Synchronization complete!");
-
-                    // Update time of last synchronization
-                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-                    sharedPreferences.edit().putLong(PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
-                }
-            } catch (JSONException e) {
-                Log.e(getClass().getName(), null, e);
-            }
-        }
+//        boolean isWifiEnabled = ConnectivityHelper.isWifiEnabled(context);
+//        Timber.i("isWifiEnabled: " + isWifiEnabled);
+//        boolean isWifiConnected = ConnectivityHelper.isWifiConnected(context);
+//        Timber.i("isWifiConnected: " + isWifiConnected);
+//        boolean isServerReachable = ConnectivityHelper.isServerReachable(context);
+//        Timber.i("isServerReachable: " + isServerReachable);
+//        if (!isWifiEnabled) {
+//            Timber.w(context.getString(R.string.wifi_needs_to_be_enabled));
+//        } else if (!isWifiConnected) {
+//            Timber.w(context.getString(R.string.wifi_needs_to_be_connected));
+//        } else if (!isServerReachable) {
+//            Timber.w(context.getString(R.string.server_is_not_reachable));
+//        } else {
+//            // Download List of applications
+//            String url = BuildConfig.REST_URL + "/admin/application/list" +
+//                    "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
+//                    "&checksum=" + ChecksumHelper.getChecksum(context) +
+//                    "&locale=" + UserPrefsHelper.getLocale(context) +
+//                    "&deviceModel=" + DeviceInfoHelper.getDeviceModel(context) +
+//                    "&osVersion=" + Build.VERSION.SDK_INT +
+//                    "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
+//                    "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
+//            String jsonResponse = JsonLoader.loadJson(url);
+//            Timber.i("jsonResponse: " + jsonResponse);
+//            try {
+//                JSONObject jsonObject = new JSONObject(jsonResponse);
+//                if (!"success".equals(jsonObject.getString("result"))) {
+//                    Timber.w("Download failed");
+//                    String errorDescription = jsonObject.getString("description");
+//                } else {
+//                    JSONArray jsonArrayApplications = jsonObject.getJSONArray("applications");
+//                    for (int i = 0; i < jsonArrayApplications.length(); i++) {
+//                        Type type = new TypeToken<ApplicationGson>() {}.getType();
+//                        ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
+//                        Timber.i("Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (status " + applicationGson.getApplicationStatus() + ")");
+//
+//                        Application application = applicationDao.load(applicationGson.getId());
+//                        if (application == null) {
+//                            // Store new Application in database
+//                            application = new Application();
+//                            application.setId(applicationGson.getId());
+//                            application.setLocale(applicationGson.getLocale());
+//                            application.setPackageName(applicationGson.getPackageName());
+//                            application.setLiteracySkills(applicationGson.getLiteracySkills());
+//                            application.setNumeracySkills(applicationGson.getNumeracySkills());
+//                            application.setApplicationStatus(applicationGson.getApplicationStatus());
+//                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+//                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+//                                application.setVersionCode(applicationVersionGson.getVersionCode());
+//                                application.setStartCommand(applicationVersionGson.getStartCommand());
+//                            }
+//                            long id = applicationDao.insert(application);
+//                            Timber.i("Stored Application in database with id " + id);
+//                        } else {
+//                            // Update existing Application in database
+//                            application.setId(applicationGson.getId());
+//                            application.setLocale(applicationGson.getLocale());
+//                            application.setPackageName(applicationGson.getPackageName());
+//                            application.setLiteracySkills(applicationGson.getLiteracySkills());
+//                            application.setNumeracySkills(applicationGson.getNumeracySkills());
+//                            application.setApplicationStatus(applicationGson.getApplicationStatus());
+//                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+//                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+//                                application.setVersionCode(applicationVersionGson.getVersionCode());
+//                                application.setStartCommand(applicationVersionGson.getStartCommand());
+//                            }
+//                            applicationDao.update(application);
+//                            Timber.i("Updated Application in database with id " + application.getId());
+//                        }
+//
+//                        // Download APK if missing from SD card
+//                        if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+//                            String language = Locale.getDefault().getLanguage();
+//                            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
+//                            ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+//                            String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
+//                            File apkFile = new File(apkDirectory, fileName);
+//                            Timber.i("apkFile: " + apkFile);
+//                            Timber.i("apkFile.exists(): " + apkFile.exists());
+//                            if (!apkFile.exists()) {
+//                                Timber.i("APK file (" + fileName + ") missing from SD card. Downloading...");
+//                                downloadApk(applicationVersionGson);
+//                            }
+//                        }
+//
+//                        // Delete/update/install application
+//                        PackageManager packageManager = context.getPackageManager();
+//                        try {
+//                            PackageInfo packageInfo = packageManager.getPackageInfo(applicationGson.getPackageName(), PackageManager.GET_ACTIVITIES);
+//                            Timber.i("The application is already installed: " + applicationGson.getPackageName());
+//
+//                            // Check if the Application has been deleted/deactivated on the website
+//                            if ((applicationGson.getApplicationStatus() == ApplicationStatus.DELETED)
+//                                    || (applicationGson.getApplicationStatus() == ApplicationStatus.INACTIVE)) {
+//                                // Delete application
+//                                uninstallApk(applicationGson);
+//                            } else if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+//                                // Check if a newer version is available
+//                                Timber.i("packageInfo.versionCode: " + packageInfo.versionCode);
+//                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+//                                Timber.i("Newest version available: " + applicationVersionGson.getVersionCode());
+//                                if (packageInfo.versionCode < applicationVersionGson.getVersionCode()) {
+//                                    // Download the APK and install it
+//                                    installApk(applicationVersionGson);
+//                                }
+//                            }
+//                        } catch (PackageManager.NameNotFoundException e) {
+//                            Timber.i("The application is not installed: " + applicationGson.getPackageName());
+//
+//                            if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+//                                // Install the APK
+//                                ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
+//                                installApk(applicationVersionGson);
+//                            }
+//                        }
+//                    }
+//                    Timber.i("Synchronization complete!");
+//
+//                    // Update time of last synchronization
+//                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+//                    sharedPreferences.edit().putLong(PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
+//                }
+//            } catch (JSONException e) {
+//                Log.e(getClass().getName(), null, e);
+//            }
+//        }
 
         return null;
     }

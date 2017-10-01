@@ -39,29 +39,16 @@ public class Application {
     @Convert(converter = ApplicationStatusConverter.class, columnType = String.class)
     private ApplicationStatus applicationStatus;
 
-    /**
-     * This value represents the versionCode of the latest APK file
-     * ({@link ai.elimu.model.gson.admin.ApplicationVersionGson} uploaded for this Application.
-     */
-    @Deprecated
-    private Integer versionCode;
-
-    @Deprecated
-    private String startCommand;
-
-    @Generated(hash = 932730884)
+    @Generated(hash = 2022782533)
     public Application(Long id, @NotNull Locale locale, @NotNull String packageName,
             Set<LiteracySkill> literacySkills, Set<NumeracySkill> numeracySkills,
-            @NotNull ApplicationStatus applicationStatus, Integer versionCode,
-            String startCommand) {
+            @NotNull ApplicationStatus applicationStatus) {
         this.id = id;
         this.locale = locale;
         this.packageName = packageName;
         this.literacySkills = literacySkills;
         this.numeracySkills = numeracySkills;
         this.applicationStatus = applicationStatus;
-        this.versionCode = versionCode;
-        this.startCommand = startCommand;
     }
 
     @Generated(hash = 312658882)
@@ -69,7 +56,7 @@ public class Application {
     }
 
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Long id) {
@@ -77,7 +64,7 @@ public class Application {
     }
 
     public Locale getLocale() {
-        return locale;
+        return this.locale;
     }
 
     public void setLocale(Locale locale) {
@@ -85,7 +72,7 @@ public class Application {
     }
 
     public String getPackageName() {
-        return packageName;
+        return this.packageName;
     }
 
     public void setPackageName(String packageName) {
@@ -93,7 +80,7 @@ public class Application {
     }
 
     public Set<LiteracySkill> getLiteracySkills() {
-        return literacySkills;
+        return this.literacySkills;
     }
 
     public void setLiteracySkills(Set<LiteracySkill> literacySkills) {
@@ -101,7 +88,7 @@ public class Application {
     }
 
     public Set<NumeracySkill> getNumeracySkills() {
-        return numeracySkills;
+        return this.numeracySkills;
     }
 
     public void setNumeracySkills(Set<NumeracySkill> numeracySkills) {
@@ -109,26 +96,10 @@ public class Application {
     }
 
     public ApplicationStatus getApplicationStatus() {
-        return applicationStatus;
+        return this.applicationStatus;
     }
 
     public void setApplicationStatus(ApplicationStatus applicationStatus) {
         this.applicationStatus = applicationStatus;
-    }
-
-    public Integer getVersionCode() {
-        return this.versionCode;
-    }
-
-    public void setVersionCode(Integer versionCode) {
-        this.versionCode = versionCode;
-    }
-
-    public String getStartCommand() {
-        return this.startCommand;
-    }
-
-    public void setStartCommand(String startCommand) {
-        this.startCommand = startCommand;
     }
 }

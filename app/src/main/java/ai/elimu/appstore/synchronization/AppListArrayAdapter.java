@@ -92,18 +92,19 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
 
         viewHolder.textViewPackageName.setText(application.getPackageName());
 
-        viewHolder.textViewVersion.setText(context.getText(R.string.version) + ": " + application.getVersionCode());
-
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
-            // TODO: hide applications that are not active?
             // Do not allow APK download
+            viewHolder.textViewVersion.setText("ApplicationStatus: " + application.getApplicationStatus());
             viewHolder.buttonDownload.setEnabled(false);
+            // TODO: hide applications that are not active?
         } else {
             // Fetch the latest APK version
             List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
                     .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
                     .list();
             final ApplicationVersion applicationVersion = applicationVersions.get(0);
+
+            viewHolder.textViewVersion.setText(context.getText(R.string.version) + ": " + applicationVersion.getVersionCode());
 
             // Check if the APK file has already been downloaded to the SD card
             String language = Locale.getDefault().getLanguage();
@@ -122,7 +123,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                 public void onClick(View view) {
                     Timber.i("buttonDownload onClick");
 
-                    Timber.i("Downloading " + application.getPackageName() + " (version " + application.getVersionCode() + ")...");
+                    Timber.i("Downloading " + application.getPackageName() + " (version " + applicationVersion.getVersionCode() + ")...");
 
                     viewHolder.buttonDownload.setVisibility(View.GONE);
                     viewHolder.progressBarDownloadProgress.setVisibility(View.VISIBLE);
