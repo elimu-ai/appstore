@@ -2,6 +2,7 @@ package ai.elimu.appstore.synchronization;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -118,7 +119,17 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             }
 
             // Check if the APK file has already been installed
-            // TODO
+            PackageManager packageManager = context.getPackageManager();
+            boolean isAppInstalled = true;
+            try {
+                packageManager.getApplicationInfo(application.getPackageName(), 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                isAppInstalled = false;
+            }
+            Timber.i("isAppInstalled: " + isAppInstalled);
+            if (isAppInstalled) {
+                viewHolder.buttonInstall.setVisibility(View.GONE);
+            }
 
             viewHolder.buttonDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
