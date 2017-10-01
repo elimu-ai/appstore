@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Locale;
 
 @Deprecated
 public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void> {
@@ -65,7 +64,7 @@ public class InstallApplicationsAsyncTask extends AsyncTask<Object, String, Void
 //        String fileName = application.getPackageName() + "-" + application.getVersionCode() + ".apk";
 //        Timber.i("fileName: " + fileName);
 //
-//        String language = Locale.getDefault().getLanguage();
+//        String language = UserPrefsHelper.getLocale(context).getLanguage();
 //        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
 //        Log.i(ApkLoader.class.getName(), "apkDirectory: " + apkDirectory);
 //        if (!apkDirectory.exists()) {

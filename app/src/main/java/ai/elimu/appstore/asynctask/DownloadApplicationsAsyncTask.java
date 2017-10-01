@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Calendar;
-import java.util.Locale;
 
 @Deprecated
 public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Void> {
@@ -134,7 +133,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 //
 //                        // Download APK if missing from SD card
 //                        if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-//                            String language = Locale.getDefault().getLanguage();
+//                            String language = UserPrefsHelper.getLocale(context).getLanguage();
 //                            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
 //                            ApplicationVersionGson applicationVersionGson = applicationGson.getApplicationVersions().get(0);
 //                            String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
@@ -226,7 +225,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
         String fileName = applicationVersionGson.getApplication().getPackageName() + "-" + applicationVersionGson.getVersionCode() + ".apk";
         Timber.i("fileName: " + fileName);
 
-        String language = Locale.getDefault().getLanguage();
+        String language = UserPrefsHelper.getLocale(context).getLanguage();
         File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
         Timber.i("apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {

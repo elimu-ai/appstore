@@ -30,7 +30,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Locale;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
@@ -107,7 +106,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             viewHolder.textViewVersion.setText(context.getText(R.string.version) + ": " + applicationVersion.getVersionCode());
 
             // Check if the APK file has already been downloaded to the SD card
-            String language = Locale.getDefault().getLanguage();
+            String language = UserPrefsHelper.getLocale(context).getLanguage();
             String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
             File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
             File existingApkFile = new File(apkDirectory, fileName);
@@ -117,6 +116,9 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                 viewHolder.buttonDownload.setVisibility(View.GONE);
                 viewHolder.buttonInstall.setVisibility(View.VISIBLE);
             }
+
+            // Check if the APK file has already been installed
+            // TODO
 
             viewHolder.buttonDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -150,7 +152,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                     String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
                     Timber.i("fileName: " + fileName);
 
-                    String language = Locale.getDefault().getLanguage();
+                    String language = UserPrefsHelper.getLocale(context).getLanguage();
                     File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
 
                     File apkFile = new File(apkDirectory, fileName);
@@ -235,7 +237,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             String urlValue = fileUrl;
             Timber.i("Downloading from " + urlValue + "...");
 
-            String language = Locale.getDefault().getLanguage();
+            String language = UserPrefsHelper.getLocale(context).getLanguage();
             File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
             Timber.i("apkDirectory: " + apkDirectory);
             if (!apkDirectory.exists()) {
