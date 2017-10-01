@@ -104,7 +104,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                     .list();
             final ApplicationVersion applicationVersion = applicationVersions.get(0);
 
-            viewHolder.textViewVersion.setText(context.getText(R.string.version) + ": " + applicationVersion.getVersionCode());
+            viewHolder.textViewVersion.setText(context.getText(R.string.version) + ": " + applicationVersion.getVersionCode() + " (" + (applicationVersion.getFileSizeInKb() / 1024) + " MB)");
 
             // Check if the APK file has already been downloaded to the SD card
             String language = UserPrefsHelper.getLocale(context).getLanguage();
