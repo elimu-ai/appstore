@@ -42,6 +42,7 @@ import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Locale;
 
+@Deprecated
 public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Void> {
 
     public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";

@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             style="?android:attr/progressBarStyleHorizontal"
-            android:progress="50" />
+            android:progress="30" />
         <TextView
             android:id="@+id/textViewDownloadProgress"
             android:layout_width="wrap_content"
