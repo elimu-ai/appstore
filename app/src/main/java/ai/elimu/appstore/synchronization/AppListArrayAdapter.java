@@ -1,12 +1,15 @@
 package ai.elimu.appstore.synchronization;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +56,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
         TextView textViewPackageName;
         TextView textViewVersion;
         Button buttonDownload;
+        Button buttonInstall;
         ProgressBar progressBarDownloadProgress;
         TextView textViewDownloadProgress;
     }
@@ -82,6 +86,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
         viewHolder.textViewPackageName = listItem.findViewById(R.id.textViewPackageName);
         viewHolder.textViewVersion = listItem.findViewById(R.id.textViewVersion);
         viewHolder.buttonDownload = listItem.findViewById(R.id.buttonDownload);
+        viewHolder.buttonInstall = listItem.findViewById(R.id.buttonInstall);
         viewHolder.progressBarDownloadProgress = listItem.findViewById(R.id.progressBarDownloadProgress);
         viewHolder.textViewDownloadProgress = listItem.findViewById(R.id.textViewDownloadProgress);
 
@@ -98,7 +103,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                 public void onClick(View view) {
                     Timber.i("buttonDownload onClick");
 
-                    Timber.i("Downloading " + application.getPackageName() + " (version " + application.getVersionCode() + ")");
+                    Timber.i("Downloading " + application.getPackageName() + " (version " + application.getVersionCode() + ")...");
 
                     viewHolder.buttonDownload.setVisibility(View.GONE);
                     viewHolder.progressBarDownloadProgress.setVisibility(View.VISIBLE);
@@ -111,7 +116,51 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                     Timber.i("applicationVersions.size(): " + applicationVersions.size());
                     ApplicationVersion applicationVersion = applicationVersions.get(0);
                     Timber.i("applicationVersion: " + applicationVersion);
-                    new DownloadApplicationAsyncTask(viewHolder.progressBarDownloadProgress, viewHolder.textViewDownloadProgress).execute(applicationVersion);
+                    new DownloadApplicationAsyncTask(
+                            viewHolder.progressBarDownloadProgress,
+                            viewHolder.textViewDownloadProgress,
+                            viewHolder.buttonInstall
+                    ).execute(applicationVersion);
+                }
+            });
+
+            viewHolder.buttonInstall.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Timber.i("buttonInstall onClick");
+
+                    // Initiate installation of the latest APK version
+                    List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
+                            .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
+                            .list();
+                    ApplicationVersion applicationVersion = applicationVersions.get(0);
+                    Timber.i("Installing " + applicationVersion.getApplication().getPackageName() + " (version " + applicationVersion.getVersionCode() + ")...");
+
+                    String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
+                    Timber.i("fileName: " + fileName);
+
+                    String language = Locale.getDefault().getLanguage();
+                    File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
+
+                    File apkFile = new File(apkDirectory, fileName);
+                    Timber.i("apkFile: " + apkFile);
+
+                    // Install APK file
+                    // TODO: Check for root access. If root access, install APK without prompting for user confirmation.
+                    if (Build.VERSION.SDK_INT >= 24) {
+                        // See https://developer.android.com/guide/topics/permissions/requesting.html#install-unknown-apps
+                        Uri apkUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", apkFile);
+                        Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                        intent.setData(apkUri);
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        context.startActivity(intent);
+                    } else {
+                        Uri apkUri = Uri.fromFile(apkFile);
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
                 }
             });
         }
@@ -129,10 +178,12 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
 
         private ProgressBar progressBarDownloadProgress;
         private TextView textViewDownloadProgress;
+        private Button buttonInstall;
 
-        public DownloadApplicationAsyncTask(ProgressBar progressBarDownloadProgress, TextView textViewDownloadProgress) {
+        public DownloadApplicationAsyncTask(ProgressBar progressBarDownloadProgress, TextView textViewDownloadProgress, Button buttonInstall) {
             this.progressBarDownloadProgress = progressBarDownloadProgress;
             this.textViewDownloadProgress = textViewDownloadProgress;
+            this.buttonInstall = buttonInstall;
         }
 
         @Override
@@ -146,6 +197,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             Timber.i("applicationVersion.getContentType(): " + applicationVersion.getContentType());
             Timber.i("applicationVersion.getVersionCode(): " + applicationVersion.getVersionCode());
             Timber.i("applicationVersion.getStartCommand(): " + applicationVersion.getStartCommand());
+            Timber.i("applicationVersion.getTimeUploaded().getTime(): " + applicationVersion.getTimeUploaded().getTime());
 
             // Reset to initial state
             Integer fileSizeInKbsDownloaded = 0;
@@ -270,7 +322,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             // Hide progress indicators
             progressBarDownloadProgress.setVisibility(View.GONE);
             textViewDownloadProgress.setVisibility(View.GONE);
-//            buttonDownload.setVisibility(View.VISIBLE);
+            buttonInstall.setVisibility(View.VISIBLE);
 
             Timber.i("fileSizeInKbsDownloaded: " + fileSizeInKbsDownloaded);
         }
