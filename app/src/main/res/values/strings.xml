@@ -3,9 +3,11 @@
     <string name="checking_for_app_updates">Checking for app updates...</string>
     <string name="device_registration_failed">Device registration failed</string>
     <string name="download">Download</string>
+    <string name="download_update">Download update</string>
     <string name="do_you_have_a_license_number">Do you have a license number?</string>
     <string name="email_address">E-mail addresss</string>
     <string name="install">Install</string>
+    <string name="install_update">Install update</string>
     <string name="language_am">Amharic</string>
     <string name="language_ar">Arabic</string>
     <string name="language_en">English</string>

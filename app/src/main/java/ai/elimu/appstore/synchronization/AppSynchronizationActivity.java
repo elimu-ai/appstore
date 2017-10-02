@@ -173,7 +173,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                         ApplicationVersion applicationVersion = applicationVersionDao.load(applicationVersionGson.getId());
 
                                         if (applicationVersion == null) {
-                                            // Update existing ApplicationVersion in database
+                                            // Store new ApplicationVersion in database
                                             applicationVersion = new ApplicationVersion();
                                             applicationVersion.setId(applicationVersionGson.getId());
                                             applicationVersion.setApplication(application);
@@ -183,8 +183,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                             applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
                                             applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());
                                             applicationVersion.setTimeUploaded(applicationVersionGson.getTimeUploaded());
-                                            applicationVersionDao.update(applicationVersion);
-                                            Timber.i("Updated ApplicationVersion in database with id " + applicationVersion.getId());
+                                            long applicationVersionId = applicationVersionDao.insert(applicationVersion);
+                                            Timber.i("Stored ApplicationVersion in database with id " + applicationVersionId);
                                         }
                                     }
                                 }

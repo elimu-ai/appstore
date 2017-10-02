@@ -2,6 +2,8 @@ package ai.elimu.appstore.synchronization;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -101,6 +103,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             // Fetch the latest APK version
             List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
                     .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
+                    .orderDesc(ApplicationVersionDao.Properties.VersionCode)
                     .list();
             final ApplicationVersion applicationVersion = applicationVersions.get(0);
 
@@ -129,6 +132,32 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             Timber.i("isAppInstalled: " + isAppInstalled);
             if (isAppInstalled) {
                 viewHolder.buttonInstall.setVisibility(View.GONE);
+            }
+
+            if (isAppInstalled) {
+                // Check if update is available for download
+                try {
+                    PackageInfo packageInfo = packageManager.getPackageInfo(application.getPackageName(), 0);
+                    int versionCodeInstalled = packageInfo.versionCode;
+                    Timber.i("versionCodeInstalled: " + versionCodeInstalled);
+                    if (applicationVersion.getVersionCode() > versionCodeInstalled) {
+                        // Update is available for download/install
+
+                        // Display version of the application currently installed
+                        viewHolder.textViewVersion.setText(viewHolder.textViewVersion.getText() + ". Installed: " + versionCodeInstalled);
+
+                        // Change the button text
+                        if (!existingApkFile.exists()) {
+                            viewHolder.buttonDownload.setVisibility(View.VISIBLE);
+                            viewHolder.buttonDownload.setText(R.string.download_update);
+                        } else {
+                            viewHolder.buttonInstall.setVisibility(View.VISIBLE);
+                            viewHolder.buttonInstall.setText(R.string.install_update);
+                        }
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    Timber.e(e, null);
+                }
             }
 
             viewHolder.buttonDownload.setOnClickListener(new View.OnClickListener() {
