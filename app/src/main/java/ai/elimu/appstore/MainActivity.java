@@ -38,13 +38,12 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
 
-        // Ask for write permission (needed for storing APK files on SD card)
+        // Ask for write permission (needed for downloading APK files to SD card)
         int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
             return;
         }
-
 
         // Ask for root access (to automate app installations)
         boolean isDeviceRooted = RootUtil.isDeviceRooted();

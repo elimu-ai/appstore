@@ -41,6 +41,15 @@
             android:layout_gravity="right"
             android:text="@string/download" />
 
+        <Button
+            android:id="@+id/buttonInstall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="right"
+            android:theme="@style/AppTheme.InstallButton"
+            android:text="@string/install" />
+
         <ProgressBar
             android:id="@+id/progressBarDownloadProgress"
             android:layout_width="match_parent"
