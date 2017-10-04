@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.greenrobot.greendao.database.Database;
+
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.util.VersionHelper;
@@ -31,9 +32,9 @@ public class BaseApplication extends Application {
                 @Override
                 protected void log(int priority, String tag, String message, Throwable throwable) {
                     if (priority == Log.WARN) {
-                        Timber.w(throwable, message);
+                        Log.w(tag, message);
                     } else if (priority == Log.ERROR) {
-                        Timber.e(throwable, message);
+                        Log.e(tag, message);
                     }
                 }
             });
