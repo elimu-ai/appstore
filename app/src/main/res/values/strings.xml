@@ -35,4 +35,7 @@
     <string name="wifi_needs_to_be_enabled">Wi-Fi needs to be enabled</string>
     <string name="wifi_needs_to_be_connected">Wi-Fi needs to be connected</string>
     <string name="yes">Yes</string>
+
+    <!-- ================= APPLICATION LIST ===================== -->
+    <string name="app_list_check_internet_connection">Please check your Internet connection.</string>
 </resources>
