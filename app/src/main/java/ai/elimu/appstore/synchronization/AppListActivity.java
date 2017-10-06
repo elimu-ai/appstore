@@ -4,8 +4,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -24,9 +25,9 @@ public class AppListActivity extends AppCompatActivity {
 
     private List<Application> mApplications;
 
-    private ArrayAdapter mAdapterApps;
+    private AppListAdapter mAdapterApps;
 
-    private ListView mListViewApps;
+    private RecyclerView mRecyclerApps;
 
     private ApplicationDao mApplicationDao;
 
@@ -43,7 +44,11 @@ public class AppListActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        mListViewApps = findViewById(R.id.listViewApplications);
+        mRecyclerApps = findViewById(R.id.recycler_view_apps);
+        mRecyclerApps.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerApps.setLayoutManager(layoutManager);
 
         mTextViewLastSynchronization = findViewById(R.id.textViewLastSynchronization);
         // Display the time of last synchronization with the server
@@ -60,9 +65,15 @@ public class AppListActivity extends AppCompatActivity {
         // Load the list of Applications stored in the local database
         mApplications = mApplicationDao.loadAll();
 //        Timber.i("mApplications.size(): " + mApplications.size());
-        mAdapterApps = new AppListArrayAdapter(getBaseContext(), R.layout.activity_app_list_item,
-                mApplications);
-        mListViewApps.setAdapter(mAdapterApps);
+        mAdapterApps = new AppListAdapter(mApplications);
+        mRecyclerApps.setAdapter(mAdapterApps);
+
+        mAdapterApps.setOnItemClickListener(new AppListAdapter.MyClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+
+            }
+        });
     }
 
 }
