@@ -18,7 +18,7 @@
     <string name="language_so">Somali</string>
     <string name="language_sw">Swahili</string>
     <string name="language_th">Thai</string>
-    <string name="last_synchronization">Last synchronization</string>
+    <string name="last_synchronization">Last synchronization: %s</string>
     <string name="license_number">License number</string>
     <string name="locale_selected">Locale selected</string>
     <string name="never">Never</string>
@@ -38,4 +38,5 @@
 
     <!-- ================= APPLICATION LIST ===================== -->
     <string name="app_list_check_internet_connection">Please check your Internet connection.</string>
+    <string name="app_list_download_progress_number">%1$.1f MB/%2$.1f MB\t%3$d%%</string>
 </resources>

@@ -57,7 +57,7 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
     public AppListArrayAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull
             List<Application> applications) {
         super(context, resource, applications);
-        Timber.i("AppListArrayAdapter");
+//        Timber.i("AppListArrayAdapter");
 
         this.mContext = context;
         this.mApplications = applications;
@@ -69,10 +69,9 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Timber.d("getView");
+//        Timber.d("getView");
 
         final Application application = mApplications.get(position);
-
         LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context
                 .LAYOUT_INFLATER_SERVICE);
         View listItem = layoutInflater.inflate(R.layout.activity_app_list_item, parent, false);
@@ -362,7 +361,11 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
                         byteArrayOutputStream.write(buffer, 0, bytesRead);
 
                         fileSizeInKbsDownloaded += (bytesRead / 1024);
-                        publishProgress(fileSizeInKbsDownloaded);
+
+                        //Only update APK size every 100KB downloaded
+                        if (fileSizeInKbsDownloaded % 100 == 0) {
+                            publishProgress(fileSizeInKbsDownloaded);
+                        }
                     }
                     byte[] bytes = byteArrayOutputStream.toByteArray();
 
@@ -402,8 +405,11 @@ public class AppListArrayAdapter extends ArrayAdapter<Application> {
             mProgressBarDownloadProgress.setProgress(progress);
 
             // E.g. "6.00 MB/12.00 MB   50%"
-            String progressText = (fileSizeInKbsDownloaded / 1024) + " MB/" + (applicationVersion
-                    .getFileSizeInKb() / 1024) + " MB   " + progress + "%";
+
+            String progressText = String.format(getContext().getString(R.string
+                            .app_list_download_progress_number), fileSizeInKbsDownloaded / 1024f,
+                    applicationVersion.getFileSizeInKb() / 1024f, progress);
+
             Timber.d("progressText: " + progressText);
             mTextViewDownloadProgress.setText(progressText);
         }
