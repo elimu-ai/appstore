@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -17,63 +16,62 @@ import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
-import ai.elimu.appstore.util.Const;
+import timber.log.Timber;
 
 public class AppListActivity extends AppCompatActivity {
 
-    private TextView mTextViewLastSynchronization;
+    private final String DATE_FORMAT_LAST_SYNC = "yyyy-MM-dd HH:mm";
 
-    private List<Application> mApplications;
+    private TextView textViewLastSynchronization;
 
-    private AppListAdapter mAdapterApps;
+    private List<Application> applicationsList;
 
-    private RecyclerView mRecyclerApps;
+    private AppListAdapter appListAdapter;
 
-    private ApplicationDao mApplicationDao;
+    private RecyclerView appListRecyclerView;
+
+    private ApplicationDao applicationDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        Timber.i("onCreate");
+        Timber.i("onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_list);
 
         BaseApplication baseApplication = (BaseApplication) getApplication();
-        mApplicationDao = baseApplication.getDaoSession().getApplicationDao();
+        applicationDao = baseApplication.getDaoSession().getApplicationDao();
 
         initViews();
     }
 
+    /**
+     * Initialize main views of app list activity
+     */
     private void initViews() {
-        mRecyclerApps = findViewById(R.id.recycler_view_apps);
-        mRecyclerApps.setHasFixedSize(true);
+        appListRecyclerView = findViewById(R.id.recycler_view_apps);
+        appListRecyclerView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        mRecyclerApps.setLayoutManager(layoutManager);
+        appListRecyclerView.setLayoutManager(layoutManager);
 
-        mTextViewLastSynchronization = findViewById(R.id.textViewLastSynchronization);
+        textViewLastSynchronization = findViewById(R.id.textViewLastSynchronization);
         // Display the time of last synchronization with the server
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
                 (getApplicationContext());
         long timeOfLastSynchronization = sharedPreferences.getLong(AppSynchronizationActivity
                 .DownloadAppListAsyncTask.PREF_LAST_SYNCHRONIZATION, 0);
         Date date = new Date(timeOfLastSynchronization);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Const.DATE_FORMAT_LAST_SYNC);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT_LAST_SYNC);
         String dateAsString = simpleDateFormat.format(date);
-        mTextViewLastSynchronization.setText(String.format(getString(R.string
+        textViewLastSynchronization.setText(String.format(getString(R.string
                 .last_synchronization), dateAsString));
 
         // Load the list of Applications stored in the local database
-        mApplications = mApplicationDao.loadAll();
-//        Timber.i("mApplications.size(): " + mApplications.size());
-        mAdapterApps = new AppListAdapter(mApplications);
-        mRecyclerApps.setAdapter(mAdapterApps);
+        applicationsList = applicationDao.loadAll();
+        Timber.i("applicationsList.size(): " + applicationsList.size());
+        appListAdapter = new AppListAdapter(applicationsList);
+        appListRecyclerView.setAdapter(appListAdapter);
 
-        mAdapterApps.setOnItemClickListener(new AppListAdapter.MyClickListener() {
-            @Override
-            public void onItemClick(int position, View v) {
-
-            }
-        });
     }
 
 }

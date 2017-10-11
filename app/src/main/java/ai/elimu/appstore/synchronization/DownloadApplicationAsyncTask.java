@@ -1,9 +1,5 @@
 package ai.elimu.appstore.synchronization;
 
-/**
- * Created by Tuan Nguyen on 10/6/2017.
- */
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -44,26 +40,26 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
     private ApplicationVersion applicationVersion;
 
-    private ProgressBar mProgressBarDownloadProgress;
+    private ProgressBar progressBarDownloadProgress;
 
-    private TextView mTextViewDownloadProgress;
+    private TextView textViewDownloadProgress;
 
-    private Button mBtnInstall;
+    private Button btnInstall;
 
-    private Button mBtnDownload;
+    private Button btnDownload;
 
-    private Context mContext;
+    private Context context;
 
     public DownloadApplicationAsyncTask(@NonNull Context context,
                                         ProgressBar progressBarDownloadProgress,
                                         TextView textViewDownloadProgress,
                                         Button buttonInstall,
                                         Button buttonDownload) {
-        mContext = Preconditions.checkNotNull(context);
-        this.mProgressBarDownloadProgress = progressBarDownloadProgress;
-        this.mTextViewDownloadProgress = textViewDownloadProgress;
-        this.mBtnInstall = buttonInstall;
-        this.mBtnDownload = buttonDownload;
+        this.context = Preconditions.checkNotNull(context);
+        this.progressBarDownloadProgress = progressBarDownloadProgress;
+        this.textViewDownloadProgress = textViewDownloadProgress;
+        this.btnInstall = buttonInstall;
+        this.btnDownload = buttonDownload;
     }
 
     @Override
@@ -88,13 +84,13 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
         // Download APK file and store it on SD card
         String fileUrl = BuildConfig.BASE_URL + applicationVersion.getFileUrl() +
-                "?deviceId=" + DeviceInfoHelper.getDeviceId(mContext) +
-                "&checksum=" + ChecksumHelper.getChecksum(mContext) +
-                "&locale=" + UserPrefsHelper.getLocale(mContext) +
-                "&deviceModel=" + DeviceInfoHelper.getDeviceModel(mContext) +
+                "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
+                "&checksum=" + ChecksumHelper.getChecksum(context) +
+                "&locale=" + UserPrefsHelper.getLocale(context) +
+                "&deviceModel=" + DeviceInfoHelper.getDeviceModel(context) +
                 "&osVersion=" + Build.VERSION.SDK_INT +
-                "&applicationId=" + DeviceInfoHelper.getApplicationId(mContext) +
-                "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(mContext);
+                "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
+                "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
         Timber.i("fileUrl: " + fileUrl);
 
         String fileName = applicationVersion.getApplication().getPackageName() + "-" +
@@ -105,12 +101,12 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 " (version " + applicationVersion.getVersionCode() + ", " +
                 applicationVersion.getFileSizeInKb() + "kB)");
 
-//            File apkFile = ApkLoader.loadApk(fileUrl, fileName, mContext);
+//            File apkFile = ApkLoader.loadApk(fileUrl, fileName, context);
         // Copied from ApkLoader#loadApk:
         String urlValue = fileUrl;
         Timber.i("Downloading from " + urlValue + "...");
 
-        String language = UserPrefsHelper.getLocale(mContext).getLanguage();
+        String language = UserPrefsHelper.getLocale(context).getLanguage();
         File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
                 ".elimu-ai/appstore/apks/" + language);
         Timber.i("apkDirectory: " + apkDirectory);
@@ -198,16 +194,15 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
         int progress = (fileSizeInKbsDownloaded * 100) / applicationVersion.getFileSizeInKb();
         Timber.d("progress: " + progress);
-        mProgressBarDownloadProgress.setProgress(progress);
+        progressBarDownloadProgress.setProgress(progress);
 
         // E.g. "6.00 MB/12.00 MB   50%"
-
-        String progressText = String.format(mContext.getString(R.string
+        String progressText = String.format(context.getString(R.string
                         .app_list_download_progress_number), fileSizeInKbsDownloaded / 1024f,
                 applicationVersion.getFileSizeInKb() / 1024f, progress);
 
         Timber.d("progressText: " + progressText);
-        mTextViewDownloadProgress.setText(progressText);
+        textViewDownloadProgress.setText(progressText);
     }
 
     @Override
@@ -216,18 +211,18 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
         super.onPostExecute(fileSizeInKbsDownloaded);
 
         // Hide progress indicators
-        mProgressBarDownloadProgress.setVisibility(View.GONE);
-        mTextViewDownloadProgress.setVisibility(View.GONE);
+        progressBarDownloadProgress.setVisibility(View.GONE);
+        textViewDownloadProgress.setVisibility(View.GONE);
 
-        if (fileSizeInKbsDownloaded == null || fileSizeInKbsDownloaded == 0) {
-            mBtnDownload.setVisibility(View.VISIBLE);
-            mBtnInstall.setVisibility(View.GONE);
-            Toast.makeText(mContext,
-                    mContext.getString(R.string.app_list_check_internet_connection),
+        if ((fileSizeInKbsDownloaded == null) || (fileSizeInKbsDownloaded == 0)) {
+            btnDownload.setVisibility(View.VISIBLE);
+            btnInstall.setVisibility(View.GONE);
+            Toast.makeText(context,
+                    context.getString(R.string.app_list_check_internet_connection),
                     Toast.LENGTH_SHORT).show();
         } else {
-            mBtnDownload.setVisibility(View.GONE);
-            mBtnInstall.setVisibility(View.VISIBLE);
+            btnDownload.setVisibility(View.GONE);
+            btnInstall.setVisibility(View.VISIBLE);
         }
 
         Timber.i("fileSizeInKbsDownloaded: " + fileSizeInKbsDownloaded);

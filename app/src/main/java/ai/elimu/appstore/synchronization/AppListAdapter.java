@@ -29,28 +29,22 @@ import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
-/**
- * Created by "Tuan Nguyen" on 11/14/2016.
- */
-
 public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHolder> {
 
-    private MyClickListener mClickListener;
+    private List<Application> applications;
 
-    private List<Application> mApplications;
+    private Context context;
 
-    private Context mContext;
-
-    private ApplicationVersionDao mApplicationVersionDao;
+    private ApplicationVersionDao applicationVersionDao;
 
     public AppListAdapter(List<Application> applications) {
-        mApplications = applications;
+        this.applications = applications;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
-        final Application application = mApplications.get(position);
+        final Application application = applications.get(position);
         holder.mTextPkgName.setText(application.getPackageName());
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
@@ -61,18 +55,18 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             // TODO: hide applications that are not active?
         } else {
             // Fetch the latest APK version
-            List<ApplicationVersion> applicationVersions = mApplicationVersionDao.queryBuilder()
+            List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
                     .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
                     .orderDesc(ApplicationVersionDao.Properties.VersionCode)
                     .list();
             final ApplicationVersion applicationVersion = applicationVersions.get(0);
 
-            holder.mTextVersion.setText(mContext.getText(R.string.version) + ": " +
+            holder.mTextVersion.setText(context.getText(R.string.version) + ": " +
                     applicationVersion.getVersionCode() + " (" + (applicationVersion
                     .getFileSizeInKb() / 1024) + " MB)");
 
             // Check if the APK file has already been downloaded to the SD card
-            String language = UserPrefsHelper.getLocale(mContext).getLanguage();
+            String language = UserPrefsHelper.getLocale(context).getLanguage();
             String fileName = applicationVersion.getApplication().getPackageName() + "-" +
                     applicationVersion.getVersionCode() + ".apk";
             File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
@@ -86,7 +80,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             }
 
             // Check if the APK file has already been installed
-            PackageManager packageManager = mContext.getPackageManager();
+            PackageManager packageManager = context.getPackageManager();
             boolean isAppInstalled = true;
             try {
                 packageManager.getApplicationInfo(application.getPackageName(), 0);
@@ -141,7 +135,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     // Initiate download of the latest APK version
                     Timber.i("applicationVersion: " + applicationVersion);
                     new DownloadApplicationAsyncTask(
-                            mContext.getApplicationContext(),
+                            context.getApplicationContext(),
                             holder.mPbDownload,
                             holder.mTextDownloadProgress,
                             holder.mBtnInstall,
@@ -163,7 +157,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             + applicationVersion.getVersionCode() + ".apk";
                     Timber.i("fileName: " + fileName);
 
-                    String language = UserPrefsHelper.getLocale(mContext).getLanguage();
+                    String language = UserPrefsHelper.getLocale(context).getLanguage();
                     File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
                             ".elimu-ai/appstore/apks/" + language);
 
@@ -176,18 +170,18 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     if (Build.VERSION.SDK_INT >= 24) {
                         // See https://developer.android.com/guide/topics/permissions/requesting
                         // .html#install-unknown-apps
-                        Uri apkUri = FileProvider.getUriForFile(mContext, BuildConfig
+                        Uri apkUri = FileProvider.getUriForFile(context, BuildConfig
                                 .APPLICATION_ID + ".provider", apkFile);
                         Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                         intent.setData(apkUri);
                         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        mContext.startActivity(intent);
+                        context.startActivity(intent);
                     } else {
                         Uri apkUri = Uri.fromFile(apkFile);
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
+                        context.startActivity(intent);
                     }
                 }
             });
@@ -196,18 +190,19 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        if (mApplications != null)
-            return mApplications.size();
-        else
+        if (applications != null) {
+            return applications.size();
+        } else {
             return 0;
+        }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        mContext = parent.getContext();
-        BaseApplication baseApplication = (BaseApplication) mContext.getApplicationContext();
-        mApplicationVersionDao = baseApplication.getDaoSession().getApplicationVersionDao();
+        context = parent.getContext();
+        BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
+        applicationVersionDao = baseApplication.getDaoSession().getApplicationVersionDao();
 
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_app_list_item,
                 parent, false);
@@ -215,22 +210,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         return new ViewHolder(view);
     }
 
-    public void setOnItemClickListener(MyClickListener myClickListener) {
-        this.mClickListener = myClickListener;
-    }
-
     public void replaceData(List<Application> apps) {
-        mApplications = apps;
+        applications = apps;
         notifyDataSetChanged();
     }
 
     public List<Application> getData() {
-        return this.mApplications;
-    }
-
-    public interface MyClickListener {
-
-        void onItemClick(int position, View v);
+        return this.applications;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
