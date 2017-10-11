@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
+import android.support.v4.util.Preconditions;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,8 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
@@ -25,6 +29,7 @@ import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
+import ai.elimu.appstore.receiver.InstallCompleteReceiver;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
@@ -37,8 +42,14 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     private ApplicationVersionDao applicationVersionDao;
 
-    public AppListAdapter(List<Application> applications) {
+    private InstallCompleteReceiver installCompleteReceiver;
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    public AppListAdapter(List<Application> applications,
+                          @NonNull InstallCompleteReceiver installCompleteReceiver) {
         this.applications = applications;
+        this.installCompleteReceiver = Preconditions.checkNotNull(installCompleteReceiver);
     }
 
     @Override
@@ -161,8 +172,25 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
                             ".elimu-ai/appstore/apks/" + language);
 
-                    File apkFile = new File(apkDirectory, fileName);
+                    final File apkFile = new File(apkDirectory, fileName);
                     Timber.i("apkFile: " + apkFile);
+
+
+                    InstallCompleteReceiver.InstallCompleteCallback installCompleteCallback = new
+                            InstallCompleteReceiver.InstallCompleteCallback() {
+
+                                @Override
+                                public void onInstallComplete(@NonNull String packageName) {
+                                    executorService.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            apkFile.delete();
+                                        }
+                                    });
+                                }
+                            };
+                    installCompleteReceiver.setInstallCompleteCallback(installCompleteCallback);
+
 
                     // Install APK file
                     // TODO: Check for root access. If root access, install APK without prompting

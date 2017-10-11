@@ -1,5 +1,7 @@
 package ai.elimu.appstore.synchronization;
 
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,6 +18,7 @@ import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
+import ai.elimu.appstore.receiver.InstallCompleteReceiver;
 import timber.log.Timber;
 
 public class AppListActivity extends AppCompatActivity {
@@ -32,6 +35,8 @@ public class AppListActivity extends AppCompatActivity {
 
     private ApplicationDao applicationDao;
 
+    private InstallCompleteReceiver installCompleteReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
@@ -41,7 +46,20 @@ public class AppListActivity extends AppCompatActivity {
         BaseApplication baseApplication = (BaseApplication) getApplication();
         applicationDao = baseApplication.getDaoSession().getApplicationDao();
 
+        initInstallCompleteReceiver();
         initViews();
+    }
+
+    /**
+     * Initialize install completion receiver
+     */
+    private void initInstallCompleteReceiver() {
+        installCompleteReceiver = new InstallCompleteReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_INSTALL_PACKAGE);
+        intentFilter.addDataScheme("package");
+        registerReceiver(installCompleteReceiver, intentFilter);
     }
 
     /**
@@ -69,9 +87,14 @@ public class AppListActivity extends AppCompatActivity {
         // Load the list of Applications stored in the local database
         applicationsList = applicationDao.loadAll();
         Timber.i("applicationsList.size(): " + applicationsList.size());
-        appListAdapter = new AppListAdapter(applicationsList);
+        appListAdapter = new AppListAdapter(applicationsList, installCompleteReceiver);
         appListRecyclerView.setAdapter(appListAdapter);
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(installCompleteReceiver);
+    }
 }
