@@ -125,6 +125,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             holder.mBtnInstall.setVisibility(View.VISIBLE);
                             holder.mBtnInstall.setText(R.string.install_update);
                         }
+                    } else {
+                        holder.mBtnDownload.setVisibility(View.GONE);
+                        holder.mBtnInstall.setVisibility(View.GONE);
                     }
                 } catch (PackageManager.NameNotFoundException e) {
                     Timber.e(e, null);
@@ -181,10 +184,14 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                                 @Override
                                 public void onInstallComplete(@NonNull String packageName) {
+                                    Timber.i("onInstallComplete, package: " + packageName);
+                                    holder.mBtnDownload.setVisibility(View.GONE);
+                                    holder.mBtnInstall.setVisibility(View.GONE);
                                     executorService.execute(new Runnable() {
                                         @Override
                                         public void run() {
                                             apkFile.delete();
+                                            Timber.i("Delete APK successfully");
                                         }
                                     });
                                 }
