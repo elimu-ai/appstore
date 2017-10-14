@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -181,6 +182,18 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             ".elimu-ai/appstore/apks/" + language);
 
                     final File apkFile = new File(apkDirectory, fileName);
+
+                    /**
+                     * Get all local versions of current APK file for deleting
+                     */
+                    final File[] apkFiles = apkDirectory.listFiles(new FilenameFilter() {
+                        @Override
+                        public boolean accept(File file, String name) {
+                            return (name.startsWith(applicationVersion.getApplication()
+                                    .getPackageName())
+                                    && name.endsWith(".apk"));
+                        }
+                    });
                     Timber.i("apkFile: " + apkFile);
 
 
@@ -195,7 +208,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     executorService.execute(new Runnable() {
                                         @Override
                                         public void run() {
-                                            apkFile.delete();
+                                            for (final File file : apkFiles) {
+                                                file.delete();
+                                            }
                                             Timber.i("Delete APK successfully");
                                         }
                                     });
