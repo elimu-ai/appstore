@@ -62,9 +62,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             // Do not allow APK download
             holder.mTextVersion.setText("ApplicationStatus: " + application
                     .getApplicationStatus());
+            holder.mBtnDownload.setVisibility(View.VISIBLE);
             holder.mBtnDownload.setEnabled(false);
             // TODO: hide applications that are not active?
         } else {
+            holder.mBtnDownload.setEnabled(true);
+
             // Fetch the latest APK version
             List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
                     .where(ApplicationVersionDao.Properties.ApplicationId.eq(application.getId()))
@@ -88,6 +91,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             if (existingApkFile.exists()) {
                 holder.mBtnDownload.setVisibility(View.GONE);
                 holder.mBtnInstall.setVisibility(View.VISIBLE);
+            } else {
+                holder.mBtnDownload.setVisibility(View.VISIBLE);
+                holder.mBtnInstall.setVisibility(View.GONE);
             }
 
             // Check if the APK file has already been installed
@@ -99,11 +105,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 isAppInstalled = false;
             }
             Timber.i("isAppInstalled: " + isAppInstalled);
-            if (isAppInstalled) {
-                holder.mBtnInstall.setVisibility(View.GONE);
-            }
 
             if (isAppInstalled) {
+                holder.mBtnInstall.setVisibility(View.GONE);
+
                 // Check if update is available for download
                 try {
                     PackageInfo packageInfo = packageManager.getPackageInfo(application
@@ -194,6 +199,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                             Timber.i("Delete APK successfully");
                                         }
                                     });
+                                }
+
+                                @Override
+                                public void onUninstallComplete(@NonNull String packageName) {
+                                    notifyDataSetChanged();
                                 }
                             };
                     installCompleteReceiver.setInstallCompleteCallback(installCompleteCallback);
