@@ -12,7 +12,15 @@ public class InstallCompleteReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        installCompleteCallback.onInstallComplete(intent.getData().toString());
+        if ((installCompleteCallback == null) || (intent.getData() == null)) {
+            return;
+        }
+        if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction())) {
+            installCompleteCallback.onInstallComplete(intent.getData().getSchemeSpecificPart());
+        } else {
+            installCompleteCallback.onUninstallComplete(intent.getData().getSchemeSpecificPart());
+        }
+
     }
 
     public void setInstallCompleteCallback(@NonNull InstallCompleteCallback
@@ -21,11 +29,13 @@ public class InstallCompleteReceiver extends BroadcastReceiver {
     }
 
     /**
-     * A listener that listens to install completion event
+     * A listener that listens to install/uninstall completion event
      */
     public interface InstallCompleteCallback {
 
         void onInstallComplete(@NonNull String packageName);
+
+        void onUninstallComplete(@NonNull String packageName);
 
     }
 }
