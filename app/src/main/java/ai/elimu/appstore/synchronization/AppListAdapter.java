@@ -182,6 +182,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             ".elimu-ai/appstore/apks/" + language);
 
                     final File apkFile = new File(apkDirectory, fileName);
+                    Timber.i("apkFile: " + apkFile);
 
                     /**
                      * Get all local versions of current APK file for deleting
@@ -194,12 +195,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     && name.endsWith(".apk"));
                         }
                     });
-                    Timber.i("apkFile: " + apkFile);
-
 
                     InstallCompleteReceiver.InstallCompleteCallback installCompleteCallback = new
                             InstallCompleteReceiver.InstallCompleteCallback() {
-
                                 @Override
                                 public void onInstallComplete(@NonNull String packageName) {
                                     Timber.i("onInstallComplete, package: " + packageName);
@@ -210,8 +208,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                         public void run() {
                                             for (final File file : apkFiles) {
                                                 file.delete();
+                                                Timber.i("APK " + file.getAbsolutePath() + " is deleted successfully");
                                             }
-                                            Timber.i("Delete APK successfully");
                                         }
                                     });
                                 }

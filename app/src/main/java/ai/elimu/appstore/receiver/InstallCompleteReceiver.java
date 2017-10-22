@@ -17,10 +17,9 @@ public class InstallCompleteReceiver extends BroadcastReceiver {
         }
         if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction())) {
             installCompleteCallback.onInstallComplete(intent.getData().getSchemeSpecificPart());
-        } else {
+        } else if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
             installCompleteCallback.onUninstallComplete(intent.getData().getSchemeSpecificPart());
         }
-
     }
 
     public void setInstallCompleteCallback(@NonNull InstallCompleteCallback
