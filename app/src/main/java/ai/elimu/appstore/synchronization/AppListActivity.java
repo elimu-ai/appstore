@@ -18,7 +18,7 @@ import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
-import ai.elimu.appstore.receiver.InstallCompleteReceiver;
+import ai.elimu.appstore.receiver.PackageUpdateReceiver;
 import timber.log.Timber;
 
 public class AppListActivity extends AppCompatActivity {
@@ -35,7 +35,7 @@ public class AppListActivity extends AppCompatActivity {
 
     private ApplicationDao applicationDao;
 
-    private InstallCompleteReceiver installCompleteReceiver;
+    private PackageUpdateReceiver packageUpdateReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,21 +46,21 @@ public class AppListActivity extends AppCompatActivity {
         BaseApplication baseApplication = (BaseApplication) getApplication();
         applicationDao = baseApplication.getDaoSession().getApplicationDao();
 
-        initInstallCompleteReceiver();
+        initPackageUpdateReceiver();
         initViews();
     }
 
     /**
-     * Initialize install completion receiver
+     * Initialize install/uninstall completion receiver
      */
-    private void initInstallCompleteReceiver() {
-        installCompleteReceiver = new InstallCompleteReceiver();
+    private void initPackageUpdateReceiver() {
+        packageUpdateReceiver = new PackageUpdateReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
         intentFilter.addAction(Intent.ACTION_INSTALL_PACKAGE);
         intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         intentFilter.addDataScheme("package");
-        registerReceiver(installCompleteReceiver, intentFilter);
+        registerReceiver(packageUpdateReceiver, intentFilter);
     }
 
     /**
@@ -88,7 +88,7 @@ public class AppListActivity extends AppCompatActivity {
         // Load the list of Applications stored in the local database
         applicationsList = applicationDao.loadAll();
         Timber.i("applicationsList.size(): " + applicationsList.size());
-        appListAdapter = new AppListAdapter(applicationsList, installCompleteReceiver);
+        appListAdapter = new AppListAdapter(applicationsList, packageUpdateReceiver);
         appListRecyclerView.setAdapter(appListAdapter);
 
     }
@@ -96,6 +96,6 @@ public class AppListActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(installCompleteReceiver);
+        unregisterReceiver(packageUpdateReceiver);
     }
 }

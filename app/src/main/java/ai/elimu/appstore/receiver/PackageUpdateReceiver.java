@@ -6,31 +6,31 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Preconditions;
 
-public class InstallCompleteReceiver extends BroadcastReceiver {
+public class PackageUpdateReceiver extends BroadcastReceiver {
 
-    private InstallCompleteCallback installCompleteCallback;
+    private PackageUpdateCallback packageUpdateCallback;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if ((installCompleteCallback == null) || (intent.getData() == null)) {
+        if ((packageUpdateCallback == null) || (intent.getData() == null)) {
             return;
         }
         if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction())) {
-            installCompleteCallback.onInstallComplete(intent.getData().getSchemeSpecificPart());
+            packageUpdateCallback.onInstallComplete(intent.getData().getSchemeSpecificPart());
         } else if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
-            installCompleteCallback.onUninstallComplete(intent.getData().getSchemeSpecificPart());
+            packageUpdateCallback.onUninstallComplete(intent.getData().getSchemeSpecificPart());
         }
     }
 
-    public void setInstallCompleteCallback(@NonNull InstallCompleteCallback
-                                                   installCompleteCallback) {
-        this.installCompleteCallback = Preconditions.checkNotNull(installCompleteCallback);
+    public void setPackageUpdateCallback(@NonNull PackageUpdateCallback
+                                                 packageUpdateCallback) {
+        this.packageUpdateCallback = Preconditions.checkNotNull(packageUpdateCallback);
     }
 
     /**
      * A listener that listens to install/uninstall completion event
      */
-    public interface InstallCompleteCallback {
+    public interface PackageUpdateCallback {
 
         void onInstallComplete(@NonNull String packageName);
 

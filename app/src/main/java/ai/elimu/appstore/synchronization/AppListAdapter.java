@@ -30,7 +30,7 @@ import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
-import ai.elimu.appstore.receiver.InstallCompleteReceiver;
+import ai.elimu.appstore.receiver.PackageUpdateReceiver;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
@@ -43,31 +43,31 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     private ApplicationVersionDao applicationVersionDao;
 
-    private InstallCompleteReceiver installCompleteReceiver;
+    private PackageUpdateReceiver packageUpdateReceiver;
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public AppListAdapter(List<Application> applications,
-                          @NonNull InstallCompleteReceiver installCompleteReceiver) {
+                          @NonNull PackageUpdateReceiver packageUpdateReceiver) {
         this.applications = applications;
-        this.installCompleteReceiver = Preconditions.checkNotNull(installCompleteReceiver);
+        this.packageUpdateReceiver = Preconditions.checkNotNull(packageUpdateReceiver);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
         final Application application = applications.get(position);
-        holder.mTextPkgName.setText(application.getPackageName());
+        holder.textPkgName.setText(application.getPackageName());
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
             // Do not allow APK download
-            holder.mTextVersion.setText("ApplicationStatus: " + application
+            holder.textVersion.setText("ApplicationStatus: " + application
                     .getApplicationStatus());
-            holder.mBtnDownload.setVisibility(View.VISIBLE);
-            holder.mBtnDownload.setEnabled(false);
+            holder.btnDownload.setVisibility(View.VISIBLE);
+            holder.btnDownload.setEnabled(false);
             // TODO: hide applications that are not active?
         } else {
-            holder.mBtnDownload.setEnabled(true);
+            holder.btnDownload.setEnabled(true);
 
             // Fetch the latest APK version
             List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
@@ -76,7 +76,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     .list();
             final ApplicationVersion applicationVersion = applicationVersions.get(0);
 
-            holder.mTextVersion.setText(context.getText(R.string.version) + ": " +
+            holder.textVersion.setText(context.getText(R.string.version) + ": " +
                     applicationVersion.getVersionCode() + " (" + (applicationVersion
                     .getFileSizeInKb() / 1024) + " MB)");
 
@@ -90,11 +90,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             Timber.i("existingApkFile: " + existingApkFile);
             Timber.i("existingApkFile.exists(): " + existingApkFile.exists());
             if (existingApkFile.exists()) {
-                holder.mBtnDownload.setVisibility(View.GONE);
-                holder.mBtnInstall.setVisibility(View.VISIBLE);
+                holder.btnDownload.setVisibility(View.GONE);
+                holder.btnInstall.setVisibility(View.VISIBLE);
             } else {
-                holder.mBtnDownload.setVisibility(View.VISIBLE);
-                holder.mBtnInstall.setVisibility(View.GONE);
+                holder.btnDownload.setVisibility(View.VISIBLE);
+                holder.btnInstall.setVisibility(View.GONE);
             }
 
             // Check if the APK file has already been installed
@@ -108,7 +108,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             Timber.i("isAppInstalled: " + isAppInstalled);
 
             if (isAppInstalled) {
-                holder.mBtnInstall.setVisibility(View.GONE);
+                holder.btnInstall.setVisibility(View.GONE);
 
                 // Check if update is available for download
                 try {
@@ -120,27 +120,27 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         // Update is available for download/install
 
                         // Display version of the application currently installed
-                        holder.mTextVersion.setText(holder.mTextVersion.getText() +
+                        holder.textVersion.setText(holder.textVersion.getText() +
                                 ". Installed: " + versionCodeInstalled);
 
                         // Change the button text
                         if (!existingApkFile.exists()) {
-                            holder.mBtnDownload.setVisibility(View.VISIBLE);
-                            holder.mBtnDownload.setText(R.string.download_update);
+                            holder.btnDownload.setVisibility(View.VISIBLE);
+                            holder.btnDownload.setText(R.string.download_update);
                         } else {
-                            holder.mBtnInstall.setVisibility(View.VISIBLE);
-                            holder.mBtnInstall.setText(R.string.install_update);
+                            holder.btnInstall.setVisibility(View.VISIBLE);
+                            holder.btnInstall.setText(R.string.install_update);
                         }
                     } else {
-                        holder.mBtnDownload.setVisibility(View.GONE);
-                        holder.mBtnInstall.setVisibility(View.GONE);
+                        holder.btnDownload.setVisibility(View.GONE);
+                        holder.btnInstall.setVisibility(View.GONE);
                     }
                 } catch (PackageManager.NameNotFoundException e) {
                     Timber.e(e, null);
                 }
             }
 
-            holder.mBtnDownload.setOnClickListener(new View.OnClickListener() {
+            holder.btnDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Timber.i("buttonDownload onClick");
@@ -148,26 +148,26 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     Timber.i("Downloading " + application.getPackageName() + " (version " +
                             applicationVersion.getVersionCode() + ")...");
 
-                    holder.mBtnDownload.setVisibility(View.GONE);
-                    holder.mPbDownload.setVisibility(View.VISIBLE);
-                    holder.mTextDownloadProgress.setVisibility(View.VISIBLE);
+                    holder.btnDownload.setVisibility(View.GONE);
+                    holder.pbDownload.setVisibility(View.VISIBLE);
+                    holder.textDownloadProgress.setVisibility(View.VISIBLE);
 
                     // Initiate download of the latest APK version
                     Timber.i("applicationVersion: " + applicationVersion);
                     new DownloadApplicationAsyncTask(
                             context.getApplicationContext(),
-                            holder.mPbDownload,
-                            holder.mTextDownloadProgress,
-                            holder.mBtnInstall,
-                            holder.mBtnDownload
+                            holder.pbDownload,
+                            holder.textDownloadProgress,
+                            holder.btnInstall,
+                            holder.btnDownload
                     ).execute(applicationVersion);
                 }
             });
 
-            holder.mBtnInstall.setOnClickListener(new View.OnClickListener() {
+            holder.btnInstall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Timber.i("mBtnInstall onClick");
+                    Timber.i("btnInstall onClick");
 
                     // Initiate installation of the latest APK version
                     Timber.i("Installing " + applicationVersion.getApplication().getPackageName()
@@ -196,13 +196,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         }
                     });
 
-                    InstallCompleteReceiver.InstallCompleteCallback installCompleteCallback = new
-                            InstallCompleteReceiver.InstallCompleteCallback() {
+                    PackageUpdateReceiver.PackageUpdateCallback packageUpdateCallback = new
+                            PackageUpdateReceiver.PackageUpdateCallback() {
                                 @Override
                                 public void onInstallComplete(@NonNull String packageName) {
                                     Timber.i("onInstallComplete, package: " + packageName);
-                                    holder.mBtnDownload.setVisibility(View.GONE);
-                                    holder.mBtnInstall.setVisibility(View.GONE);
+                                    holder.btnDownload.setVisibility(View.GONE);
+                                    holder.btnInstall.setVisibility(View.GONE);
                                     executorService.execute(new Runnable() {
                                         @Override
                                         public void run() {
@@ -219,7 +219,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     notifyDataSetChanged();
                                 }
                             };
-                    installCompleteReceiver.setInstallCompleteCallback(installCompleteCallback);
+                    packageUpdateReceiver.setPackageUpdateCallback(packageUpdateCallback);
 
 
                     // Install APK file
@@ -279,27 +279,27 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView mTextPkgName;
+        private final TextView textPkgName;
 
-        private final TextView mTextVersion;
+        private final TextView textVersion;
 
-        private final Button mBtnDownload;
+        private final Button btnDownload;
 
-        private final Button mBtnInstall;
+        private final Button btnInstall;
 
-        private final ProgressBar mPbDownload;
+        private final ProgressBar pbDownload;
 
-        private final TextView mTextDownloadProgress;
+        private final TextView textDownloadProgress;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mTextPkgName = itemView.findViewById(R.id.textViewPackageName);
-            mTextVersion = itemView.findViewById(R.id.textViewVersion);
-            mBtnDownload = itemView.findViewById(R.id.buttonDownload);
-            mBtnInstall = itemView.findViewById(R.id.buttonInstall);
-            mPbDownload = itemView.findViewById(R.id.progressBarDownloadProgress);
-            mTextDownloadProgress = itemView.findViewById(R.id.textViewDownloadProgress);
+            textPkgName = itemView.findViewById(R.id.textViewPackageName);
+            textVersion = itemView.findViewById(R.id.textViewVersion);
+            btnDownload = itemView.findViewById(R.id.buttonDownload);
+            btnInstall = itemView.findViewById(R.id.buttonInstall);
+            pbDownload = itemView.findViewById(R.id.progressBarDownloadProgress);
+            textDownloadProgress = itemView.findViewById(R.id.textViewDownloadProgress);
         }
 
     }
