@@ -2,10 +2,9 @@ package ai.elimu.appstore.onboarding;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -35,7 +34,8 @@ public class LicenseOptionActivity extends AppCompatActivity {
         Timber.i("onStart");
         super.onStart();
 
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
+                (this);
 
         buttonOptionNo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,9 +45,11 @@ public class LicenseOptionActivity extends AppCompatActivity {
                 sharedPreferences.edit().putString(PREF_LICENSE_OPTION, "no").commit();
 
                 // Restart application
-                Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+                Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext()
+                        .getPackageName());
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -59,7 +61,8 @@ public class LicenseOptionActivity extends AppCompatActivity {
                 sharedPreferences.edit().putString(PREF_LICENSE_OPTION, "yes").commit();
 
                 // Restart application
-                Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+                Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext()
+                        .getPackageName());
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
