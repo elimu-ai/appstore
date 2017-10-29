@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -98,6 +98,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
+                        finish();
                     } else if ("error".equals(jsonObject.getString("result")) && "Device already exists".equals(jsonObject.getString("description"))) {
                         // Device has already been registered
                         Timber.i("Device has already been registered");
@@ -109,6 +110,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
+                        finish();
                     } else {
                         // Device registration failed
                         Toast.makeText(context, context.getString(R.string.device_registration_failed), Toast.LENGTH_SHORT).show();

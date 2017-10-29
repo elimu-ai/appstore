@@ -2,25 +2,17 @@ package ai.elimu.appstore.onboarding;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import ai.elimu.appstore.R;
-import ai.elimu.appstore.util.RootHelper;
 import ai.elimu.model.enums.Locale;
 import timber.log.Timber;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class LocaleActivity extends AppCompatActivity {
 
@@ -83,6 +75,7 @@ public class LocaleActivity extends AppCompatActivity {
                 Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                finish();
             }
         });
     }
