@@ -50,16 +50,21 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
     private Context context;
 
+    private DownloadCompleteCallback downloadCompleteCallback;
+
     public DownloadApplicationAsyncTask(@NonNull Context context,
                                         ProgressBar progressBarDownloadProgress,
                                         TextView textViewDownloadProgress,
                                         Button buttonInstall,
-                                        Button buttonDownload) {
+                                        Button buttonDownload,
+                                        @NonNull DownloadCompleteCallback
+                                                downloadCompleteCallback) {
         this.context = Preconditions.checkNotNull(context);
         this.progressBarDownloadProgress = progressBarDownloadProgress;
         this.textViewDownloadProgress = textViewDownloadProgress;
         this.btnInstall = buttonInstall;
         this.btnDownload = buttonDownload;
+        this.downloadCompleteCallback = Preconditions.checkNotNull(downloadCompleteCallback);
     }
 
     @Override
@@ -223,8 +228,14 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
         } else {
             btnDownload.setVisibility(View.GONE);
             btnInstall.setVisibility(View.VISIBLE);
+            downloadCompleteCallback.onDownloadCompleted();
         }
 
         Timber.i("fileSizeInKbsDownloaded: " + fileSizeInKbsDownloaded);
+    }
+
+    interface DownloadCompleteCallback {
+
+        void onDownloadCompleted();
     }
 }

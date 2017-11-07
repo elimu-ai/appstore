@@ -2,8 +2,11 @@ package ai.elimu.appstore.synchronization;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -15,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -135,9 +139,27 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         holder.btnDownload.setVisibility(View.GONE);
                         holder.btnInstall.setVisibility(View.GONE);
                     }
+
+                    /**
+                     * Extract icon from installed application
+                     */
+                    ApplicationInfo applicationInfo = packageManager.getApplicationInfo
+                            (application.getPackageName(), PackageManager.GET_META_DATA);
+                    Resources resources = packageManager.getResourcesForApplication(application
+                            .getPackageName());
+                    Drawable appIcon = resources.getDrawableForDensity(applicationInfo.icon,
+                            resources.getDisplayMetrics().densityDpi, null);
+                    holder.imageAppIcon.setImageDrawable(appIcon);
                 } catch (PackageManager.NameNotFoundException e) {
                     Timber.e(e, null);
                 }
+            } else if (existingApkFile.exists()) {  //Extract app icon from downloaded APK if found
+                PackageInfo packageInfo = packageManager.getPackageArchiveInfo(existingApkFile
+                        .getAbsolutePath(), 0);
+                packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
+                packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
+                Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
+                holder.imageAppIcon.setImageDrawable(appIcon);
             }
 
             holder.btnDownload.setOnClickListener(new View.OnClickListener() {
@@ -154,12 +176,25 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                     // Initiate download of the latest APK version
                     Timber.i("applicationVersion: " + applicationVersion);
+
+                    /**
+                     * Listen to download completed event to update app icon
+                     */
+                    DownloadApplicationAsyncTask.DownloadCompleteCallback
+                            downloadCompleteCallback = new DownloadApplicationAsyncTask
+                            .DownloadCompleteCallback() {
+                        @Override
+                        public void onDownloadCompleted() {
+                            notifyDataSetChanged();
+                        }
+                    };
                     new DownloadApplicationAsyncTask(
                             context.getApplicationContext(),
                             holder.pbDownload,
                             holder.textDownloadProgress,
                             holder.btnInstall,
-                            holder.btnDownload
+                            holder.btnDownload,
+                            downloadCompleteCallback
                     ).execute(applicationVersion);
                 }
             });
@@ -208,7 +243,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                         public void run() {
                                             for (final File file : apkFiles) {
                                                 file.delete();
-                                                Timber.i("APK " + file.getAbsolutePath() + " is deleted successfully");
+                                                Timber.i("APK " + file.getAbsolutePath() + " is " +
+                                                        "deleted successfully");
                                             }
                                         }
                                     });
@@ -291,6 +327,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         private final TextView textDownloadProgress;
 
+        private final ImageView imageAppIcon;
+
         public ViewHolder(View itemView) {
             super(itemView);
 
@@ -300,6 +338,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             btnInstall = itemView.findViewById(R.id.buttonInstall);
             pbDownload = itemView.findViewById(R.id.progressBarDownloadProgress);
             textDownloadProgress = itemView.findViewById(R.id.textViewDownloadProgress);
+            imageAppIcon = itemView.findViewById(R.id.iv_app_icon);
         }
 
     }
