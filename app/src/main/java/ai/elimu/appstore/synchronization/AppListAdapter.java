@@ -69,6 +69,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     .getApplicationStatus());
             holder.btnDownload.setVisibility(View.VISIBLE);
             holder.btnDownload.setEnabled(false);
+            holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
+            holder.btnInstall.setVisibility(View.GONE);
             // TODO: hide applications that are not active?
         } else {
             holder.btnDownload.setEnabled(true);
@@ -160,6 +162,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
                 Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
                 holder.imageAppIcon.setImageDrawable(appIcon);
+            } else {
+                holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
             }
 
             holder.btnDownload.setOnClickListener(new View.OnClickListener() {
