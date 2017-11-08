@@ -58,10 +58,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         final Application application = applications.get(position);
         holder.textPkgName.setText(application.getPackageName());
+        holder.pbDownload.setVisibility(application.isDownloading() ? View.VISIBLE : View.GONE);
+        holder.textDownloadProgress.setVisibility(application.isDownloading() ? View.VISIBLE :
+                View.GONE);
+        holder.textDownloadProgress.setText(application.getDownloadProgressText());
+        holder.pbDownload.setProgress(application.getDownloadProgress());
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
             // Do not allow APK download
@@ -177,6 +182,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     holder.btnDownload.setVisibility(View.GONE);
                     holder.pbDownload.setVisibility(View.VISIBLE);
                     holder.textDownloadProgress.setVisibility(View.VISIBLE);
+                    application.setDownloading(true);
+                    applications.set(position, application);
 
                     // Initiate download of the latest APK version
                     Timber.i("applicationVersion: " + applicationVersion);
@@ -189,16 +196,36 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             .DownloadCompleteCallback() {
                         @Override
                         public void onDownloadCompleted() {
+                            application.setDownloading(false);
+                            applications.set(position, application);
                             notifyDataSetChanged();
                         }
                     };
+
+                    /**
+                     * Listen to download progress update to reflect progress in data and UI,
+                     * in case adapter is refreshed
+                     */
+                    DownloadApplicationAsyncTask.ProgressUpdateCallback progressUpdateCallback =
+                            new DownloadApplicationAsyncTask.ProgressUpdateCallback() {
+                                @Override
+                                public void onProgressUpdated(String progressText, int progress) {
+                                    application.setDownloadProgressText(progressText);
+                                    application.setDownloadProgress(progress);
+                                    applications.set(position, application);
+                                    holder.textDownloadProgress.setText(application
+                                            .getDownloadProgressText());
+                                    holder.pbDownload.setProgress(progress);
+                                }
+                            };
                     new DownloadApplicationAsyncTask(
                             context.getApplicationContext(),
                             holder.pbDownload,
                             holder.textDownloadProgress,
                             holder.btnInstall,
                             holder.btnDownload,
-                            downloadCompleteCallback
+                            downloadCompleteCallback,
+                            progressUpdateCallback
                     ).execute(applicationVersion);
                 }
             });

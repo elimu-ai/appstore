@@ -52,19 +52,22 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
     private DownloadCompleteCallback downloadCompleteCallback;
 
+    private ProgressUpdateCallback progressUpdateCallback;
+
     public DownloadApplicationAsyncTask(@NonNull Context context,
                                         ProgressBar progressBarDownloadProgress,
                                         TextView textViewDownloadProgress,
                                         Button buttonInstall,
                                         Button buttonDownload,
-                                        @NonNull DownloadCompleteCallback
-                                                downloadCompleteCallback) {
+                                        @NonNull DownloadCompleteCallback downloadCompleteCallback,
+                                        @NonNull ProgressUpdateCallback progressUpdateCallback) {
         this.context = Preconditions.checkNotNull(context);
         this.progressBarDownloadProgress = progressBarDownloadProgress;
         this.textViewDownloadProgress = textViewDownloadProgress;
         this.btnInstall = buttonInstall;
         this.btnDownload = buttonDownload;
         this.downloadCompleteCallback = Preconditions.checkNotNull(downloadCompleteCallback);
+        this.progressUpdateCallback = Preconditions.checkNotNull(progressUpdateCallback);
     }
 
     @Override
@@ -199,7 +202,6 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
         int progress = (fileSizeInKbsDownloaded * 100) / applicationVersion.getFileSizeInKb();
         Timber.d("progress: " + progress);
-        progressBarDownloadProgress.setProgress(progress);
 
         // E.g. "6.00 MB/12.00 MB   50%"
         String progressText = String.format(context.getString(R.string
@@ -207,7 +209,7 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 applicationVersion.getFileSizeInKb() / 1024f, progress);
 
         Timber.d("progressText: " + progressText);
-        textViewDownloadProgress.setText(progressText);
+        progressUpdateCallback.onProgressUpdated(progressText, progress);
     }
 
     @Override
@@ -237,5 +239,11 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
     interface DownloadCompleteCallback {
 
         void onDownloadCompleted();
+    }
+
+    interface ProgressUpdateCallback {
+
+        void onProgressUpdated(String progressText, int progress);
+
     }
 }
