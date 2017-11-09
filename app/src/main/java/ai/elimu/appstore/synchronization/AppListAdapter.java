@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +33,7 @@ import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
+import ai.elimu.appstore.model.AppDownloadStatus;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
 import ai.elimu.appstore.receiver.PackageUpdateReceiver;
@@ -42,6 +44,8 @@ import timber.log.Timber;
 public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHolder> {
 
     private List<Application> applications;
+
+    private List<AppDownloadStatus> appDownloadStatus;
 
     private Context context;
 
@@ -55,18 +59,34 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                           @NonNull PackageUpdateReceiver packageUpdateReceiver) {
         this.applications = applications;
         this.packageUpdateReceiver = Preconditions.checkNotNull(packageUpdateReceiver);
+        initAppDownloadStatus();
+    }
+
+    private void initAppDownloadStatus() {
+        appDownloadStatus = new ArrayList<>(applications.size());
+        for (int i = 0; i < applications.size(); i++) {
+            appDownloadStatus.add(new AppDownloadStatus());
+        }
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         final Application application = applications.get(position);
+        final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
         holder.textPkgName.setText(application.getPackageName());
-        holder.pbDownload.setVisibility(application.isDownloading() ? View.VISIBLE : View.GONE);
-        holder.textDownloadProgress.setVisibility(application.isDownloading() ? View.VISIBLE :
-                View.GONE);
-        holder.textDownloadProgress.setText(application.getDownloadProgressText());
-        holder.pbDownload.setProgress(application.getDownloadProgress());
+        holder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());
+        holder.progressBarDownload.setProgress(downloadStatus.getDownloadProgress());
+
+        if (downloadStatus.isDownloading()) {
+            holder.progressBarDownload.setVisibility(View.VISIBLE);
+            holder.textDownloadProgress.setVisibility(View.VISIBLE);
+            holder.btnDownload.setVisibility(View.GONE);
+        } else {
+            holder.progressBarDownload.setVisibility(View.GONE);
+            holder.textDownloadProgress.setVisibility(View.GONE);
+            holder.btnDownload.setVisibility(View.VISIBLE);
+        }
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
             // Do not allow APK download
@@ -104,7 +124,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 holder.btnDownload.setVisibility(View.GONE);
                 holder.btnInstall.setVisibility(View.VISIBLE);
             } else {
-                holder.btnDownload.setVisibility(View.VISIBLE);
+                if (!downloadStatus.isDownloading()) {
+                    holder.btnDownload.setVisibility(View.VISIBLE);
+                }
                 holder.btnInstall.setVisibility(View.GONE);
             }
 
@@ -180,10 +202,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             applicationVersion.getVersionCode() + ")...");
 
                     holder.btnDownload.setVisibility(View.GONE);
-                    holder.pbDownload.setVisibility(View.VISIBLE);
+                    holder.progressBarDownload.setVisibility(View.VISIBLE);
                     holder.textDownloadProgress.setVisibility(View.VISIBLE);
-                    application.setDownloading(true);
-                    applications.set(position, application);
+                    downloadStatus.setDownloading(true);
+                    appDownloadStatus.set(position, downloadStatus);
 
                     // Initiate download of the latest APK version
                     Timber.i("applicationVersion: " + applicationVersion);
@@ -196,8 +218,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             .DownloadCompleteCallback() {
                         @Override
                         public void onDownloadCompleted() {
-                            application.setDownloading(false);
-                            applications.set(position, application);
+                            downloadStatus.setDownloading(false);
+                            appDownloadStatus.set(position, downloadStatus);
                             notifyDataSetChanged();
                         }
                     };
@@ -210,17 +232,17 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             new DownloadApplicationAsyncTask.ProgressUpdateCallback() {
                                 @Override
                                 public void onProgressUpdated(String progressText, int progress) {
-                                    application.setDownloadProgressText(progressText);
-                                    application.setDownloadProgress(progress);
-                                    applications.set(position, application);
-                                    holder.textDownloadProgress.setText(application
+                                    downloadStatus.setDownloadProgressText(progressText);
+                                    downloadStatus.setDownloadProgress(progress);
+                                    appDownloadStatus.set(position, downloadStatus);
+                                    holder.textDownloadProgress.setText(downloadStatus
                                             .getDownloadProgressText());
-                                    holder.pbDownload.setProgress(progress);
+                                    holder.progressBarDownload.setProgress(progress);
                                 }
                             };
                     new DownloadApplicationAsyncTask(
                             context.getApplicationContext(),
-                            holder.pbDownload,
+                            holder.progressBarDownload,
                             holder.textDownloadProgress,
                             holder.btnInstall,
                             holder.btnDownload,
@@ -354,7 +376,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         private final Button btnInstall;
 
-        private final ProgressBar pbDownload;
+        private final ProgressBar progressBarDownload;
 
         private final TextView textDownloadProgress;
 
@@ -367,7 +389,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             textVersion = itemView.findViewById(R.id.textViewVersion);
             btnDownload = itemView.findViewById(R.id.buttonDownload);
             btnInstall = itemView.findViewById(R.id.buttonInstall);
-            pbDownload = itemView.findViewById(R.id.progressBarDownloadProgress);
+            progressBarDownload = itemView.findViewById(R.id.progressBarDownloadProgress);
             textDownloadProgress = itemView.findViewById(R.id.textViewDownloadProgress);
             imageAppIcon = itemView.findViewById(R.id.iv_app_icon);
         }
