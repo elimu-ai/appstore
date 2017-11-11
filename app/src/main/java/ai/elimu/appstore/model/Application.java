@@ -5,6 +5,9 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
+
+import java.util.Set;
+
 import ai.elimu.appstore.dao.converter.ApplicationStatusConverter;
 import ai.elimu.appstore.dao.converter.LiteracySkillSetConverter;
 import ai.elimu.appstore.dao.converter.LocaleConverter;
@@ -13,8 +16,6 @@ import ai.elimu.model.enums.Locale;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import ai.elimu.model.enums.content.LiteracySkill;
 import ai.elimu.model.enums.content.NumeracySkill;
-
-import java.util.Set;
 
 @Entity
 public class Application {
@@ -34,7 +35,7 @@ public class Application {
 
     @Convert(converter = NumeracySkillSetConverter.class, columnType = String.class)
     private Set<NumeracySkill> numeracySkills;
-    
+
     @NotNull
     @Convert(converter = ApplicationStatusConverter.class, columnType = String.class)
     private ApplicationStatus applicationStatus;
