@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -117,7 +118,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     applicationVersion.getVersionCode() + ".apk";
             File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
                     ".elimu-ai/appstore/apks/" + language);
-            File existingApkFile = new File(apkDirectory, fileName);
+            final File existingApkFile = new File(apkDirectory, fileName);
             Timber.i("existingApkFile: " + existingApkFile);
             Timber.i("existingApkFile.exists(): " + existingApkFile.exists());
             if (existingApkFile.exists()) {
@@ -131,7 +132,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             }
 
             // Check if the APK file has already been installed
-            PackageManager packageManager = context.getPackageManager();
+            final PackageManager packageManager = context.getPackageManager();
             boolean isAppInstalled = true;
             try {
                 packageManager.getApplicationInfo(application.getPackageName(), 0);
@@ -220,7 +221,19 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         public void onDownloadCompleted() {
                             downloadStatus.setDownloading(false);
                             appDownloadStatus.set(position, downloadStatus);
-                            notifyDataSetChanged();
+
+                            /**
+                             * Set app icon upon download completion
+                             */
+                            PackageInfo packageInfo = packageManager.getPackageArchiveInfo
+                                    (existingApkFile
+                                    .getAbsolutePath(), 0);
+                            packageInfo.applicationInfo.sourceDir = existingApkFile
+                                    .getAbsolutePath();
+                            packageInfo.applicationInfo.publicSourceDir = existingApkFile
+                                    .getAbsolutePath();
+                            Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
+                            holder.imageAppIcon.setImageDrawable(appIcon);
                         }
                     };
 
@@ -240,7 +253,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     holder.progressBarDownload.setProgress(progress);
                                 }
                             };
-                    new DownloadApplicationAsyncTask(
+                    DownloadApplicationAsyncTask downloadApplicationAsyncTask = new
+                            DownloadApplicationAsyncTask(
                             context.getApplicationContext(),
                             holder.progressBarDownload,
                             holder.textDownloadProgress,
@@ -248,7 +262,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             holder.btnDownload,
                             downloadCompleteCallback,
                             progressUpdateCallback
-                    ).execute(applicationVersion);
+                    );
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        downloadApplicationAsyncTask.executeOnExecutor(AsyncTask
+                                .THREAD_POOL_EXECUTOR, applicationVersion);
+                    } else {
+                        downloadApplicationAsyncTask.execute(applicationVersion);
+                    }
                 }
             });
 
