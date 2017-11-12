@@ -68,7 +68,6 @@
             android:id="@+id/textViewDownloadProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="6.00 MB/12.00 MB   50%"
             android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>
