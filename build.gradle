@@ -17,6 +17,14 @@ buildscript {
 ext {
     supportLibVersion = "26.0.1"
     greenDaoVersion = "3.2.2"
+
+    //Retrofit and GSON
+    gsonVersion = '2.8.0'
+    retrofitVersion = '2.1.0'
+    gsonConverterVersion = '2.1.0'
+
+    //Logging interceptor
+    loggingInterceptorVersion = '3.3.1'
 }
 
 allprojects {

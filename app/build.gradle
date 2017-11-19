@@ -57,6 +57,14 @@ dependencies {
     implementation "com.android.support:support-annotations:$supportLibVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
+    //Retrofit networking library & GSON
+    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.gsonConverterVersion"
+
+    //For logging Retrofit request and response in debug mode
+    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingInterceptorVersion"
+
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation "com.android.support:support-annotations:$supportLibVersion"

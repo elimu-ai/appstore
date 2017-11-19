@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import ai.elimu.appstore.onboarding.LocaleActivity;
+import ai.elimu.appstore.presentation.onboarding.LocaleActivity;
 import ai.elimu.model.enums.Locale;
 
 public class UserPrefsHelper {

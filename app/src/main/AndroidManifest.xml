@@ -43,7 +43,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".onboarding.LocaleActivity" />
+        <activity android:name=".presentation.onboarding.LocaleActivity" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
@@ -71,9 +71,9 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".onboarding.LicenseOptionActivity" />
-        <activity android:name=".onboarding.LicenseNumberActivity" />
-        <activity android:name=".onboarding.DeviceRegistrationActivity" />
+        <activity android:name=".presentation.onboarding.LicenseOptionActivity" />
+        <activity android:name=".presentation.onboarding.validatelicense.LicenseNumberActivity" />
+        <activity android:name=".presentation.onboarding.DeviceRegistrationActivity" />
         <activity android:name=".synchronization.AppSynchronizationActivity" />
         <activity android:name=".synchronization.AppListActivity"></activity>
     </application>
