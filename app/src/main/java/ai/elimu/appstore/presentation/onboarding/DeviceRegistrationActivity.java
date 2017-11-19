@@ -1,4 +1,4 @@
-package ai.elimu.appstore.onboarding;
+package ai.elimu.appstore.presentation.onboarding;
 
 import android.content.Context;
 import android.content.Intent;
