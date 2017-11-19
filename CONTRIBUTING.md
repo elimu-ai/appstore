@@ -46,7 +46,7 @@ belong to one of the following:
    
    3. When you have selected a repository, click the 
    ["Projects"](https://github.com/elimu-ai/appstore/projects) tab of the repository. Within each 
-   project you will se a collection of issues, and the state of each one (_todo_, _in progress_, 
+   project you will see a collection of issues, and the state of each one (_todo_, _in progress_, 
    _done_). Feel free to start working on any issue in the left-hand "To do" column.
    
    4. If you feel lost, take a look at the issues labeled with `good first issue`. These are tasks 
@@ -62,7 +62,8 @@ Once you have identified a task to work on, there is a specific workflow that yo
 workflow is mostly identical for both outside and core contributors, except from the way to create a 
 new GitHub branch to work on:
 
-   1. If you are an outside contributor, _fork_ the repository to your own GitHub account.
+   1. If you are an outside contributor, _fork_ the repository to your own GitHub account. ()If you are 
+   are core contributor, you will create a new branch directly in the main repository.)
 
    2. Create a new _branch_ for the GitHub issue that you will be working on. If, for example the issue 
    you have picked is titled "Upgrade to the latest Gradle version" and has the issue number 57, 
@@ -84,16 +85,16 @@ new GitHub branch to work on:
    6. Once you are ready to receive feedback on your branch, create a _pull request_ for merging it 
    into the `master` branch.
 
-   7. Every pull request requiers at least one approved peer review before being merged, so add at 
+   7. Every pull request requires at least one approved peer review before being merged, so add at 
    least one person as a _code reviewer_ of your pull request. To find out who to add, click 
    "Insights" → "Contributors" too see an overview of the most active contributors for each 
    repository. If you are unsure who to add, use these: `jo-elimuai` and `sladomic`.
    
-   8. Once your pull requests has been reviewed and approved, it can be merged. The person who created 
+   8. Once your pull request has been reviewed and approved, it can be merged. The person who created 
    the branch (you) will be the person responsible for merging the branch. So the peers reviewing 
    your code will not merge the branch; that is your responsibility.
    
-   9. If you consider the issue complete (code reviwed, merged, and tested), delete the branch, and 
+   9. If you consider the issue complete (code reviewed, merged, and tested), delete the branch, and 
    move the GitHub issue to the "Done" column. Well done!
 
 If any of the above steps are unclear, or you have any other questions or comments, please reach out 
