@@ -49,7 +49,7 @@ belong to one of the following:
    project you will se a collection of issues, and the state of each one (_todo_, _in progress_, 
    _done_). Feel free to start working on any issue in the left-hand "To do" column.
    
-   4. If you feel lost, take a look at the issues labeled with "good first issues". These are tasks 
+   4. If you feel lost, take a look at the issues labeled with `good first issue`. These are tasks 
    that are considered as good entry-points for first-time contributors. See 
    [example](https://github.com/elimu-ai/appstore/issues?q=is%3Aissue+is%3Aopen+label%3A"good+first+issue").
    
