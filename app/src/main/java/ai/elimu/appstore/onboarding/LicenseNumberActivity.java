@@ -1,5 +1,6 @@
 package ai.elimu.appstore.onboarding;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,7 +12,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import java.io.IOException;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
@@ -26,6 +31,7 @@ public class LicenseNumberActivity extends AppCompatActivity {
 
     public static final String PREF_LICENSE_EMAIL = "pref_license_email";
     public static final String PREF_LICENSE_NUMBER = "pref_license_number";
+    public static final String PREF_APP_COLLECTION_ID = "pref_app_collection_id";
 
     private LicenseService licenseService;
 
@@ -82,8 +88,8 @@ public class LicenseNumberActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Timber.i("onClick");
 
-                String licenseEmail = editTextLicenseEmail.getText().toString();
-                String licenseNumber = editTextLicenseNumber.getText().toString();
+                final String licenseEmail = editTextLicenseEmail.getText().toString();
+                final String licenseNumber = editTextLicenseNumber.getText().toString();
                 if (!TextUtils.isEmpty(licenseEmail) && !TextUtils.isEmpty(licenseNumber)) {
                     // Submit License details to REST API for validation
                     Call<ResponseBody> call = licenseService.getLicense(licenseEmail, licenseNumber);
@@ -92,8 +98,31 @@ public class LicenseNumberActivity extends AppCompatActivity {
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             Timber.i("onResponse");
 
-                            // TODO: if valid license number, store e-mail and license number in shared preferences
-                            // TODO: redirect user to AppListActivity
+                            try {
+                                String jsonBody = response.body().string();
+                                JSONObject jsonObject = new JSONObject(jsonBody);
+                                if (jsonObject.has("appCollectionId")) {
+                                    // The License submitted was valid
+
+                                    Long appCollectionId = jsonObject.getLong("appCollectionId");
+                                    Timber.i("appCollectionId: " + appCollectionId);
+
+                                    // Store details in SharedPreferences
+                                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                    sharedPreferences.edit().putString(PREF_LICENSE_EMAIL, licenseEmail).commit();
+                                    sharedPreferences.edit().putString(PREF_LICENSE_NUMBER, licenseNumber).commit();
+                                    sharedPreferences.edit().putLong(PREF_APP_COLLECTION_ID, appCollectionId).commit();
+
+                                    // Redirect user to AppListActivity
+                                    // TODO
+                                } else {
+                                    // TODO: display error message
+                                }
+                            } catch (IOException | JSONException e) {
+                                Timber.e(e);
+
+                                // TODO: display error message
+                            }
                         }
 
                         @Override
