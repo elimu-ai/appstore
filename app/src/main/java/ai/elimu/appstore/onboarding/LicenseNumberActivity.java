@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -141,12 +142,12 @@ public class LicenseNumberActivity extends AppCompatActivity {
                                     startActivity(intent);
                                     finish();
                                 } else {
-                                    // TODO: display error message
+                                    Toast.makeText(getApplicationContext(), "License validation failed", Toast.LENGTH_SHORT).show();
                                 }
                             } catch (IOException | JSONException e) {
                                 Timber.e(e);
 
-                                // TODO: display error message
+                                Toast.makeText(getApplicationContext(), "License validation failed", Toast.LENGTH_SHORT).show();
                             }
 
                             licenseNumberDetailsContainer.setVisibility(View.VISIBLE);
@@ -157,7 +158,7 @@ public class LicenseNumberActivity extends AppCompatActivity {
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                             Timber.e(t, "onFailure");
 
-                            // TODO: display error message
+                            Toast.makeText(getApplicationContext(), "License validation failed", Toast.LENGTH_SHORT).show();
 
                             licenseNumberDetailsContainer.setVisibility(View.VISIBLE);
                             licenseNumberLoadingContainer.setVisibility(View.GONE);
