@@ -28,6 +28,7 @@ import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
+import ai.elimu.appstore.onboarding.LicenseNumberActivity;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
@@ -104,6 +105,18 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         "&osVersion=" + Build.VERSION.SDK_INT +
                         "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
                         "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
+
+                // If AppCollection from custom Project, use a different URL (see LicenseNumberActivity)
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                Long appCollectionId = sharedPreferences.getLong(LicenseNumberActivity.PREF_APP_COLLECTION_ID, 0);
+                Timber.i("appCollectionId: " + appCollectionId);
+                if (appCollectionId > 0) {
+                    // See https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#read-applications
+                    url = BuildConfig.REST_URL + "/project/app-collections/" + appCollectionId + "/applications" +
+                            "?licenseEmail=" + sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_EMAIL, null) +
+                            "&licenseNumber=" + sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_NUMBER, null);
+                }
+
                 String jsonResponse = JsonLoader.loadJson(url);
                 Timber.i("jsonResponse: " + jsonResponse);
                 try {
@@ -193,7 +206,6 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         Timber.i("Synchronization complete!");
 
                         // Update time of last synchronization
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
                         sharedPreferences.edit().putLong(PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
                     }
                 } catch (JSONException e) {
