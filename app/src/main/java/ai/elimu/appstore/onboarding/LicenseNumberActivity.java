@@ -1,6 +1,5 @@
 package ai.elimu.appstore.onboarding;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -8,15 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 
@@ -37,11 +33,12 @@ public class LicenseNumberActivity extends AppCompatActivity {
 
     private LicenseService licenseService;
 
+    private View licenseNumberDetailsContainer;
     private EditText editTextLicenseEmail;
-
     private EditText editTextLicenseNumber;
-
     private Button buttonLicenseNumber;
+
+    private View licenseNumberLoadingContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +50,12 @@ public class LicenseNumberActivity extends AppCompatActivity {
         BaseApplication baseApplication = (BaseApplication) getApplication();
         licenseService = baseApplication.getRetrofit().create(LicenseService.class);
 
+        licenseNumberDetailsContainer = findViewById(R.id.licenseNumberDetailsContainer);
         editTextLicenseEmail = findViewById(R.id.editTextLicenseEmail);
         editTextLicenseNumber = findViewById(R.id.editTextLicenseNumber);
         buttonLicenseNumber = findViewById(R.id.buttonLicenseNumber);
+
+        licenseNumberLoadingContainer = findViewById(R.id.licenseNumberLoadingContainer);
     }
 
     @Override
@@ -106,6 +106,9 @@ public class LicenseNumberActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Timber.i("onClick");
 
+                licenseNumberDetailsContainer.setVisibility(View.GONE);
+                licenseNumberLoadingContainer.setVisibility(View.VISIBLE);
+
                 final String licenseEmail = editTextLicenseEmail.getText().toString();
                 final String licenseNumber = editTextLicenseNumber.getText().toString();
                 if (!TextUtils.isEmpty(licenseEmail) && !TextUtils.isEmpty(licenseNumber)) {
@@ -141,6 +144,9 @@ public class LicenseNumberActivity extends AppCompatActivity {
 
                                 // TODO: display error message
                             }
+
+                            licenseNumberDetailsContainer.setVisibility(View.VISIBLE);
+                            licenseNumberLoadingContainer.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -148,6 +154,9 @@ public class LicenseNumberActivity extends AppCompatActivity {
                             Timber.e(t, "onFailure");
 
                             // TODO: display error message
+
+                            licenseNumberDetailsContainer.setVisibility(View.VISIBLE);
+                            licenseNumberLoadingContainer.setVisibility(View.GONE);
                         }
                     });
                 }
