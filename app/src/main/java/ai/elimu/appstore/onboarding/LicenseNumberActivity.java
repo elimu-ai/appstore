@@ -1,5 +1,6 @@
 package ai.elimu.appstore.onboarding;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -134,8 +135,11 @@ public class LicenseNumberActivity extends AppCompatActivity {
                                     sharedPreferences.edit().putString(PREF_LICENSE_NUMBER, licenseNumber).commit();
                                     sharedPreferences.edit().putLong(PREF_APP_COLLECTION_ID, appCollectionId).commit();
 
-                                    // Redirect user to AppListActivity
-                                    // TODO
+                                    // Restart application
+                                    Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    finish();
                                 } else {
                                     // TODO: display error message
                                 }
