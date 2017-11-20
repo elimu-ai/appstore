@@ -62,7 +62,7 @@ Once you have identified a task to work on, there is a specific workflow that yo
 workflow is mostly identical for both outside and core contributors, except from the way to create a 
 new GitHub branch to work on:
 
-   1. If you are an outside contributor, _fork_ the repository to your own GitHub account. ()If you are 
+   1. If you are an outside contributor, _fork_ the repository to your own GitHub account. (If you are 
    are core contributor, you will create a new branch directly in the main repository.)
 
    2. Create a new _branch_ for the GitHub issue that you will be working on. If, for example the issue 
