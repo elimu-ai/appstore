@@ -63,12 +63,6 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             if (!isServerReachable) {
                 return null;
             } else {
-                Locale locale = UserPrefsHelper.getLocale(context);
-                if (locale == null) {
-                    // The user typed a License for a custom Project, which does not use a specific Locale.
-                    // Fall back to English since "locale" is a required parameter on the server-side.
-                    locale = Locale.EN;
-                }
                 String url = BuildConfig.REST_URL + "/device/create" +
                         "?deviceId=" + DeviceInfoHelper.getDeviceId(context) +
                         "&deviceManufacturer=" + DeviceInfoHelper.getDeviceManufacturer(context) +
@@ -77,7 +71,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         "&applicationId=" + context.getPackageName() +
                         "&appVersionCode=" + VersionHelper.getAppVersionCode(context) +
                         "&osVersion=" + Build.VERSION.SDK_INT +
-                        "&locale=" + locale;
+                        "&locale=" + UserPrefsHelper.getLocale(context);
                 String jsonResponse = JsonLoader.loadJson(url);
                 Timber.i("jsonResponse: " + jsonResponse);
                 return jsonResponse;
