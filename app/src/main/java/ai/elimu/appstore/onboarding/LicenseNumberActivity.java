@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -61,25 +63,41 @@ public class LicenseNumberActivity extends AppCompatActivity {
         Timber.i("onStart");
         super.onStart();
 
-        editTextLicenseEmail.setOnKeyListener(new View.OnKeyListener() {
+        editTextLicenseEmail.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Timber.i("editTextLicenseEmail onKey");
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Timber.i("editTextLicenseEmail onTextChanged");
 
                 updateSubmitButton();
+            }
 
-                return false;
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
-        editTextLicenseNumber.setOnKeyListener(new View.OnKeyListener() {
+        editTextLicenseNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Timber.i("editTextLicenseNumber onKey");
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Timber.i("editTextLicenseNumber onTextChanged");
 
                 updateSubmitButton();
+            }
 
-                return false;
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
@@ -141,6 +159,8 @@ public class LicenseNumberActivity extends AppCompatActivity {
      * Keep submit button disabled until all required fields have been filled
      */
     private void updateSubmitButton() {
+        Timber.i("updateSubmitButton");
+
         if (TextUtils.isEmpty(editTextLicenseEmail.getText().toString())
                 || TextUtils.isEmpty(editTextLicenseNumber.getText().toString())) {
             buttonLicenseNumber.setEnabled(false);
