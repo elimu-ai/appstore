@@ -142,7 +142,7 @@ public class LicenseNumberActivity extends AppCompatActivity {
                                     startActivity(intent);
                                     finish();
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "License validation failed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), R.string.license_validation_failed, Toast.LENGTH_SHORT).show();
                                 }
                             } catch (IOException | JSONException e) {
                                 Timber.e(e);
