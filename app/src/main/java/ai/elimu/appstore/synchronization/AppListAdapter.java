@@ -39,6 +39,7 @@ import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
 import ai.elimu.appstore.receiver.PackageUpdateReceiver;
 import ai.elimu.appstore.util.UserPrefsHelper;
+import ai.elimu.model.enums.Locale;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
@@ -113,7 +114,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     .getFileSizeInKb() / 1024) + " MB)");
 
             // Check if the APK file has already been downloaded to the SD card
-            String language = UserPrefsHelper.getLocale(context).getLanguage();
+            Locale locale = UserPrefsHelper.getLocale(context);
+            if (locale == null) {
+                // The user typed a License for a custom Project, which does not use a specific Locale.
+                // Fall back to English
+                locale = Locale.EN;
+            }
+            String language = locale.getLanguage();
             String fileName = applicationVersion.getApplication().getPackageName() + "-" +
                     applicationVersion.getVersionCode() + ".apk";
             File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
