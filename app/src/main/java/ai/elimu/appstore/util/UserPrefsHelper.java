@@ -28,4 +28,16 @@ public class UserPrefsHelper {
             return locale;
         }
     }
+
+    public static String getLicenseEmail(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String licenseEmail = sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_EMAIL, null);
+        return licenseEmail;
+    }
+
+    public static String getLicenseNumber(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String licenseNumber = sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_NUMBER, null);
+        return licenseNumber;
+    }
 }
