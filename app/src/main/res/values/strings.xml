@@ -20,6 +20,7 @@
     <string name="language_th">Thai</string>
     <string name="last_synchronization">Last synchronization: %s</string>
     <string name="license_number">License number</string>
+    <string name="license_validation_failed">License validation failed</string>
     <string name="locale_selected">Locale selected</string>
     <string name="never">Never</string>
     <string name="no">No</string>
