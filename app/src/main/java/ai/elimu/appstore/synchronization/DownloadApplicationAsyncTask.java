@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Preconditions;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -99,6 +100,11 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 "&osVersion=" + Build.VERSION.SDK_INT +
                 "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
                 "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
+        if (!TextUtils.isEmpty(UserPrefsHelper.getLicenseEmail(context))) {
+            // Custom Project
+            fileUrl += "&licenseEmail=" + UserPrefsHelper.getLicenseEmail(context);
+            fileUrl += "&licenseNumber=" + UserPrefsHelper.getLicenseNumber(context);
+        }
         Timber.i("fileUrl: " + fileUrl);
 
         String fileName = applicationVersion.getApplication().getPackageName() + "-" +

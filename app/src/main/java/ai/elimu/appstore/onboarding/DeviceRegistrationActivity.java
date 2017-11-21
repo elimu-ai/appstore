@@ -22,6 +22,7 @@ import ai.elimu.appstore.util.DeviceInfoHelper;
 import ai.elimu.appstore.util.JsonLoader;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.appstore.util.VersionHelper;
+import ai.elimu.model.enums.Locale;
 import timber.log.Timber;
 
 public class DeviceRegistrationActivity extends AppCompatActivity {
