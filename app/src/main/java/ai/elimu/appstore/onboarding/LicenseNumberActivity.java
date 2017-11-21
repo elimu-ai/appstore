@@ -1,41 +1,63 @@
 package ai.elimu.appstore.onboarding;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.KeyEvent;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
+import ai.elimu.appstore.service.LicenseService;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 public class LicenseNumberActivity extends AppCompatActivity {
 
     public static final String PREF_LICENSE_EMAIL = "pref_license_email";
     public static final String PREF_LICENSE_NUMBER = "pref_license_number";
+    public static final String PREF_APP_COLLECTION_ID = "pref_app_collection_id";
 
+    private LicenseService licenseService;
+
+    private View licenseNumberDetailsContainer;
     private EditText editTextLicenseEmail;
-
     private EditText editTextLicenseNumber;
-
     private Button buttonLicenseNumber;
+
+    private View licenseNumberLoadingContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_license_number);
 
+        BaseApplication baseApplication = (BaseApplication) getApplication();
+        licenseService = baseApplication.getRetrofit().create(LicenseService.class);
+
+        licenseNumberDetailsContainer = findViewById(R.id.licenseNumberDetailsContainer);
         editTextLicenseEmail = findViewById(R.id.editTextLicenseEmail);
         editTextLicenseNumber = findViewById(R.id.editTextLicenseNumber);
         buttonLicenseNumber = findViewById(R.id.buttonLicenseNumber);
+
+        licenseNumberLoadingContainer = findViewById(R.id.licenseNumberLoadingContainer);
     }
 
     @Override
@@ -43,25 +65,41 @@ public class LicenseNumberActivity extends AppCompatActivity {
         Timber.i("onStart");
         super.onStart();
 
-        editTextLicenseEmail.setOnKeyListener(new View.OnKeyListener() {
+        editTextLicenseEmail.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Timber.i("editTextLicenseEmail onKey");
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Timber.i("editTextLicenseEmail onTextChanged");
 
                 updateSubmitButton();
+            }
 
-                return false;
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
-        editTextLicenseNumber.setOnKeyListener(new View.OnKeyListener() {
+        editTextLicenseNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Timber.i("editTextLicenseNumber onKey");
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Timber.i("editTextLicenseNumber onTextChanged");
 
                 updateSubmitButton();
+            }
 
-                return false;
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
@@ -70,13 +108,62 @@ public class LicenseNumberActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Timber.i("onClick");
 
-                String licenseEmail = editTextLicenseEmail.getText().toString();
-                String licenseNumber = editTextLicenseNumber.getText().toString();
+                licenseNumberDetailsContainer.setVisibility(View.GONE);
+                licenseNumberLoadingContainer.setVisibility(View.VISIBLE);
+
+                final String licenseEmail = editTextLicenseEmail.getText().toString();
+                final String licenseNumber = editTextLicenseNumber.getText().toString();
                 if (!TextUtils.isEmpty(licenseEmail) && !TextUtils.isEmpty(licenseNumber)) {
-                    // TODO: submit to REST API for validation
-                    // TODO: if invalid license number, display error message
-                    // TODO: if valid license number, store e-mail and license number in shared preferences
-                    // TODO: if valid license number, fetch and store locale of app collection, and redirect to download activity
+                    // Submit License details to REST API for validation
+                    Call<ResponseBody> call = licenseService.getLicense(licenseEmail, licenseNumber);
+                    call.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            Timber.i("onResponse");
+
+                            try {
+                                String jsonBody = response.body().string();
+                                JSONObject jsonObject = new JSONObject(jsonBody);
+                                if (jsonObject.has("appCollectionId")) {
+                                    // The License submitted was valid
+
+                                    Long appCollectionId = jsonObject.getLong("appCollectionId");
+                                    Timber.i("appCollectionId: " + appCollectionId);
+
+                                    // Store details in SharedPreferences
+                                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                    sharedPreferences.edit().putString(PREF_LICENSE_EMAIL, licenseEmail).commit();
+                                    sharedPreferences.edit().putString(PREF_LICENSE_NUMBER, licenseNumber).commit();
+                                    sharedPreferences.edit().putLong(PREF_APP_COLLECTION_ID, appCollectionId).commit();
+
+                                    // Restart application
+                                    Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), R.string.license_validation_failed, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (IOException | JSONException e) {
+                                Timber.e(e);
+
+                                Toast.makeText(getApplicationContext(), "License validation failed", Toast.LENGTH_SHORT).show();
+                            }
+
+                            licenseNumberDetailsContainer.setVisibility(View.VISIBLE);
+                            licenseNumberLoadingContainer.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Timber.e(t, "onFailure");
+
+                            Toast.makeText(getApplicationContext(), "License validation failed", Toast.LENGTH_SHORT).show();
+
+                            licenseNumberDetailsContainer.setVisibility(View.VISIBLE);
+                            licenseNumberLoadingContainer.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
         });
@@ -86,6 +173,8 @@ public class LicenseNumberActivity extends AppCompatActivity {
      * Keep submit button disabled until all required fields have been filled
      */
     private void updateSubmitButton() {
+        Timber.i("updateSubmitButton");
+
         if (TextUtils.isEmpty(editTextLicenseEmail.getText().toString())
                 || TextUtils.isEmpty(editTextLicenseNumber.getText().toString())) {
             buttonLicenseNumber.setEnabled(false);

@@ -19,6 +19,7 @@
         app:spb_checkStateCompleted="true" />
 
     <LinearLayout
+        android:id="@+id/licenseNumberDetailsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -54,5 +55,25 @@
             android:text="@string/save"
             style="?android:attr/buttonBarButtonStyle"
             android:enabled="false" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/licenseNumberLoadingContainer"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/validating_license" />
     </LinearLayout>
 </RelativeLayout>

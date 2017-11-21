@@ -10,6 +10,7 @@ import org.greenrobot.greendao.database.Database;
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.util.VersionHelper;
+import retrofit2.Retrofit;
 import timber.log.Timber;
 
 public class BaseApplication extends Application {
@@ -17,6 +18,8 @@ public class BaseApplication extends Application {
     public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
 
     private DaoSession daoSession;
+
+    private Retrofit retrofit;
 
     @Override
     public void onCreate() {
@@ -65,5 +68,20 @@ public class BaseApplication extends Application {
 
     public DaoSession getDaoSession() {
         return daoSession;
+    }
+
+    /**
+     * Initializes Retrofit and makes it available to all activities.
+     */
+    public Retrofit getRetrofit() {
+        Timber.i("getRetrofit");
+
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BuildConfig.REST_URL + "/")
+                    .build();
+        }
+
+        return retrofit;
     }
 }
