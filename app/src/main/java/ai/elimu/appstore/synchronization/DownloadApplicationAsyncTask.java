@@ -98,7 +98,7 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 "&locale=" + UserPrefsHelper.getLocale(context) +
                 "&deviceModel=" + DeviceInfoHelper.getDeviceModel(context) +
                 "&osVersion=" + Build.VERSION.SDK_INT +
-                "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
+                "&applicationId=" + applicationVersion.getApplication().getId() +
                 "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
         if (!TextUtils.isEmpty(UserPrefsHelper.getLicenseEmail(context))) {
             // Custom Project

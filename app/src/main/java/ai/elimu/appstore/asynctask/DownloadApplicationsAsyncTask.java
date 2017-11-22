@@ -200,7 +200,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
                 "&locale=" + UserPrefsHelper.getLocale(context) +
                 "&deviceModel=" + DeviceInfoHelper.getDeviceModel(context) +
                 "&osVersion=" + Build.VERSION.SDK_INT +
-                "&applicationId=" + DeviceInfoHelper.getApplicationId(context) +
+                "&applicationId=" + applicationVersionGson.getApplication().getId() +
                 "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
         Timber.i("fileUrl: " + fileUrl);
 
