@@ -65,6 +65,7 @@ public class LicenseOptionActivity extends AppCompatActivity {
                         .getPackageName());
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                finish();
             }
         });
     }
