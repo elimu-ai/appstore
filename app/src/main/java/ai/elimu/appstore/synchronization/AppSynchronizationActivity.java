@@ -5,10 +5,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,6 +30,7 @@ import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
 import ai.elimu.appstore.onboarding.LicenseNumberActivity;
+import ai.elimu.appstore.service.GetAppListService;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
@@ -41,12 +43,20 @@ import timber.log.Timber;
 
 public class AppSynchronizationActivity extends AppCompatActivity {
 
+    private GetAppListService getAppListService;
+    private View appSyncLoadingContainer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_app_synchronization);
+
+        appSyncLoadingContainer = findViewById(R.id.appSyncLoadingContainer);
+
+        BaseApplication baseApplication = (BaseApplication) getApplication();
+        getAppListService = baseApplication.getRetrofit().create(GetAppListService.class);
     }
 
     @Override
