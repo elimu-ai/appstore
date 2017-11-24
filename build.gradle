@@ -19,6 +19,8 @@ ext {
     greenDaoVersion = "3.2.2"
     loggingInterceptorVersion = '3.6.0'
     okHttpVersion = '3.6.0'
+    gsonVersion = '2.8.0'
+    gsonConverterVersion = '2.1.0'
 }
 
 allprojects {
