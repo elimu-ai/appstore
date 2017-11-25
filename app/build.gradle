@@ -62,11 +62,6 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingInterceptorVersion"
 
-    //GSON and GSON converter library to serialize & deserialize object automatically in network
-    //request
-    compile "com.google.code.gson:gson:$rootProject.gsonVersion"
-    compile "com.squareup.retrofit2:converter-gson:$rootProject.gsonConverterVersion"
-
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation "com.android.support:support-annotations:$supportLibVersion"
