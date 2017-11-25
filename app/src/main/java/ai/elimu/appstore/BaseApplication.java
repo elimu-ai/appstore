@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.greenrobot.greendao.database.Database;
 
 import ai.elimu.appstore.dao.CustomDaoMaster;
@@ -16,7 +13,6 @@ import ai.elimu.appstore.util.VersionHelper;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
 public class BaseApplication extends Application {
@@ -94,15 +90,9 @@ public class BaseApplication extends Application {
                 .retryOnConnectionFailure(true)
                 .build();
 
-        /**
-         * Gson object used in convert factory for serialization and deserialization of objects
-         */
-        Gson gson = new GsonBuilder().setLenient().create();
-
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BuildConfig.REST_URL + "/")
-                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(okHttpClient)
                     .build();
         }
