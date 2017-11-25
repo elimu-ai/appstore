@@ -78,7 +78,7 @@ public class AppListActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
                 (getApplicationContext());
         long timeOfLastSynchronization = sharedPreferences.getLong(AppSynchronizationActivity
-                .DownloadAppListAsyncTask.PREF_LAST_SYNCHRONIZATION, 0);
+                .PREF_LAST_SYNCHRONIZATION, 0);
         Date date = new Date(timeOfLastSynchronization);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT_LAST_SYNC);
         String dateAsString = simpleDateFormat.format(date);
