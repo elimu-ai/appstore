@@ -11,6 +11,9 @@ import retrofit2.http.Query;
  */
 public interface GetAppListByCollectionIdService {
 
+    /**
+     * See https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#read-applications
+     */
     @GET("project/app-collections/{appCollectionId}/applications")
     Call<ResponseBody> getApplicationListByCollectionId(@Path("appCollectionId") Long appCollectionId,
                                                         @Query("licenseEmail") String licenseEmail,
