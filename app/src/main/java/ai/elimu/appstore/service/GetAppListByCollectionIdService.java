@@ -11,8 +11,8 @@ import retrofit2.http.Query;
  */
 public interface GetAppListByCollectionIdService {
 
-    @GET("project/app-collections/{id}/applications")
-    Call<ResponseBody> getApplicationListByCollectionId(@Path("id") long id,
+    @GET("project/app-collections/{appCollectionId}/applications")
+    Call<ResponseBody> getApplicationListByCollectionId(@Path("appCollectionId") Long appCollectionId,
                                                         @Query("licenseEmail") String licenseEmail,
                                                         @Query("licenseNumber") String licenseNumber);
 }
