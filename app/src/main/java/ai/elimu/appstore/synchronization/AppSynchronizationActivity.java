@@ -31,8 +31,8 @@ import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
 import ai.elimu.appstore.onboarding.LicenseNumberActivity;
-import ai.elimu.appstore.service.GetAppListByCollectionIdService;
-import ai.elimu.appstore.service.GetAppListService;
+import ai.elimu.appstore.service.AppCollectionService;
+import ai.elimu.appstore.service.ApplicationService;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
@@ -48,8 +48,8 @@ import timber.log.Timber;
 
 public class AppSynchronizationActivity extends AppCompatActivity {
 
-    private GetAppListService getAppListService;
-    private GetAppListByCollectionIdService getAppListByCollectionIdService;
+    private ApplicationService mApplicationService;
+    private AppCollectionService mAppCollectionService;
     private View appSyncLoadingContainer;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -65,9 +65,9 @@ public class AppSynchronizationActivity extends AppCompatActivity {
         appSyncLoadingContainer = findViewById(R.id.appSyncLoadingContainer);
 
         BaseApplication baseApplication = (BaseApplication) getApplication();
-        getAppListService = baseApplication.getRetrofit().create(GetAppListService.class);
-        getAppListByCollectionIdService = baseApplication.getRetrofit()
-                .create(GetAppListByCollectionIdService.class);
+        mApplicationService = baseApplication.getRetrofit().create(ApplicationService.class);
+        mAppCollectionService = baseApplication.getRetrofit()
+                .create(AppCollectionService.class);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         /**
                          * Download apps using app collection id
                          */
-                        call = getAppListByCollectionIdService.getApplicationListByCollectionId(
+                        call = mAppCollectionService.getApplicationListByCollectionId(
                                 appCollectionId,
                                 sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_EMAIL, null),
                                 sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_NUMBER, null)
@@ -119,7 +119,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         /**
                          * Download apps using device info
                          */
-                        call = getAppListService.getApplicationList(
+                        call = mApplicationService.getApplicationList(
                                 DeviceInfoHelper.getDeviceId(getApplicationContext()),
                                 ChecksumHelper.getChecksum(getApplicationContext()),
                                 UserPrefsHelper.getLocale(getApplicationContext()).toString(),

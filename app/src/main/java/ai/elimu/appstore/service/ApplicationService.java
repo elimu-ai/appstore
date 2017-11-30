@@ -8,7 +8,7 @@ import retrofit2.http.Query;
 /**
  * Retrofit integration with the REST API for downloading applications list
  */
-public interface GetAppListService {
+public interface ApplicationService {
 
     @GET("application/list")
     Call<ResponseBody> getApplicationList(@Query("deviceId") String deviceId,
