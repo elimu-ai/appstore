@@ -1,50 +1,31 @@
 package ai.elimu.appstore.asynctask;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import ai.elimu.appstore.BaseApplication;
-import ai.elimu.appstore.BuildConfig;
-import ai.elimu.appstore.R;
-import ai.elimu.appstore.dao.ApplicationDao;
-import ai.elimu.appstore.model.Application;
-import ai.elimu.appstore.util.ApkLoader;
-import ai.elimu.appstore.util.ChecksumHelper;
-import ai.elimu.appstore.util.ConnectivityHelper;
-import ai.elimu.appstore.util.DeviceInfoHelper;
-import ai.elimu.appstore.util.JsonLoader;
-import ai.elimu.appstore.util.UserPrefsHelper;
-import ai.elimu.model.enums.admin.ApplicationStatus;
-import ai.elimu.model.gson.admin.ApplicationGson;
-import ai.elimu.model.gson.admin.ApplicationVersionGson;
-import timber.log.Timber;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.util.Calendar;
+
+import ai.elimu.appstore.BaseApplication;
+import ai.elimu.appstore.BuildConfig;
+import ai.elimu.appstore.dao.ApplicationDao;
+import ai.elimu.appstore.util.ApkLoader;
+import ai.elimu.appstore.util.ChecksumHelper;
+import ai.elimu.appstore.util.DeviceInfoHelper;
+import ai.elimu.appstore.util.UserPrefsHelper;
+import ai.elimu.model.gson.admin.ApplicationGson;
+import ai.elimu.model.gson.admin.ApplicationVersionGson;
+import timber.log.Timber;
 
 @Deprecated
 public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Void> {
-
-    public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";
 
     private Context context;
 

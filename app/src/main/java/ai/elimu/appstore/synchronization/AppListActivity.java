@@ -2,9 +2,7 @@ package ai.elimu.appstore.synchronization;
 
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +17,7 @@ import ai.elimu.appstore.R;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.receiver.PackageUpdateReceiver;
+import ai.elimu.appstore.util.AppPrefs;
 import timber.log.Timber;
 
 public class AppListActivity extends AppCompatActivity {
@@ -75,10 +74,7 @@ public class AppListActivity extends AppCompatActivity {
 
         textViewLastSynchronization = findViewById(R.id.textViewLastSynchronization);
         // Display the time of last synchronization with the server
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
-                (getApplicationContext());
-        long timeOfLastSynchronization = sharedPreferences.getLong(AppSynchronizationActivity
-                .DownloadAppListAsyncTask.PREF_LAST_SYNCHRONIZATION, 0);
+        long timeOfLastSynchronization = AppPrefs.getLastSyncTime();
         Date date = new Date(timeOfLastSynchronization);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT_LAST_SYNC);
         String dateAsString = simpleDateFormat.format(date);

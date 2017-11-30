@@ -23,6 +23,8 @@ public class AppPrefs {
 
     public static final String PREF_APP_COLLECTION_ID = "pref_app_collection_id";
 
+    public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";
+
     /**
      * Save application version code
      *
@@ -153,6 +155,25 @@ public class AppPrefs {
      */
     public static long getAppCollectionId() {
         return BaseApplication.getSharedPreferences().getLong(PREF_APP_COLLECTION_ID, 0);
+    }
+
+    /**
+     * Save last time that app synchronization was executed
+     *
+     * @param lastSyncTime The last synchronization time in millisecond
+     */
+    public static void saveLastSyncTime(long lastSyncTime) {
+        BaseApplication.getSharedPreferences().edit().putLong(PREF_LAST_SYNCHRONIZATION,
+                lastSyncTime);
+    }
+
+    /**
+     * Get application's last synchronization time
+     *
+     * @return Last synchronization time in millisecond
+     */
+    public static long getLastSyncTime() {
+        return BaseApplication.getSharedPreferences().getLong(PREF_LAST_SYNCHRONIZATION, 0);
     }
 
 }

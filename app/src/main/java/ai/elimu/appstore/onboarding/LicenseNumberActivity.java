@@ -1,9 +1,7 @@
 package ai.elimu.appstore.onboarding;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -128,7 +126,6 @@ public class LicenseNumberActivity extends AppCompatActivity {
                                     Timber.i("appCollectionId: " + appCollectionId);
 
                                     // Store details in SharedPreferences
-                                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                                     AppPrefs.saveLicenseEmail(licenseEmail);
                                     AppPrefs.saveLicenseNumber(licenseNumber);
                                     AppPrefs.saveAppCollectionId(appCollectionId);

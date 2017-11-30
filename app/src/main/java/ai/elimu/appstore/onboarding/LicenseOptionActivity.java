@@ -1,9 +1,7 @@
 package ai.elimu.appstore.onboarding;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -36,9 +34,6 @@ public class LicenseOptionActivity extends AppCompatActivity {
     protected void onStart() {
         Timber.i("onStart");
         super.onStart();
-
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
-                (this);
 
         buttonOptionNo.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -2,11 +2,9 @@ package ai.elimu.appstore.synchronization;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -63,8 +61,6 @@ public class AppSynchronizationActivity extends AppCompatActivity {
      */
     public class DownloadAppListAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";
-
         private Context context;
 
         private ApplicationDao applicationDao;
@@ -107,7 +103,6 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
 
                 // If AppCollection from custom Project, use a different URL (see LicenseNumberActivity)
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Long appCollectionId = AppPrefs.getAppCollectionId();
                 Timber.i("appCollectionId: " + appCollectionId);
                 if (appCollectionId > 0) {
@@ -206,7 +201,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         Timber.i("Synchronization complete!");
 
                         // Update time of last synchronization
-                        sharedPreferences.edit().putLong(PREF_LAST_SYNCHRONIZATION, Calendar.getInstance().getTimeInMillis()).commit();
+                        AppPrefs.saveLastSyncTime(Calendar.getInstance().getTimeInMillis());
                     }
                 } catch (JSONException e) {
                     Log.e(getClass().getName(), null, e);
