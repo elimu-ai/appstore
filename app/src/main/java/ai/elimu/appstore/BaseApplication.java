@@ -1,30 +1,42 @@
 package ai.elimu.appstore;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.securepreferences.SecurePreferences;
 
 import org.greenrobot.greendao.database.Database;
 
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
+import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.VersionHelper;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
 public class BaseApplication extends Application {
 
-    public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
+    //Name of the shared pref file. If null use the default shared prefs
+    private static final String PREF_FILE_NAME = "app_store_preferences.xml";
+
+    //user password/code used to generate encryption key.
+    private static final String PREF_PASSWORD = "appstore123";
 
     private DaoSession daoSession;
 
     private Retrofit retrofit;
 
+    private static SecurePreferences sSecurePreferences;
+
+    private static Context sContext;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+        BaseApplication.sContext = getApplicationContext();
         // Log config
         if (BuildConfig.DEBUG) {
             // Log everything
@@ -45,24 +57,25 @@ public class BaseApplication extends Application {
         Timber.i("onCreate");
 
         // greenDAO config
-        CustomDaoMaster.DevOpenHelper helper = new CustomDaoMaster.DevOpenHelper(this, "appstore-db");
+        CustomDaoMaster.DevOpenHelper helper = new CustomDaoMaster.DevOpenHelper(this,
+                "appstore-db");
         Database db = helper.getWritableDb();
         daoSession = new CustomDaoMaster(db).newSession();
 
         // Check if the application's versionCode was upgraded
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        int oldVersionCode = sharedPreferences.getInt(PREF_APP_VERSION_CODE, 0);
+        int oldVersionCode = AppPrefs.getAppVersionCode();
         int newVersionCode = VersionHelper.getAppVersionCode(getApplicationContext());
         if (oldVersionCode == 0) {
-            sharedPreferences.edit().putInt(PREF_APP_VERSION_CODE, newVersionCode).commit();
+            AppPrefs.saveAppVersionCode(newVersionCode);
             oldVersionCode = newVersionCode;
         }
         if (oldVersionCode < newVersionCode) {
-            Timber.i("Upgrading application from version " + oldVersionCode + " to " + newVersionCode);
+            Timber.i("Upgrading application from version " + oldVersionCode + " to " +
+                    newVersionCode);
 //            if (newVersionCode == ???) {
 //                // Put relevant tasks required for upgrading here
 //            }
-            sharedPreferences.edit().putInt(PREF_APP_VERSION_CODE, newVersionCode).commit();
+            AppPrefs.saveAppVersionCode(newVersionCode);
         }
     }
 
@@ -83,5 +96,27 @@ public class BaseApplication extends Application {
         }
 
         return retrofit;
+    }
+
+    /**
+     * Provides {@SecurePreferences} singleton instance to access shared preferences
+     *
+     * @return A single instance of {@SecurePreferences}
+     */
+    public static SharedPreferences getSharedPreferences() {
+        if (sSecurePreferences == null) {
+            synchronized (BaseApplication.class) {
+                if (sSecurePreferences == null) {
+                    sSecurePreferences = new SecurePreferences(getAppContext(), PREF_PASSWORD,
+                            PREF_FILE_NAME);
+                    SecurePreferences.setLoggingEnabled(BuildConfig.DEBUG);
+                }
+            }
+        }
+        return sSecurePreferences;
+    }
+
+    public static Context getAppContext() {
+        return BaseApplication.sContext;
     }
 }
