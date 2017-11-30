@@ -11,7 +11,9 @@ import retrofit2.http.Query;
  */
 public interface AppCollectionService {
 
-
+    /**
+     * See https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#read-applications
+     */
     //API specs: https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#appcollection
     @GET("project/app-collections/{appCollectionId}/applications")
     Call<ResponseBody> getApplicationListByCollectionId(@Path("appCollectionId") long appCollectionId,
