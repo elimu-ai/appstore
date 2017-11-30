@@ -2,11 +2,9 @@ package ai.elimu.appstore.onboarding;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,17 +15,15 @@ import org.json.JSONObject;
 
 import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.R;
+import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
 import ai.elimu.appstore.util.JsonLoader;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.appstore.util.VersionHelper;
-import ai.elimu.model.enums.Locale;
 import timber.log.Timber;
 
 public class DeviceRegistrationActivity extends AppCompatActivity {
-
-    public static final String PREF_IS_REGISTERED = "pref_is_registered";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +88,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         // Device was successfully registered
                         Timber.i("Device was successfully registered");
 
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                        sharedPreferences.edit().putBoolean(PREF_IS_REGISTERED, true).commit();
+                        AppPrefs.saveRegisterStatus(true);
 
                         // Restart application
                         Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
@@ -104,8 +99,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         // Device has already been registered
                         Timber.i("Device has already been registered");
 
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                        sharedPreferences.edit().putBoolean(PREF_IS_REGISTERED, true).commit();
+                        AppPrefs.saveRegisterStatus(true);
 
                         // Restart application
                         Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());

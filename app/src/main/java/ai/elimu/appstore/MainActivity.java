@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else {
                 // Register device
-                boolean isRegistered = sharedPreferences.getBoolean(DeviceRegistrationActivity.PREF_IS_REGISTERED, false);
+                boolean isRegistered = AppPrefs.getRegisterStatus();
                 Timber.i("isRegistered: " + isRegistered);
                 if (!isRegistered) {
                     Intent intent = new Intent(this, DeviceRegistrationActivity.class);
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else if ("yes".equals(licenseOption)) {
-            Long appCollectionId = sharedPreferences.getLong(LicenseNumberActivity.PREF_APP_COLLECTION_ID, 0);
+            Long appCollectionId = AppPrefs.getAppCollectionId();
             Timber.i("appCollectionId: " + appCollectionId);
             if (appCollectionId == 0) {
                 Intent intent = new Intent(this, LicenseNumberActivity.class);
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else {
                 // Register device
-                boolean isRegistered = sharedPreferences.getBoolean(DeviceRegistrationActivity.PREF_IS_REGISTERED, false);
+                boolean isRegistered = AppPrefs.getRegisterStatus();
                 Timber.i("isRegistered: " + isRegistered);
                 if (!isRegistered) {
                     Intent intent = new Intent(this, DeviceRegistrationActivity.class);

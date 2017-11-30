@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -28,7 +28,7 @@ import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
-import ai.elimu.appstore.onboarding.LicenseNumberActivity;
+import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
@@ -108,13 +108,13 @@ public class AppSynchronizationActivity extends AppCompatActivity {
 
                 // If AppCollection from custom Project, use a different URL (see LicenseNumberActivity)
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                Long appCollectionId = sharedPreferences.getLong(LicenseNumberActivity.PREF_APP_COLLECTION_ID, 0);
+                Long appCollectionId = AppPrefs.getAppCollectionId();
                 Timber.i("appCollectionId: " + appCollectionId);
                 if (appCollectionId > 0) {
                     // See https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#read-applications
                     url = BuildConfig.REST_URL + "/project/app-collections/" + appCollectionId + "/applications" +
-                            "?licenseEmail=" + sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_EMAIL, null) +
-                            "&licenseNumber=" + sharedPreferences.getString(LicenseNumberActivity.PREF_LICENSE_NUMBER, null);
+                            "?licenseEmail=" + AppPrefs.getLicenseEmail() +
+                            "&licenseNumber=" + AppPrefs.getLicenseNumber();
                 }
 
                 String jsonResponse = JsonLoader.loadJson(url);
