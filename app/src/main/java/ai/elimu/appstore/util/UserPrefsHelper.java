@@ -6,14 +6,13 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import ai.elimu.appstore.onboarding.LicenseNumberActivity;
-import ai.elimu.appstore.onboarding.LocaleActivity;
 import ai.elimu.model.enums.Locale;
 
 public class UserPrefsHelper {
 
     public static Locale getLocale(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String localeAsString = sharedPreferences.getString(LocaleActivity.PREF_LOCALE, null);
+        String localeAsString = AppPrefs.getLocale();
         if (TextUtils.isEmpty(localeAsString)) {
             Long appCollectionId = sharedPreferences.getLong(LicenseNumberActivity.PREF_APP_COLLECTION_ID, 0);
             if (appCollectionId > 0) {

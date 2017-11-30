@@ -17,6 +17,7 @@ import ai.elimu.appstore.onboarding.LicenseNumberActivity;
 import ai.elimu.appstore.onboarding.LicenseOptionActivity;
 import ai.elimu.appstore.onboarding.LocaleActivity;
 import ai.elimu.appstore.synchronization.AppSynchronizationActivity;
+import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.RootUtil;
 import timber.log.Timber;
 
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Ask for license number (used in custom projects)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String licenseOption = sharedPreferences.getString(LicenseOptionActivity.PREF_LICENSE_OPTION, null);
+        String licenseOption = AppPrefs.getLicenseOption();
         Timber.i("licenseOption: " + licenseOption);
         if (TextUtils.isEmpty(licenseOption)) {
             Intent intent = new Intent(this, LicenseOptionActivity.class);
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else if ("no".equals(licenseOption)) {
             // Ask for locale (only apps for the selected locale will be downloaded)
-            String localeAsString = sharedPreferences.getString(LocaleActivity.PREF_LOCALE, null);
+            String localeAsString = AppPrefs.getLocale();
             Timber.i("localeAsString: " + localeAsString);
             if (TextUtils.isEmpty(localeAsString)) {
                 Intent intent = new Intent(this, LocaleActivity.class);

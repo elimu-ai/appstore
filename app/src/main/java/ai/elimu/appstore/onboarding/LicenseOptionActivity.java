@@ -9,15 +9,18 @@ import android.view.View;
 import android.widget.Button;
 
 import ai.elimu.appstore.R;
+import ai.elimu.appstore.util.AppPrefs;
 import timber.log.Timber;
 
 public class LicenseOptionActivity extends AppCompatActivity {
 
-    public static final String PREF_LICENSE_OPTION = "pref_license_option";
-
     private Button buttonOptionNo;
 
     private Button buttonOptionYes;
+
+    private final String LICENSE_OPTION_NO = "no";
+
+    private final String LICENSE_OPTION_YES = "yes";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,7 @@ public class LicenseOptionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Timber.i("buttonOptionNo onClick");
 
-                sharedPreferences.edit().putString(PREF_LICENSE_OPTION, "no").commit();
+                AppPrefs.saveLicenseOption(LICENSE_OPTION_NO);
 
                 // Restart application
                 Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext()
@@ -58,7 +61,7 @@ public class LicenseOptionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Timber.i("buttonOptionYes onClick");
 
-                sharedPreferences.edit().putString(PREF_LICENSE_OPTION, "yes").commit();
+                AppPrefs.saveLicenseOption(LICENSE_OPTION_YES);
 
                 // Restart application
                 Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext()
