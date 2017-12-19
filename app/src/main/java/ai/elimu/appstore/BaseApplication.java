@@ -10,6 +10,8 @@ import org.greenrobot.greendao.database.Database;
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.util.VersionHelper;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
@@ -76,9 +78,22 @@ public class BaseApplication extends Application {
     public Retrofit getRetrofit() {
         Timber.i("getRetrofit");
 
+        /**
+         * Adding logging interceptor for printing out Retrofit request url
+         * in debug mode
+         */
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY :
+                HttpLoggingInterceptor.Level.NONE);
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .retryOnConnectionFailure(true)
+                .build();
+
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BuildConfig.REST_URL + "/")
+                    .client(okHttpClient)
                     .build();
         }
 

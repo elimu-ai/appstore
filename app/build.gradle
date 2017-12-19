@@ -58,6 +58,10 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
 
+    //Logging interceptor for printing out Retrofit request url
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingInterceptorVersion"
+
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation "com.android.support:support-annotations:$supportLibVersion"
