@@ -1,11 +1,9 @@
 package ai.elimu.appstore.synchronization;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Calendar;
@@ -31,10 +28,9 @@ import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
-import ai.elimu.appstore.util.AppPrefs;
-import ai.elimu.appstore.onboarding.LicenseNumberActivity;
 import ai.elimu.appstore.service.AppCollectionService;
 import ai.elimu.appstore.service.ApplicationService;
+import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
@@ -163,8 +159,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
         ApplicationVersionDao applicationVersionDao = ((BaseApplication) getApplicationContext()).getDaoSession().getApplicationVersionDao();
 
         // If AppCollection from custom Project, use a different URL (see LicenseNumberActivity)
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        Long appCollectionId = sharedPreferences.getLong(LicenseNumberActivity.PREF_APP_COLLECTION_ID, 0);
+        Long appCollectionId = AppPrefs.getAppCollectionId();
         Timber.i("appCollectionId: " + appCollectionId);
 
         try {
