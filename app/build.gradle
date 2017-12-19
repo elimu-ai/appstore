@@ -8,8 +8,8 @@ android {
         applicationId "ai.elimu.appstore"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2000008
-        versionName "2.0.8-SNAPSHOT"
+        versionCode 2000009
+        versionName "2.0.9-SNAPSHOT"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -58,6 +58,10 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation "com.scottyab:secure-preferences-lib:$rootProject.securePreferencesVersion"
+
+    //Logging interceptor for printing out Retrofit request url
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingInterceptorVersion"
 
     testImplementation 'junit:junit:4.12'
 
