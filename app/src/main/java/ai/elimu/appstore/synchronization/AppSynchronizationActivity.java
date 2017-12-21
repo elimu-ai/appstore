@@ -254,9 +254,9 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         AppPrefs.saveLastSyncTime(Calendar.getInstance().getTimeInMillis());
                     }
                 } catch (JSONException e) {
-                    Log.e(getClass().getName(), null, e);
+                    Timber.e(e);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Timber.e(e);
                 }
             }
 
