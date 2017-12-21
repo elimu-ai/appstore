@@ -3,11 +3,18 @@ package ai.elimu.appstore;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.util.Base64;
 import android.util.Log;
 
 import com.securepreferences.SecurePreferences;
 
 import org.greenrobot.greendao.database.Database;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
@@ -24,7 +31,7 @@ public class BaseApplication extends Application {
     private static final String PREF_FILE_NAME = "app_store_preferences.xml";
 
     //user password/code used to generate encryption key.
-    private static final String PREF_PASSWORD = "appstore123";
+    private static String PREF_PASSWORD;
 
     private DaoSession daoSession;
 
@@ -37,6 +44,8 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        PREF_PASSWORD = getKeyHash();
 
         BaseApplication.sContext = getApplicationContext();
         // Log config
@@ -133,5 +142,32 @@ public class BaseApplication extends Application {
 
     public static Context getAppContext() {
         return BaseApplication.sContext;
+    }
+
+    /**
+     * Get keystore hash value to use as secure preferences' password
+     * @return The hash value generated from signing key
+     */
+    private String getKeyHash(){
+        String keyHash = "";
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(),
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                keyHash = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+            }
+
+            return keyHash;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "";
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }
