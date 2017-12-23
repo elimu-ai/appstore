@@ -94,7 +94,7 @@ new GitHub branch to work on:
    the branch (you) will be the person responsible for merging the branch. So the peers reviewing 
    your code will not merge the branch; that is your responsibility.
    
-   9. If you consider the issue complete (code reviewed, merged, and tested), delete the branch, and 
+   9. If you consider the issue complete (code reviewed and tested), merge and delete the branch, and 
    move the GitHub issue to the "Done" column. Well done!
 
 If any of the above steps are unclear, or you have any other questions or comments, please reach out 
