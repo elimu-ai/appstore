@@ -37,17 +37,17 @@ public class BaseApplication extends Application {
 
     private Retrofit retrofit;
 
-    private static SecurePreferences sSecurePreferences;
+    private static SecurePreferences securePreferences;
 
-    private static Context sContext;
+    private static Context context;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         PREF_PASSWORD = getKeyHash();
+        context = getApplicationContext();
 
-        BaseApplication.sContext = getApplicationContext();
         // Log config
         if (BuildConfig.DEBUG) {
             // Log everything
@@ -68,26 +68,11 @@ public class BaseApplication extends Application {
         Timber.i("onCreate");
 
         // greenDAO config
-        CustomDaoMaster.DevOpenHelper helper = new CustomDaoMaster.DevOpenHelper(this,
-                "appstore-db");
+        CustomDaoMaster.DevOpenHelper helper = new CustomDaoMaster.DevOpenHelper(this, "appstore-db");
         Database db = helper.getWritableDb();
         daoSession = new CustomDaoMaster(db).newSession();
 
-        // Check if the application's versionCode was upgraded
-        int oldVersionCode = AppPrefs.getAppVersionCode();
-        int newVersionCode = VersionHelper.getAppVersionCode(getApplicationContext());
-        if (oldVersionCode == 0) {
-            AppPrefs.saveAppVersionCode(newVersionCode);
-            oldVersionCode = newVersionCode;
-        }
-        if (oldVersionCode < newVersionCode) {
-            Timber.i("Upgrading application from version " + oldVersionCode + " to " +
-                    newVersionCode);
-//            if (newVersionCode == ???) {
-//                // Put relevant tasks required for upgrading here
-//            }
-            AppPrefs.saveAppVersionCode(newVersionCode);
-        }
+        VersionHelper.updateAppVersion(getApplicationContext());
     }
 
     public DaoSession getDaoSession() {
@@ -128,20 +113,20 @@ public class BaseApplication extends Application {
      * @return A single instance of {@SecurePreferences}
      */
     public static SharedPreferences getSharedPreferences() {
-        if (sSecurePreferences == null) {
+        if (securePreferences == null) {
             synchronized (BaseApplication.class) {
-                if (sSecurePreferences == null) {
-                    sSecurePreferences = new SecurePreferences(getAppContext(), PREF_PASSWORD,
+                if (securePreferences == null) {
+                    securePreferences = new SecurePreferences(getAppContext(), PREF_PASSWORD,
                             PREF_FILE_NAME);
                     SecurePreferences.setLoggingEnabled(BuildConfig.DEBUG);
                 }
             }
         }
-        return sSecurePreferences;
+        return securePreferences;
     }
 
     public static Context getAppContext() {
-        return BaseApplication.sContext;
+        return context;
     }
 
     /**

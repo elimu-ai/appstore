@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else {
                 // Register device
-                boolean isRegistered = AppPrefs.getRegisterStatus();
+                boolean isRegistered = AppPrefs.isDeviceRegistered();
                 Timber.i("isRegistered: " + isRegistered);
                 if (!isRegistered) {
                     Intent intent = new Intent(this, DeviceRegistrationActivity.class);
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else {
                 // Register device
-                boolean isRegistered = AppPrefs.getRegisterStatus();
+                boolean isRegistered = AppPrefs.isDeviceRegistered();
                 Timber.i("isRegistered: " + isRegistered);
                 if (!isRegistered) {
                     Intent intent = new Intent(this, DeviceRegistrationActivity.class);

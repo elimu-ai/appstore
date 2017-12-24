@@ -86,7 +86,7 @@ public class AppPrefs {
      *
      * @param isRegistered true if device is already registered, false if not
      */
-    public static void saveRegisterStatus(boolean isRegistered) {
+    public static void saveDeviceRegisterStatus(boolean isRegistered) {
         BaseApplication.getSharedPreferences().edit().putBoolean(PREF_IS_REGISTERED,
                 isRegistered).apply();
     }
@@ -96,7 +96,7 @@ public class AppPrefs {
      *
      * @return true if already registered, false if not
      */
-    public static boolean getRegisterStatus() {
+    public static boolean isDeviceRegistered() {
         return BaseApplication.getSharedPreferences().getBoolean(PREF_IS_REGISTERED, false);
     }
 

@@ -88,7 +88,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         // Device was successfully registered
                         Timber.i("Device was successfully registered");
 
-                        AppPrefs.saveRegisterStatus(true);
+                        AppPrefs.saveDeviceRegisterStatus(true);
 
                         // Restart application
                         Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
@@ -99,7 +99,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                         // Device has already been registered
                         Timber.i("Device has already been registered");
 
-                        AppPrefs.saveRegisterStatus(true);
+                        AppPrefs.saveDeviceRegisterStatus(true);
 
                         // Restart application
                         Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
