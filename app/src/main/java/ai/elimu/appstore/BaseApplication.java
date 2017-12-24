@@ -147,11 +147,11 @@ public class BaseApplication extends Application {
             return keyHash;
         }
         catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return "";
         }
         catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return "";
         }
     }
