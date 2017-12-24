@@ -2,10 +2,8 @@ package ai.elimu.appstore;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +15,7 @@ import ai.elimu.appstore.onboarding.LicenseNumberActivity;
 import ai.elimu.appstore.onboarding.LicenseOptionActivity;
 import ai.elimu.appstore.onboarding.LocaleActivity;
 import ai.elimu.appstore.synchronization.AppSynchronizationActivity;
+import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.RootUtil;
 import timber.log.Timber;
 
@@ -60,8 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Ask for license number (used in custom projects)
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String licenseOption = sharedPreferences.getString(LicenseOptionActivity.PREF_LICENSE_OPTION, null);
+        String licenseOption = AppPrefs.getLicenseOption();
         Timber.i("licenseOption: " + licenseOption);
         if (TextUtils.isEmpty(licenseOption)) {
             Intent intent = new Intent(this, LicenseOptionActivity.class);
@@ -69,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else if ("no".equals(licenseOption)) {
             // Ask for locale (only apps for the selected locale will be downloaded)
-            String localeAsString = sharedPreferences.getString(LocaleActivity.PREF_LOCALE, null);
+            String localeAsString = AppPrefs.getLocale();
             Timber.i("localeAsString: " + localeAsString);
             if (TextUtils.isEmpty(localeAsString)) {
                 Intent intent = new Intent(this, LocaleActivity.class);
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else {
                 // Register device
-                boolean isRegistered = sharedPreferences.getBoolean(DeviceRegistrationActivity.PREF_IS_REGISTERED, false);
+                boolean isRegistered = AppPrefs.isDeviceRegistered();
                 Timber.i("isRegistered: " + isRegistered);
                 if (!isRegistered) {
                     Intent intent = new Intent(this, DeviceRegistrationActivity.class);
@@ -91,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else if ("yes".equals(licenseOption)) {
-            Long appCollectionId = sharedPreferences.getLong(LicenseNumberActivity.PREF_APP_COLLECTION_ID, 0);
+            Long appCollectionId = AppPrefs.getAppCollectionId();
             Timber.i("appCollectionId: " + appCollectionId);
             if (appCollectionId == 0) {
                 Intent intent = new Intent(this, LicenseNumberActivity.class);
@@ -99,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else {
                 // Register device
-                boolean isRegistered = sharedPreferences.getBoolean(DeviceRegistrationActivity.PREF_IS_REGISTERED, false);
+                boolean isRegistered = AppPrefs.isDeviceRegistered();
                 Timber.i("isRegistered: " + isRegistered);
                 if (!isRegistered) {
                     Intent intent = new Intent(this, DeviceRegistrationActivity.class);

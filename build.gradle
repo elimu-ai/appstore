@@ -19,6 +19,7 @@ ext {
     greenDaoVersion = "3.2.2"
     loggingInterceptorVersion = '3.6.0'
     okHttpVersion = '3.6.0'
+    securePreferencesVersion = '0.1.4'
 }
 
 allprojects {

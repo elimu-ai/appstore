@@ -1,9 +1,7 @@
 package ai.elimu.appstore.onboarding;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -21,6 +19,7 @@ import java.io.IOException;
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.service.LicenseService;
+import ai.elimu.appstore.util.AppPrefs;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,10 +27,6 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 public class LicenseNumberActivity extends AppCompatActivity {
-
-    public static final String PREF_LICENSE_EMAIL = "pref_license_email";
-    public static final String PREF_LICENSE_NUMBER = "pref_license_number";
-    public static final String PREF_APP_COLLECTION_ID = "pref_app_collection_id";
 
     private LicenseService licenseService;
 
@@ -131,10 +126,9 @@ public class LicenseNumberActivity extends AppCompatActivity {
                                     Timber.i("appCollectionId: " + appCollectionId);
 
                                     // Store details in SharedPreferences
-                                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                    sharedPreferences.edit().putString(PREF_LICENSE_EMAIL, licenseEmail).commit();
-                                    sharedPreferences.edit().putString(PREF_LICENSE_NUMBER, licenseNumber).commit();
-                                    sharedPreferences.edit().putLong(PREF_APP_COLLECTION_ID, appCollectionId).commit();
+                                    AppPrefs.saveLicenseEmail(licenseEmail);
+                                    AppPrefs.saveLicenseNumber(licenseNumber);
+                                    AppPrefs.saveAppCollectionId(appCollectionId);
 
                                     // Restart application
                                     Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());

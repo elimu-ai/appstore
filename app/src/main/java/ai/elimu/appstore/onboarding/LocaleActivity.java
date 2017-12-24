@@ -1,9 +1,7 @@
 package ai.elimu.appstore.onboarding;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -11,12 +9,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import ai.elimu.appstore.R;
+import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.model.enums.Locale;
 import timber.log.Timber;
 
 public class LocaleActivity extends AppCompatActivity {
-
-    public static final String PREF_LOCALE = "pref_locale";
 
     private Spinner spinnerLocale;
 
@@ -68,8 +65,7 @@ public class LocaleActivity extends AppCompatActivity {
 
                 // TODO: if root, set locale of device?
 
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                sharedPreferences.edit().putString(PREF_LOCALE, localeSelected.toString()).commit();
+                AppPrefs.saveLocale(localeSelected.toString());
 
                 // Restart application
                 Intent intent = getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
