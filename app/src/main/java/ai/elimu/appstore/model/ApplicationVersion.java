@@ -1,5 +1,6 @@
 package ai.elimu.appstore.model;
 
+import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
@@ -8,21 +9,11 @@ import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Calendar;
-import java.util.Set;
 
-import ai.elimu.appstore.dao.converter.ApplicationStatusConverter;
-import ai.elimu.appstore.dao.converter.CalendarConverter;
-import ai.elimu.appstore.dao.converter.LiteracySkillSetConverter;
-import ai.elimu.appstore.dao.converter.LocaleConverter;
-import ai.elimu.appstore.dao.converter.NumeracySkillSetConverter;
-import ai.elimu.model.enums.Locale;
-import ai.elimu.model.enums.admin.ApplicationStatus;
-import ai.elimu.model.enums.content.LiteracySkill;
-import ai.elimu.model.enums.content.NumeracySkill;
-import org.greenrobot.greendao.DaoException;
-import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
+import ai.elimu.appstore.dao.DaoSession;
+import ai.elimu.appstore.dao.converter.CalendarConverter;
 
 @Entity
 public class ApplicationVersion {
@@ -52,6 +43,9 @@ public class ApplicationVersion {
     @Convert(converter = CalendarConverter.class, columnType = Long.class)
     private Calendar timeUploaded;
 
+    @NotNull
+    private String checksumMd5;
+
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -60,11 +54,10 @@ public class ApplicationVersion {
     @Generated(hash = 1339503542)
     private transient ApplicationVersionDao myDao;
 
-    @Generated(hash = 781349668)
-    public ApplicationVersion(Long id, long applicationId,
-            @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
-            @NotNull String contentType, @NotNull Integer versionCode,
-            String startCommand, @NotNull Calendar timeUploaded) {
+    @Generated(hash = 1403843754)
+    public ApplicationVersion(Long id, long applicationId, @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
+            @NotNull String contentType, @NotNull Integer versionCode, String startCommand,
+            @NotNull Calendar timeUploaded, @NotNull String checksumMd5) {
         this.id = id;
         this.applicationId = applicationId;
         this.fileSizeInKb = fileSizeInKb;
@@ -73,6 +66,7 @@ public class ApplicationVersion {
         this.versionCode = versionCode;
         this.startCommand = startCommand;
         this.timeUploaded = timeUploaded;
+        this.checksumMd5 = checksumMd5;
     }
 
     @Generated(hash = 386036356)
@@ -141,6 +135,14 @@ public class ApplicationVersion {
 
     public void setTimeUploaded(Calendar timeUploaded) {
         this.timeUploaded = timeUploaded;
+    }
+
+    public String getChecksumMd5() {
+        return checksumMd5;
+    }
+
+    public void setChecksumMd5(String checksumMd5) {
+        this.checksumMd5 = checksumMd5;
     }
 
     @Generated(hash = 110579603)
