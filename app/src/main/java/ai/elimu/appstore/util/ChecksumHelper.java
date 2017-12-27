@@ -72,7 +72,7 @@ public class ChecksumHelper {
      * @param updateFile The file whose's MD5 hash value needs to be calculated
      * @return The MD5 hash value of input file
      */
-    private static String calculateMd5(File updateFile) {
+    public static String calculateMd5(File updateFile) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");

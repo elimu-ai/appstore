@@ -134,6 +134,7 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
         if (!apkFile.exists()) {
             FileOutputStream fileOutputStream = null;
+            String downloadedApkChecksum = "";
             try {
                 URL url = new URL(urlValue);
 
@@ -178,6 +179,8 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 fileOutputStream = new FileOutputStream(apkFile);
                 fileOutputStream.write(bytes);
                 fileOutputStream.flush();
+
+                downloadedApkChecksum = ChecksumHelper.calculateMd5(apkFile);
             } catch (MalformedURLException e) {
                 Timber.e(e, "MalformedURLException");
             } catch (IOException e) {
@@ -189,6 +192,13 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                     } catch (IOException e) {
                         Timber.i(e, "IOException");
                     }
+                }
+
+                /**
+                 * Delete downloaded APK file in case its checksum is invalid
+                 */
+                if (!applicationVersion.getChecksumMd5().equals(downloadedApkChecksum)) {
+                    apkFile.delete();
                 }
             }
         }
