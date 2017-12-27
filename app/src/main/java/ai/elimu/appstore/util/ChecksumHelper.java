@@ -47,6 +47,8 @@ public class ChecksumHelper {
      * @param md5        Provided MD5 string
      * @param updateFile The file whose's MD5 value needs to be checked
      * @return true if file is valid, false if invalid
+     *
+     * Reference: https://github.com/CyanogenMod/android_packages_apps_CMUpdater/blob/cm-10.2/src/com/cyanogenmod/updater/utils/MD5.java
      */
     public static boolean checkMd5(String md5, File updateFile) {
         if (TextUtils.isEmpty(md5) || updateFile == null) {
