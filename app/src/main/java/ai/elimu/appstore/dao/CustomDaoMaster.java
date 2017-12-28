@@ -43,8 +43,7 @@ public class CustomDaoMaster extends DaoMaster {
             }
 
             if (oldVersion < 2000010) {
-                dropAllTables(db, true);
-                onCreate(db);
+                DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
             }
         }
     }
