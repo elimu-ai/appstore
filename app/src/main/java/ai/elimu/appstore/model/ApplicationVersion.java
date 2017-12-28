@@ -43,7 +43,6 @@ public class ApplicationVersion {
     @Convert(converter = CalendarConverter.class, columnType = Long.class)
     private Calendar timeUploaded;
 
-    @NotNull
     private String checksumMd5;
 
     /** Used to resolve relations */
@@ -54,10 +53,10 @@ public class ApplicationVersion {
     @Generated(hash = 1339503542)
     private transient ApplicationVersionDao myDao;
 
-    @Generated(hash = 1403843754)
+    @Generated(hash = 86392402)
     public ApplicationVersion(Long id, long applicationId, @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
             @NotNull String contentType, @NotNull Integer versionCode, String startCommand,
-            @NotNull Calendar timeUploaded, @NotNull String checksumMd5) {
+            @NotNull Calendar timeUploaded, String checksumMd5) {
         this.id = id;
         this.applicationId = applicationId;
         this.fileSizeInKb = fileSizeInKb;
