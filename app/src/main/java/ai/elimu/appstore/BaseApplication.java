@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
+import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.appstore.util.VersionHelper;
 import okhttp3.OkHttpClient;
@@ -77,16 +78,17 @@ public class BaseApplication extends Application {
         Database db = helper.getWritableDb();
         daoSession = new CustomDaoMaster(db).newSession();
 
-        VersionHelper.updateAppVersion(getApplicationContext());
+        int oldVersionCode = AppPrefs.getAppVersionCode();
+        if (oldVersionCode < 2000010) {
 
-        /**
-         * Check and delete existing APKs to avoid manually deleting corrupt files before upgrading to version 2.0.9
-         * of the Appstore application
-         */
-        int newVersionCode = VersionHelper.getAppVersionCode(context);
-        if (newVersionCode < 2000009) {
+            /**
+             * Check and delete existing APKs to avoid manually deleting corrupt files before upgrading to version 2.0.9
+             * of the Appstore application
+             */
             deleteExistingApks();
         }
+
+        VersionHelper.updateAppVersion(getApplicationContext());
     }
 
     public DaoSession getDaoSession() {
