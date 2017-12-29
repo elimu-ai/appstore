@@ -197,7 +197,7 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 /**
                  * Delete downloaded APK file in case its checksum is invalid
                  */
-                if (!applicationVersion.getChecksumMd5().equals(downloadedApkChecksum)) {
+                if (!downloadedApkChecksum.equals(applicationVersion.getChecksumMd5())) {
                     apkFile.delete();
                 }
             }

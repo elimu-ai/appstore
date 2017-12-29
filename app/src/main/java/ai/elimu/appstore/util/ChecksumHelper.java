@@ -80,7 +80,7 @@ public class ChecksumHelper {
             digest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             Timber.e(e);
-            return null;
+            return "";
         }
 
         InputStream is;
@@ -88,7 +88,7 @@ public class ChecksumHelper {
             is = new FileInputStream(updateFile);
         } catch (FileNotFoundException e) {
             Timber.e(e);
-            return null;
+            return "";
         }
 
         byte[] buffer = new byte[8192]; //8x1024 = 8MB
