@@ -277,7 +277,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                         File jsonFile = new File(fileDir, "app-collection.json");
                                         Timber.i("jsonFile: " + jsonFile);
                                         try {
-                                            FileUtils.writeStringToFile(jsonFile, jsonReponse, "UTF-8", true);
+                                            FileUtils.writeStringToFile(jsonFile, jsonReponse, "UTF-8", false);
                                         } catch (IOException e) {
                                             Timber.e(e);
                                         }
