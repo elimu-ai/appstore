@@ -268,13 +268,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                         String jsonReponse = responseBody.string();
                                         Timber.i("jsonReponse: " + jsonReponse);
 
-                                        File fileDir = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/");
-                                        Timber.i("fileDir: " + fileDir);
-                                        if (!fileDir.exists()) {
-                                            fileDir.mkdirs();
-                                        }
-
-                                        File jsonFile = new File(fileDir, "app-collection.json");
+                                        File jsonFile = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/", "app-collection.json");
                                         Timber.i("jsonFile: " + jsonFile);
                                         FileUtils.writeStringToFile(jsonFile, jsonReponse, "UTF-8", false);
                                     } catch (IOException e) {
