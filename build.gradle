@@ -30,7 +30,7 @@ allprojects {
             url "https://maven.google.com"
         }
         maven {
-            url "http://maven.elimu.ai:8081/repository/internal/"
+            url "https://dl.bintray.com/elimu-ai/maven/"
         }
     }
 }
