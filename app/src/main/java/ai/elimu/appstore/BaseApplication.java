@@ -15,10 +15,10 @@ import org.greenrobot.greendao.database.Database;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
-import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.VersionHelper;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -94,6 +94,7 @@ public class BaseApplication extends Application {
                 HttpLoggingInterceptor.Level.NONE);
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(logging)
+                .readTimeout(20, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .build();
 
