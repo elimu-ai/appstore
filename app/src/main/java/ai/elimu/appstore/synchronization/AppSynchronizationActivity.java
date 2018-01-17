@@ -3,6 +3,7 @@ package ai.elimu.appstore.synchronization;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,10 +12,12 @@ import android.view.View;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Calendar;
@@ -47,7 +50,7 @@ import timber.log.Timber;
 public class AppSynchronizationActivity extends AppCompatActivity {
 
     private ApplicationService mApplicationService;
-    private AppCollectionService mAppCollectionService;
+    private AppCollectionService appCollectionService;
     private View appSyncLoadingContainer;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -64,7 +67,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
 
         BaseApplication baseApplication = (BaseApplication) getApplication();
         mApplicationService = baseApplication.getRetrofit().create(ApplicationService.class);
-        mAppCollectionService = baseApplication.getRetrofit()
+        appCollectionService = baseApplication.getRetrofit()
                 .create(AppCollectionService.class);
     }
 
@@ -105,7 +108,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         /**
                          * Download apps using app collection id
                          */
-                        call = mAppCollectionService.getApplicationListByCollectionId(
+                        call = appCollectionService.getApplicationListByCollectionId(
                                 appCollectionId,
                                 AppPrefs.getLicenseEmail(),
                                 AppPrefs.getLicenseNumber()
@@ -249,17 +252,49 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         }
                     }
                 }
+
+                if (appCollectionId > 0) {
+                    // Custom Project AppCollection
+
+                    // Store JSON response in a file on the /sdcard so that the Custom Launcher can fetch the AppCollection
+                    // TODO: create Android library for providing the AppCollection instead of writing/reading file
+                    appCollectionService.getAppCollection(appCollectionId, AppPrefs.getLicenseEmail(), AppPrefs.getLicenseNumber())
+                            .enqueue(new Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    Timber.i("appCollectionService.getAppCollection onResponse");
+
+                                    ResponseBody responseBody = response.body();
+                                    try {
+                                        String jsonReponse = responseBody.string();
+                                        Timber.i("jsonReponse: " + jsonReponse);
+
+                                        File jsonFile = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/", "app-collection.json");
+                                        Timber.i("jsonFile: " + jsonFile);
+                                        FileUtils.writeStringToFile(jsonFile, jsonReponse, "UTF-8", false);
+                                    } catch (IOException e) {
+                                        Timber.e(e);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    Timber.e(t,"appCollectionService.getAppCollection onFailure");
+                                }
+                            });
+                }
+
                 Timber.i("Synchronization complete!");
 
-                        // Update time of last synchronization
-                        AppPrefs.saveLastSyncTime(Calendar.getInstance().getTimeInMillis());
-                    }
-                } catch (JSONException e) {
-                    Timber.e(e);
-                } catch (IOException e) {
-                    Timber.e(e);
-                }
+                // Update time of last synchronization
+                AppPrefs.saveLastSyncTime(Calendar.getInstance().getTimeInMillis());
             }
+        } catch (JSONException e) {
+            Timber.e(e);
+        } catch (IOException e) {
+            Timber.e(e);
+        }
+    }
 
     /**
      * Go to app list activity
