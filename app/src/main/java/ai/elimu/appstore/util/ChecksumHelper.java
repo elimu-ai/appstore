@@ -68,6 +68,24 @@ public class ChecksumHelper {
         return calculatedDigest.equalsIgnoreCase(md5);
     }
 
+    public static boolean checkMd5(String md5, InputStream inputStream) {
+        if (TextUtils.isEmpty(md5) || inputStream == null) {
+            Timber.e("MD5 string empty or updateFile null");
+            return false;
+        }
+
+        String calculatedDigest = calculateMd5(inputStream, "MD5");
+        if (calculatedDigest == null) {
+            Timber.e("calculatedDigest null");
+            return false;
+        }
+
+        Timber.v("Calculated digest: " + calculatedDigest);
+        Timber.v("Provided digest: " + md5);
+
+        return calculatedDigest.equalsIgnoreCase(md5);
+    }
+
     /**
      * Get MD5 hash value of a file
      *
@@ -112,5 +130,52 @@ public class ChecksumHelper {
                 Timber.e(e);
             }
         }
+    }
+
+    /**
+     * Calculate checksum of an InputStream
+     *
+     * @param stream            The InputStream whose checksum needs to be calculated
+     * @param checksumAlgorithm Checksum algorithm
+     * @return The checksum string of the InputStream
+     * @throws Exception Reference: https://stackoverflow.com/a/21710105/3682198
+     */
+    public static String calculateMd5(InputStream stream, String checksumAlgorithm) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance(checksumAlgorithm);
+        } catch (NoSuchAlgorithmException e) {
+            Timber.e(e);
+            return "";
+        }
+
+        InputStream input = null;
+        StringBuffer sb = new StringBuffer();
+        try {
+            input = stream;
+            byte[] buffer = new byte[8192];   //8x1024 = 8MB
+            do {
+                int read = input.read(buffer);
+                if (read <= 0)
+                    break;
+                digest.update(buffer, 0, read);
+            } while (true);
+            byte[] sum = digest.digest();
+
+            for (int i = 0; i < sum.length; i++) {
+                sb.append(Integer.toString((sum[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+        } catch (IOException e) {
+            Timber.e(e);
+        } finally {
+            try {
+                input.close();
+            } catch (IOException e) {
+                Timber.e(e);
+            }
+        }
+
+        return sb.toString();
     }
 }
