@@ -164,7 +164,7 @@ public class AppPrefs {
      */
     public static void saveLastSyncTime(long lastSyncTime) {
         BaseApplication.getSharedPreferences().edit().putLong(PREF_LAST_SYNCHRONIZATION,
-                lastSyncTime);
+                lastSyncTime).apply();
     }
 
     /**
