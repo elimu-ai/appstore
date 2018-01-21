@@ -38,6 +38,7 @@ public class CustomDaoMaster extends DaoMaster {
             }
 
             if (oldVersion < 2000011) {
+                // Add checksumMd5
                 DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
             }
         }
