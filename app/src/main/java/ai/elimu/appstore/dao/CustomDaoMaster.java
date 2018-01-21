@@ -2,7 +2,6 @@ package ai.elimu.appstore.dao;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -16,6 +15,7 @@ public class CustomDaoMaster extends DaoMaster {
     }
 
     public static class DevOpenHelper extends OpenHelper {
+
         public DevOpenHelper(Context context, String name) {
             super(context, name);
         }
@@ -39,6 +39,10 @@ public class CustomDaoMaster extends DaoMaster {
             }
 
             if (oldVersion < 2000003) {
+                DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
+            }
+
+            if (oldVersion < 2000010) {
                 DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
             }
         }
