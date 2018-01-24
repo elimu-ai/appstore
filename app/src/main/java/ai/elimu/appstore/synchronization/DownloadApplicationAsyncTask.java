@@ -13,11 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -162,30 +160,11 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                     return null;
                 }
 
-                /**
-                 * Clone source inputStream to read it multiple times
-                 */
-                byte[] byteArray = IOUtils.toByteArray(inputStream);
-                InputStream inputStreamForCheckSum = new ByteArrayInputStream(byteArray);
-                InputStream inputStreamForFile = new ByteArrayInputStream(byteArray);
-
-                /**
-                 * Calculate inputStream's checksum
-                 */
-                downloadedApkChecksum = ChecksumHelper.calculateMd5(inputStreamForCheckSum, "MD5");
-
-                /**
-                 * Stop writing inputStream content to file in case its checksum is invalid
-                 */
-                if (!downloadedApkChecksum.equals(applicationVersion.getChecksumMd5())) {
-                    return 0;
-                }
-
 //                    byte[] bytes = IOUtils.toByteArray(inputStream);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead = 0;
-                while ((bytesRead = inputStreamForFile.read(buffer)) != -1) {
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
                     byteArrayOutputStream.write(buffer, 0, bytesRead);
 
                     fileSizeInKbsDownloaded += (bytesRead / 1024);
@@ -201,6 +180,7 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 fileOutputStream.write(bytes);
                 fileOutputStream.flush();
 
+                downloadedApkChecksum = ChecksumHelper.calculateMd5(apkFile);
             } catch (MalformedURLException e) {
                 Timber.e(e, "MalformedURLException");
             } catch (IOException e) {
@@ -212,6 +192,15 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                     } catch (IOException e) {
                         Timber.i(e, "IOException");
                     }
+                }
+
+                /**
+                 * Delete downloaded APK file in case its checksum is invalid
+                 */
+                if (!downloadedApkChecksum.equals(applicationVersion.getChecksumMd5())) {
+                    Timber.w("Invalid checksum. Deleting downloaded APK file: " + apkFile);
+                    Toast.makeText(context, "Invalid checksum. Deleting downloaded APK file: " + apkFile, Toast.LENGTH_LONG).show();
+                    apkFile.delete();
                 }
             }
         }

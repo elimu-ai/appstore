@@ -32,6 +32,9 @@ public class ApplicationVersion {
     private String fileUrl;
 
     @NotNull
+    private String checksumMd5;
+
+    @NotNull
     private String contentType;
 
     @NotNull
@@ -43,8 +46,6 @@ public class ApplicationVersion {
     @Convert(converter = CalendarConverter.class, columnType = Long.class)
     private Calendar timeUploaded;
 
-    private String checksumMd5;
-
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -53,19 +54,21 @@ public class ApplicationVersion {
     @Generated(hash = 1339503542)
     private transient ApplicationVersionDao myDao;
 
-    @Generated(hash = 86392402)
-    public ApplicationVersion(Long id, long applicationId, @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
-            @NotNull String contentType, @NotNull Integer versionCode, String startCommand,
-            @NotNull Calendar timeUploaded, String checksumMd5) {
+    @Generated(hash = 597723545)
+    public ApplicationVersion(Long id, long applicationId,
+            @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
+            @NotNull String checksumMd5, @NotNull String contentType,
+            @NotNull Integer versionCode, String startCommand,
+            @NotNull Calendar timeUploaded) {
         this.id = id;
         this.applicationId = applicationId;
         this.fileSizeInKb = fileSizeInKb;
         this.fileUrl = fileUrl;
+        this.checksumMd5 = checksumMd5;
         this.contentType = contentType;
         this.versionCode = versionCode;
         this.startCommand = startCommand;
         this.timeUploaded = timeUploaded;
-        this.checksumMd5 = checksumMd5;
     }
 
     @Generated(hash = 386036356)
@@ -104,6 +107,14 @@ public class ApplicationVersion {
         this.fileUrl = fileUrl;
     }
 
+    public String getChecksumMd5() {
+        return this.checksumMd5;
+    }
+
+    public void setChecksumMd5(String checksumMd5) {
+        this.checksumMd5 = checksumMd5;
+    }
+
     public String getContentType() {
         return this.contentType;
     }
@@ -134,14 +145,6 @@ public class ApplicationVersion {
 
     public void setTimeUploaded(Calendar timeUploaded) {
         this.timeUploaded = timeUploaded;
-    }
-
-    public String getChecksumMd5() {
-        return checksumMd5;
-    }
-
-    public void setChecksumMd5(String checksumMd5) {
-        this.checksumMd5 = checksumMd5;
     }
 
     @Generated(hash = 110579603)
