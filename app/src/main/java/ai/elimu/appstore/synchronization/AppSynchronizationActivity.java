@@ -227,11 +227,11 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     applicationVersion.setApplication(application);
                                     applicationVersion.setFileSizeInKb(applicationVersionGson.getFileSizeInKb());
                                     applicationVersion.setFileUrl(applicationVersionGson.getFileUrl());
+                                    applicationVersion.setChecksumMd5(applicationVersionGson.getChecksumMd5());
                                     applicationVersion.setContentType(applicationVersionGson.getContentType());
                                     applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
                                     applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());
                                     applicationVersion.setTimeUploaded(applicationVersionGson.getTimeUploaded());
-                                    applicationVersion.setChecksumMd5(applicationVersionGson.getChecksumMd5());
                                     long applicationVersionId = applicationVersionDao.insert(applicationVersion);
                                     Timber.i("Stored ApplicationVersion in database with id " + applicationVersionId);
                                 }
@@ -262,6 +262,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     applicationVersion.setApplication(application);
                                     applicationVersion.setFileSizeInKb(applicationVersionGson.getFileSizeInKb());
                                     applicationVersion.setFileUrl(applicationVersionGson.getFileUrl());
+                                    applicationVersion.setChecksumMd5(applicationVersionGson.getChecksumMd5());
                                     applicationVersion.setContentType(applicationVersionGson.getContentType());
                                     applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
                                     applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());
