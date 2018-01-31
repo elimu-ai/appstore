@@ -73,9 +73,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
         appSyncLoadingContainer = findViewById(R.id.appSyncLoadingContainer);
 
         BaseApplication baseApplication = (BaseApplication) getApplication();
-        mApplicationService = baseApplication.getRetrofit().create(ApplicationService.class);
-        appCollectionService = baseApplication.getRetrofit()
-                .create(AppCollectionService.class);
+        mApplicationService = baseApplication.getRetrofit(null).create(ApplicationService.class);
+        appCollectionService = baseApplication.getRetrofit(null).create(AppCollectionService.class);
     }
 
     @Override
