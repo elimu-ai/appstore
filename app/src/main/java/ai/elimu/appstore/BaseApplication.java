@@ -106,21 +106,21 @@ public class BaseApplication extends Application {
         final ProgressResponseBody.ProgressListener progressListener = new ProgressResponseBody.ProgressListener() {
             @Override
             public void update(long bytesRead, long contentLength, boolean done) {
-                Timber.i("bytesRead: " + bytesRead);
-                Timber.i("contentLength: " + contentLength);
-                Timber.i("done: " + done);
-                Timber.i("%d%% done\n", (100 * bytesRead) / contentLength);
+//                Timber.i("bytesRead: " + bytesRead);
+//                Timber.i("contentLength: " + contentLength);
+//                Timber.i("done: " + done);
+//                Timber.i("%d%% done\n", (100 * bytesRead) / contentLength);
 
                 if (progressUpdateCallback != null) {
                     long progress = (bytesRead * 100) / contentLength;
-                    Timber.d("progress: " + progress);
+//                    Timber.d("progress: " + progress);
 
                     // E.g. "6.00 MB/12.00 MB   50%"
                     String progressText = String.format(context.getString(R.string
                                     .app_list_download_progress_number), bytesRead / 1024f / 1024f,
                             contentLength / 1024f / 1024f, progress);
 
-                    Timber.i("progressText: " + progressText);
+//                    Timber.i("progressText: " + progressText);
                     progressUpdateCallback.onProgressUpdated(progressText, (int) progress);
                 }
             }
