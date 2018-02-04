@@ -25,8 +25,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -112,6 +110,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         } else {
             holder.progressBarDownload.setVisibility(View.GONE);
             holder.textDownloadProgress.setVisibility(View.GONE);
+            holder.progressBarDownload.setProgress(0);
+            holder.textDownloadProgress.setText("");
             holder.btnDownload.setVisibility(View.VISIBLE);
         }
 
@@ -251,16 +251,35 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         @Override
                         public void onDownloadCompleted() {
                             downloadStatus.setDownloading(false);
+                            holder.btnDownload.setVisibility(View.GONE);
+                            holder.btnInstall.setVisibility(View.VISIBLE);
                             appDownloadStatus.set(position, downloadStatus);
 
                             /**
                              * Set app icon upon download completion
                              */
                             PackageInfo packageInfo = packageManager.getPackageArchiveInfo(existingApkFile.getAbsolutePath(), 0);
-                            packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
-                            packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
-                            Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
-                            holder.imageAppIcon.setImageDrawable(appIcon);
+                            if (packageInfo != null) {
+                                packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
+                                packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
+                                Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
+                                holder.imageAppIcon.setImageDrawable(appIcon);
+                            }
+                        }
+
+                        @Override
+                        public void onDownloadFailed(Integer fileSizeInKbsDownloaded) {
+                            downloadStatus.setDownloading(false);
+                            holder.btnDownload.setVisibility(View.VISIBLE);
+                            holder.btnInstall.setVisibility(View.GONE);
+                            if (fileSizeInKbsDownloaded == 0 || fileSizeInKbsDownloaded == null) {
+                                Toast.makeText(context, context.getString(R.string.app_list_check_internet_connection),
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Invalid checkSum", Toast.LENGTH_SHORT).show();
+                            }
+                            holder.progressBarDownload.setProgress(0);
+                            holder.textDownloadProgress.setText("");
                         }
                     };
 
@@ -298,29 +317,30 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                 executorService.execute(new Runnable() {
                                     @Override
                                     public void run() {
+                                        uiHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                holder.progressBarDownload.setVisibility(View.GONE);
+                                                holder.textDownloadProgress.setVisibility(View.GONE);
+                                            }
+                                        });
                                         writeResponseBodyToDisk(downloadResponse, applicationVersion,
                                                 new WriteToFileCallback() {
                                                     @Override
-                                                    public void onWriteToFileDone(final Integer
-                                                                                          fileSizeInKbsDownloaded) {
+                                                    public void onWriteToFileDone(final Integer fileSizeInKbsDownloaded) {
                                                         // Hide progress indicators
                                                         uiHandler.post(new Runnable() {
                                                             @Override
                                                             public void run() {
+                                                                holder.progressBarDownload.setProgress(0);
+                                                                holder.textDownloadProgress.setText("");
                                                                 holder.progressBarDownload.setVisibility(View.GONE);
                                                                 holder.textDownloadProgress.setVisibility(View.GONE);
 
                                                                 if ((fileSizeInKbsDownloaded == null) ||
-                                                                        (fileSizeInKbsDownloaded == 0)) {
-                                                                    holder.btnDownload.setVisibility(View.VISIBLE);
-                                                                    holder.btnInstall.setVisibility(View.GONE);
-                                                                    Toast.makeText(context,
-                                                                            context.getString(R.string
-                                                                                    .app_list_check_internet_connection),
-                                                                            Toast.LENGTH_SHORT).show();
+                                                                        (fileSizeInKbsDownloaded <= 0)) {
+                                                                    downloadCompleteCallback.onDownloadFailed(fileSizeInKbsDownloaded);
                                                                 } else {
-                                                                    holder.btnDownload.setVisibility(View.GONE);
-                                                                    holder.btnInstall.setVisibility(View.VISIBLE);
                                                                     downloadCompleteCallback.onDownloadCompleted();
                                                                 }
                                                             }
@@ -456,6 +476,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             String downloadedApkChecksum = "";
 
             try {
+                fileOutputStream = new FileOutputStream(apkFile);
                 InputStream inputStream;
 
                 if (response.isSuccessful()) {
@@ -466,18 +487,19 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     return 0;
                 }
 
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead = 0;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+//                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+                    fileOutputStream.write(buffer, 0, bytesRead);
 
                     fileSizeInKbsDownloaded += (bytesRead / 1024);
                 }
-                byte[] bytes = byteArrayOutputStream.toByteArray();
+//                byte[] bytes = byteArrayOutputStream.toByteArray();
 
-                fileOutputStream = new FileOutputStream(apkFile);
-                fileOutputStream.write(bytes);
+//                fileOutputStream = new FileOutputStream(apkFile);
+//                fileOutputStream.write(bytes);
                 fileOutputStream.flush();
 
                 downloadedApkChecksum = ChecksumHelper.calculateMd5(apkFile);
@@ -500,6 +522,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 if (!downloadedApkChecksum.equals(applicationVersion.getChecksumMd5())) {
                     Timber.w("Invalid checksum. Deleting downloaded APK file: " + apkFile);
                     apkFile.delete();
+                    fileSizeInKbsDownloaded = -1;
                 }
             }
 
