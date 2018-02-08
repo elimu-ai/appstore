@@ -16,6 +16,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.util.Preconditions;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -146,9 +151,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 locale = Locale.EN;
             }
             String language = locale.getLanguage();
-            String fileName = applicationVersion.getApplication().getPackageName() + "-" +
+            final String fileName = applicationVersion.getApplication().getPackageName() + "-" +
                     applicationVersion.getVersionCode() + ".apk";
-            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
+            final File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
                     ".elimu-ai/appstore/apks/" + language);
             final File existingApkFile = new File(apkDirectory, fileName);
             Timber.i("existingApkFile: " + existingApkFile);
@@ -250,6 +255,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             .DownloadCompleteCallback() {
                         @Override
                         public void onDownloadCompleted() {
+                            Log.i("tuancoltech", "onDownloadCompleted, INSTALL btn should be visible");
                             downloadStatus.setDownloading(false);
                             holder.btnDownload.setVisibility(View.GONE);
                             holder.btnInstall.setVisibility(View.VISIBLE);
@@ -309,55 +315,101 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     Call<ResponseBody> call = downloadApplicationService.downloadApplicationFile(getFileUrl
                             (applicationVersion));
 
-                    call.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            if (response != null) {
-                                final Response<ResponseBody> downloadResponse = response;
-                                executorService.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        uiHandler.post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                holder.progressBarDownload.setVisibility(View.GONE);
-                                                holder.textDownloadProgress.setVisibility(View.GONE);
-                                            }
-                                        });
-                                        writeResponseBodyToDisk(downloadResponse, applicationVersion,
-                                                new WriteToFileCallback() {
-                                                    @Override
-                                                    public void onWriteToFileDone(final Integer fileSizeInKbsDownloaded) {
-                                                        // Hide progress indicators
-                                                        uiHandler.post(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                holder.progressBarDownload.setProgress(0);
-                                                                holder.textDownloadProgress.setText("");
-                                                                holder.progressBarDownload.setVisibility(View.GONE);
-                                                                holder.textDownloadProgress.setVisibility(View.GONE);
+//                    call.enqueue(new Callback<ResponseBody>() {
+//                        @Override
+//                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                            if (response != null) {
+//                                final Response<ResponseBody> downloadResponse = response;
+//                                Log.i("tuancoltech", "onResponse - downloadResponse: " + response);
+//                                executorService.execute(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        uiHandler.post(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                holder.progressBarDownload.setVisibility(View.GONE);
+//                                                holder.textDownloadProgress.setVisibility(View.GONE);
+//                                            }
+//                                        });
+//                                        writeResponseBodyToDisk(downloadResponse, applicationVersion,
+//                                                new WriteToFileCallback() {
+//                                                    @Override
+//                                                    public void onWriteToFileDone(final Integer
+// fileSizeInKbsDownloaded) {
+//                                                        Log.i("tuancoltech", "onWriteToFileDone");
+//                                                        // Hide progress indicators
+//                                                        uiHandler.post(new Runnable() {
+//                                                            @Override
+//                                                            public void run() {
+//                                                                holder.progressBarDownload.setProgress(0);
+//                                                                holder.textDownloadProgress.setText("");
+//                                                                holder.progressBarDownload.setVisibility(View.GONE);
+//                                                                holder.textDownloadProgress.setVisibility(View.GONE);
+//
+//                                                                if ((fileSizeInKbsDownloaded == null) ||
+//                                                                        (fileSizeInKbsDownloaded <= 0)) {
+//                                                                    downloadCompleteCallback.onDownloadFailed
+// (fileSizeInKbsDownloaded);
+//                                                                } else {
+//                                                                    downloadCompleteCallback.onDownloadCompleted();
+//                                                                }
+//                                                            }
+//                                                        });
+//                                                    }
+//                                                });
+//                                    }
+//                                });
+//                            }
+//
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                            Timber.e(t, "onFailure DownloadApplicationService");
+//                        }
+//                    });
 
-                                                                if ((fileSizeInKbsDownloaded == null) ||
-                                                                        (fileSizeInKbsDownloaded <= 0)) {
-                                                                    downloadCompleteCallback.onDownloadFailed(fileSizeInKbsDownloaded);
-                                                                } else {
-                                                                    downloadCompleteCallback.onDownloadCompleted();
-                                                                }
-                                                            }
-                                                        });
-                                                    }
-                                                });
-                                    }
-                                });
-                            }
+//                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(getFileUrl
+// (applicationVersion)));
+//                    request.setDescription("Some descrition");
+//                    request.setTitle("Some title");
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//                        request.allowScanningByMediaScanner();
+//                        request.setNotificationVisibility(DownloadManager.Request
+// .VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+//                    }
+//                    String apkFileName = applicationVersion.getApplication().getPackageName() + "-" +
+//                            applicationVersion.getVersionCode() + ".apk";
+//
+//                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, apkFileName);
+//
+//                    DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+//                    manager.enqueue(request);
 
-                        }
+                    Ion.with(context)
+                            .load(getFileUrl(applicationVersion))
+// have a ProgressBar get updated automatically with the percent
+                            .progressBar(holder.progressBarDownload)
+// and a ProgressDialog
+//                            .progressDialog(progressDialog)
+// can also use a custom callback
+                            .progress(new ProgressCallback() {
+                                @Override
+                                public void onProgress(long downloaded, long total) {
+                                    System.out.println("" + downloaded + " / " + total);
+                                    Timber.i("" + downloaded + " / " + total);
+                                }
+                            })
+                            .write(new File(apkDirectory, fileName))
+                            .setCallback(new FutureCallback<File>() {
+                                @Override
+                                public void onCompleted(Exception e, File file) {
+                                    // download done...
+                                    // do stuff with the File or error
+                                    Timber.i("Download completed.");
+                                }
+                            });
 
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Timber.e(t, "onFailure DownloadApplicationService");
-                        }
-                    });
                 }
             });
 
@@ -454,6 +506,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
      */
     private Integer writeResponseBodyToDisk(Response<ResponseBody> response, ApplicationVersion applicationVersion,
                                             WriteToFileCallback writeToFileCallback) {
+        Log.i("tuancoltech", "writeResponseBodyToDisk");
         Integer fileSizeInKbsDownloaded = 0;
         String fileName = applicationVersion.getApplication().getPackageName() + "-" +
                 applicationVersion.getVersionCode() + ".apk";
@@ -528,6 +581,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
             Timber.i("fileSizeInKbsDownloaded: " + fileSizeInKbsDownloaded);
         }
+        Log.i("tuancoltech", "writeResponseBodyToDisk DONE =============");
         writeToFileCallback.onWriteToFileDone(fileSizeInKbsDownloaded);
         return fileSizeInKbsDownloaded;
     }
