@@ -19,8 +19,8 @@ android {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
             buildConfigField("String", "DOMAIN", '"test.elimu.ai"')
-            buildConfigField("String", "BASE_URL", '"http://elimu.ai"')
-            buildConfigField("String", "REST_URL", '"http://elimu.ai/rest/v1"')
+            buildConfigField("String", "BASE_URL", '"http://test.elimu.ai"')
+            buildConfigField("String", "REST_URL", '"http://test.elimu.ai/rest/v1"')
             buildConfigField("String", "APPSTORE_SECRET", '"rafiki"')
         }
 
