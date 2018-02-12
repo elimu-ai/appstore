@@ -391,96 +391,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         }
     }
 
-//    /**
-//     * Write downloaded content to file on disk
-//     *
-//     * @param response            The API response
-//     * @param applicationVersion  The application version of downloaded file
-//     * @param writeToFileCallback The callback triggered when writing is done, to update progress UI
-//     * @return Downloaded file size
-//     */
-//    private Integer writeResponseBodyToDisk(Response<ResponseBody> response, ApplicationVersion applicationVersion,
-//                                            WriteToFileCallback writeToFileCallback) {
-//        Log.i("tuancoltech", "writeResponseBodyToDisk");
-//        Integer fileSizeInKbsDownloaded = 0;
-//        String fileName = applicationVersion.getApplication().getPackageName() + "-" +
-//                applicationVersion.getVersionCode() + ".apk";
-//        Timber.i("fileName: " + fileName);
-//        String language = UserPrefsHelper.getLocale(context).getLanguage();
-//        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-//                ".elimu-ai/appstore/apks/" + language);
-//        Timber.i("apkDirectory: " + apkDirectory);
-//
-//        if (!apkDirectory.exists()) {
-//            apkDirectory.mkdirs();
-//        }
-//
-//        File apkFile = new File(apkDirectory, fileName);
-//        Timber.i("apkFile: " + apkFile);
-//        Timber.i("apkFile.exists(): " + apkFile.exists());
-//
-//        if (!apkFile.exists()) {
-//            FileOutputStream fileOutputStream = null;
-//            String downloadedApkChecksum = "";
-//
-//            try {
-//                fileOutputStream = new FileOutputStream(apkFile);
-//                InputStream inputStream;
-//
-//                if (response.isSuccessful()) {
-//                    inputStream = response.body().byteStream();
-//                } else {
-//                    String errorResponse = response.errorBody().string();
-//                    Timber.w("errorResponse: " + errorResponse);
-//                    return 0;
-//                }
-//
-////                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//                byte[] buffer = new byte[1024];
-//                int bytesRead = 0;
-//                while ((bytesRead = inputStream.read(buffer)) != -1) {
-////                    byteArrayOutputStream.write(buffer, 0, bytesRead);
-//                    fileOutputStream.write(buffer, 0, bytesRead);
-//
-//                    fileSizeInKbsDownloaded += (bytesRead / 1024);
-//                }
-////                byte[] bytes = byteArrayOutputStream.toByteArray();
-//
-////                fileOutputStream = new FileOutputStream(apkFile);
-////                fileOutputStream.write(bytes);
-//                fileOutputStream.flush();
-//
-//                downloadedApkChecksum = ChecksumHelper.calculateMd5(apkFile);
-//            } catch (MalformedURLException e) {
-//                Timber.e(e, "MalformedURLException");
-//            } catch (IOException e) {
-//                Timber.e(e, "IOException");
-//            } finally {
-//                if (fileOutputStream != null) {
-//                    try {
-//                        fileOutputStream.close();
-//                    } catch (IOException e) {
-//                        Timber.i(e, "IOException");
-//                    }
-//                }
-//
-//                /**
-//                 * Delete downloaded APK file in case its checksum is invalid
-//                 */
-//                if (!downloadedApkChecksum.equals(applicationVersion.getChecksumMd5())) {
-//                    Timber.w("Invalid checksum. Deleting downloaded APK file: " + apkFile);
-//                    apkFile.delete();
-//                    fileSizeInKbsDownloaded = -1;
-//                }
-//            }
-//
-//            Timber.i("fileSizeInKbsDownloaded: " + fileSizeInKbsDownloaded);
-//        }
-//        Log.i("tuancoltech", "writeResponseBodyToDisk DONE =============");
-//        writeToFileCallback.onWriteToFileDone(fileSizeInKbsDownloaded);
-//        return fileSizeInKbsDownloaded;
-//    }
-
     @Override
     public int getItemCount() {
         if (applications != null) {
@@ -604,9 +514,5 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     private boolean isExistingAndValidApk(@NonNull File apkFile, @NonNull String checkSumMd5) {
         return apkFile.exists() && (checkSumMd5.equals(ChecksumHelper.calculateMd5(apkFile)));
     }
-//
-//    interface WriteToFileCallback {
-//
-//        void onWriteToFileDone(Integer fileSizeInKbsDownloaded);
-//    }
+
 }
