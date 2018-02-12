@@ -19,8 +19,8 @@ android {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
             buildConfigField("String", "DOMAIN", '"test.elimu.ai"')
-            buildConfigField("String", "BASE_URL", '"http://test.elimu.ai"')
-            buildConfigField("String", "REST_URL", '"http://test.elimu.ai/rest/v1"')
+            buildConfigField("String", "BASE_URL", '"http://elimu.ai"')
+            buildConfigField("String", "REST_URL", '"http://elimu.ai/rest/v1"')
             buildConfigField("String", "APPSTORE_SECRET", '"rafiki"')
         }
 
@@ -62,6 +62,8 @@ dependencies {
     //Logging interceptor for printing out Retrofit request url
     implementation "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingInterceptorVersion"
+
+    implementation "com.koushikdutta.ion:ion:$rootProject.ionVersion"
 
     testImplementation 'junit:junit:4.12'
 
