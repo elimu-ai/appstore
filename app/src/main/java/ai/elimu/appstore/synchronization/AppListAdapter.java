@@ -139,7 +139,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             final File existingApkFile = new File(apkDirectory, fileName);
             Timber.i("existingApkFile: " + existingApkFile);
             Timber.i("existingApkFile.exists(): " + existingApkFile.exists());
-            if (isExistingAndValidApk(existingApkFile, applicationVersion.getChecksumMd5())) {
+            if (isExistingAndValidApk(existingApkFile, applicationVersion.getFileSizeInKb())) {
                 holder.btnDownload.setVisibility(View.GONE);
                 holder.btnInstall.setVisibility(View.VISIBLE);
             } else {
@@ -201,14 +201,16 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 } catch (PackageManager.NameNotFoundException e) {
                     Timber.e(e, null);
                 }
-            } else if (isExistingAndValidApk(existingApkFile, applicationVersion.getChecksumMd5())) {
+            } else if (isExistingAndValidApk(existingApkFile, applicationVersion.getFileSizeInKb())) {
                 //Extract app icon from downloaded APK if found
                 PackageInfo packageInfo = packageManager.getPackageArchiveInfo(existingApkFile
                         .getAbsolutePath(), 0);
-                packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
-                packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
-                Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
-                holder.imageAppIcon.setImageDrawable(appIcon);
+                if (packageInfo != null) {
+                    packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
+                    packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
+                    Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
+                    holder.imageAppIcon.setImageDrawable(appIcon);
+                }
             } else {
                 holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
             }
@@ -507,12 +509,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     /**
      * Check if an apk file exists and valid
      *
-     * @param apkFile     The apk file needs to be checked
-     * @param checkSumMd5 The valid checkSumMd5 string
+     * @param apkFile      The apk file needs to be checked
+     * @param fileSizeInKb The actually file size of the APK
      * @return true if apk file exists & valid, false otherwise
      */
-    private boolean isExistingAndValidApk(@NonNull File apkFile, @NonNull String checkSumMd5) {
-        return apkFile.exists() && (checkSumMd5.equals(ChecksumHelper.calculateMd5(apkFile)));
+    private boolean isExistingAndValidApk(@NonNull File apkFile, @NonNull Integer fileSizeInKb) {
+        return apkFile.exists() && (apkFile.length() >= fileSizeInKb * 1024);
     }
 
 }
