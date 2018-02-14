@@ -276,6 +276,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             uiHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
+                                    Timber.d(progressText);
                                     holder.textDownloadProgress.setText(progressText);
                                     holder.progressBarDownload.setProgress(progress);
                                 }
@@ -302,7 +303,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             .setCallback(new FutureCallback<File>() {
                                 @Override
                                 public void onCompleted(Exception e, File file) {
-                                    Timber.i("Download completed.");
+                                    Timber.i("Download completed. File size: " + file.length() + " bytes");
+                                    Timber.d(e);
                                     downloadCompleteCallback.onDownloadCompleted();
 
                                 }
