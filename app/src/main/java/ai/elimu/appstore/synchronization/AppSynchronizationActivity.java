@@ -4,10 +4,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -53,6 +54,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
     private AppCollectionService appCollectionService;
     private View appSyncLoadingContainer;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private Handler mainThreadHandler;
 
     public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";
 
@@ -60,6 +62,11 @@ public class AppSynchronizationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
         super.onCreate(savedInstanceState);
+
+        /**
+         * Create a Handler in UI thread to use for updating view from background threads
+         */
+        mainThreadHandler = new Handler();
 
         setContentView(R.layout.activity_app_synchronization);
 
@@ -92,6 +99,13 @@ public class AppSynchronizationActivity extends AppCompatActivity {
 
                 if (!isServerReachable) {
                     Timber.w(getString(R.string.server_is_not_reachable));
+                    mainThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(AppSynchronizationActivity.this, getString(R.string.server_is_not_reachable),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else {
 
                     /**
@@ -142,6 +156,13 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                             appSyncLoadingContainer.setVisibility(View.GONE);
+                            mainThreadHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(AppSynchronizationActivity.this, getString(R.string.server_is_not_reachable),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             t.printStackTrace();
                         }
                     });
@@ -206,11 +227,11 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     applicationVersion.setApplication(application);
                                     applicationVersion.setFileSizeInKb(applicationVersionGson.getFileSizeInKb());
                                     applicationVersion.setFileUrl(applicationVersionGson.getFileUrl());
+                                    applicationVersion.setChecksumMd5(applicationVersionGson.getChecksumMd5());
                                     applicationVersion.setContentType(applicationVersionGson.getContentType());
                                     applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
                                     applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());
                                     applicationVersion.setTimeUploaded(applicationVersionGson.getTimeUploaded());
-                                    applicationVersion.setChecksumMd5(applicationVersionGson.getChecksumMd5());
                                     long applicationVersionId = applicationVersionDao.insert(applicationVersion);
                                     Timber.i("Stored ApplicationVersion in database with id " + applicationVersionId);
                                 }
@@ -241,6 +262,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     applicationVersion.setApplication(application);
                                     applicationVersion.setFileSizeInKb(applicationVersionGson.getFileSizeInKb());
                                     applicationVersion.setFileUrl(applicationVersionGson.getFileUrl());
+                                    applicationVersion.setChecksumMd5(applicationVersionGson.getChecksumMd5());
                                     applicationVersion.setContentType(applicationVersionGson.getContentType());
                                     applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
                                     applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());

@@ -13,11 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -55,22 +53,18 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
     private DownloadCompleteCallback downloadCompleteCallback;
 
-    private ProgressUpdateCallback progressUpdateCallback;
-
     public DownloadApplicationAsyncTask(@NonNull Context context,
                                         ProgressBar progressBarDownloadProgress,
                                         TextView textViewDownloadProgress,
                                         Button buttonInstall,
                                         Button buttonDownload,
-                                        @NonNull DownloadCompleteCallback downloadCompleteCallback,
-                                        @NonNull ProgressUpdateCallback progressUpdateCallback) {
+                                        @NonNull DownloadCompleteCallback downloadCompleteCallback) {
         this.context = Preconditions.checkNotNull(context);
         this.progressBarDownloadProgress = progressBarDownloadProgress;
         this.textViewDownloadProgress = textViewDownloadProgress;
         this.btnInstall = buttonInstall;
         this.btnDownload = buttonDownload;
         this.downloadCompleteCallback = Preconditions.checkNotNull(downloadCompleteCallback);
-        this.progressUpdateCallback = Preconditions.checkNotNull(progressUpdateCallback);
     }
 
     @Override
@@ -162,30 +156,11 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                     return null;
                 }
 
-                /**
-                 * Clone source inputStream to read it multiple times
-                 */
-                byte[] byteArray = IOUtils.toByteArray(inputStream);
-                InputStream inputStreamForCheckSum = new ByteArrayInputStream(byteArray);
-                InputStream inputStreamForFile = new ByteArrayInputStream(byteArray);
-
-                /**
-                 * Calculate inputStream's checksum
-                 */
-                downloadedApkChecksum = ChecksumHelper.calculateMd5(inputStreamForCheckSum, "MD5");
-
-                /**
-                 * Stop writing inputStream content to file in case its checksum is invalid
-                 */
-                if (!downloadedApkChecksum.equals(applicationVersion.getChecksumMd5())) {
-                    return 0;
-                }
-
 //                    byte[] bytes = IOUtils.toByteArray(inputStream);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead = 0;
-                while ((bytesRead = inputStreamForFile.read(buffer)) != -1) {
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
                     byteArrayOutputStream.write(buffer, 0, bytesRead);
 
                     fileSizeInKbsDownloaded += (bytesRead / 1024);
@@ -201,6 +176,7 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 fileOutputStream.write(bytes);
                 fileOutputStream.flush();
 
+                downloadedApkChecksum = ChecksumHelper.calculateMd5(apkFile);
             } catch (MalformedURLException e) {
                 Timber.e(e, "MalformedURLException");
             } catch (IOException e) {
@@ -212,6 +188,14 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                     } catch (IOException e) {
                         Timber.i(e, "IOException");
                     }
+                }
+
+                /**
+                 * Delete downloaded APK file in case its checksum is invalid
+                 */
+                if (!downloadedApkChecksum.equals(applicationVersion.getChecksumMd5())) {
+                    Timber.w("Invalid checksum. Deleting downloaded APK file: " + apkFile);
+                    apkFile.delete();
                 }
             }
         }
@@ -238,7 +222,6 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 applicationVersion.getFileSizeInKb() / 1024f, progress);
 
         Timber.d("progressText: " + progressText);
-        progressUpdateCallback.onProgressUpdated(progressText, progress);
     }
 
     @Override
@@ -268,11 +251,5 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
     interface DownloadCompleteCallback {
 
         void onDownloadCompleted();
-    }
-
-    interface ProgressUpdateCallback {
-
-        void onProgressUpdated(String progressText, int progress);
-
     }
 }

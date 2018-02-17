@@ -20,6 +20,7 @@ ext {
     loggingInterceptorVersion = '3.6.0'
     okHttpVersion = '3.6.0'
     securePreferencesVersion = '0.1.4'
+    ionVersion = '2.2.1'
 }
 
 allprojects {

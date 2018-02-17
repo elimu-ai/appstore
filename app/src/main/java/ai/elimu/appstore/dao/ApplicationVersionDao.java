@@ -35,11 +35,11 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         public final static Property ApplicationId = new Property(1, long.class, "applicationId", false, "APPLICATION_ID");
         public final static Property FileSizeInKb = new Property(2, Integer.class, "fileSizeInKb", false, "FILE_SIZE_IN_KB");
         public final static Property FileUrl = new Property(3, String.class, "fileUrl", false, "FILE_URL");
-        public final static Property ContentType = new Property(4, String.class, "contentType", false, "CONTENT_TYPE");
-        public final static Property VersionCode = new Property(5, Integer.class, "versionCode", false, "VERSION_CODE");
-        public final static Property StartCommand = new Property(6, String.class, "startCommand", false, "START_COMMAND");
-        public final static Property TimeUploaded = new Property(7, long.class, "timeUploaded", false, "TIME_UPLOADED");
-        public final static Property ChecksumMd5 = new Property(8, String.class, "checksumMd5", false, "CHECKSUM_MD5");
+        public final static Property ChecksumMd5 = new Property(4, String.class, "checksumMd5", false, "CHECKSUM_MD5");
+        public final static Property ContentType = new Property(5, String.class, "contentType", false, "CONTENT_TYPE");
+        public final static Property VersionCode = new Property(6, Integer.class, "versionCode", false, "VERSION_CODE");
+        public final static Property StartCommand = new Property(7, String.class, "startCommand", false, "START_COMMAND");
+        public final static Property TimeUploaded = new Property(8, long.class, "timeUploaded", false, "TIME_UPLOADED");
     }
 
     private DaoSession daoSession;
@@ -63,11 +63,11 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
                 "\"APPLICATION_ID\" INTEGER NOT NULL ," + // 1: applicationId
                 "\"FILE_SIZE_IN_KB\" INTEGER NOT NULL ," + // 2: fileSizeInKb
                 "\"FILE_URL\" TEXT NOT NULL ," + // 3: fileUrl
-                "\"CONTENT_TYPE\" TEXT NOT NULL ," + // 4: contentType
-                "\"VERSION_CODE\" INTEGER NOT NULL ," + // 5: versionCode
-                "\"START_COMMAND\" TEXT," + // 6: startCommand
-                "\"TIME_UPLOADED\" INTEGER NOT NULL ," + // 7: timeUploaded
-                "\"CHECKSUM_MD5\" TEXT);"); // 8: checksumMd5
+                "\"CHECKSUM_MD5\" TEXT NOT NULL ," + // 4: checksumMd5
+                "\"CONTENT_TYPE\" TEXT NOT NULL ," + // 5: contentType
+                "\"VERSION_CODE\" INTEGER NOT NULL ," + // 6: versionCode
+                "\"START_COMMAND\" TEXT," + // 7: startCommand
+                "\"TIME_UPLOADED\" INTEGER NOT NULL );"); // 8: timeUploaded
     }
 
     /** Drops the underlying database table. */
@@ -87,19 +87,15 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         stmt.bindLong(2, entity.getApplicationId());
         stmt.bindLong(3, entity.getFileSizeInKb());
         stmt.bindString(4, entity.getFileUrl());
-        stmt.bindString(5, entity.getContentType());
-        stmt.bindLong(6, entity.getVersionCode());
+        stmt.bindString(5, entity.getChecksumMd5());
+        stmt.bindString(6, entity.getContentType());
+        stmt.bindLong(7, entity.getVersionCode());
  
         String startCommand = entity.getStartCommand();
         if (startCommand != null) {
-            stmt.bindString(7, startCommand);
+            stmt.bindString(8, startCommand);
         }
-        stmt.bindLong(8, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
- 
-        String checksumMd5 = entity.getChecksumMd5();
-        if (checksumMd5 != null) {
-            stmt.bindString(9, checksumMd5);
-        }
+        stmt.bindLong(9, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
     }
 
     @Override
@@ -113,19 +109,15 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         stmt.bindLong(2, entity.getApplicationId());
         stmt.bindLong(3, entity.getFileSizeInKb());
         stmt.bindString(4, entity.getFileUrl());
-        stmt.bindString(5, entity.getContentType());
-        stmt.bindLong(6, entity.getVersionCode());
+        stmt.bindString(5, entity.getChecksumMd5());
+        stmt.bindString(6, entity.getContentType());
+        stmt.bindLong(7, entity.getVersionCode());
  
         String startCommand = entity.getStartCommand();
         if (startCommand != null) {
-            stmt.bindString(7, startCommand);
+            stmt.bindString(8, startCommand);
         }
-        stmt.bindLong(8, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
- 
-        String checksumMd5 = entity.getChecksumMd5();
-        if (checksumMd5 != null) {
-            stmt.bindString(9, checksumMd5);
-        }
+        stmt.bindLong(9, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
     }
 
     @Override
@@ -146,11 +138,11 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
             cursor.getLong(offset + 1), // applicationId
             cursor.getInt(offset + 2), // fileSizeInKb
             cursor.getString(offset + 3), // fileUrl
-            cursor.getString(offset + 4), // contentType
-            cursor.getInt(offset + 5), // versionCode
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // startCommand
-            timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 7)), // timeUploaded
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // checksumMd5
+            cursor.getString(offset + 4), // checksumMd5
+            cursor.getString(offset + 5), // contentType
+            cursor.getInt(offset + 6), // versionCode
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // startCommand
+            timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 8)) // timeUploaded
         );
         return entity;
     }
@@ -161,11 +153,11 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         entity.setApplicationId(cursor.getLong(offset + 1));
         entity.setFileSizeInKb(cursor.getInt(offset + 2));
         entity.setFileUrl(cursor.getString(offset + 3));
-        entity.setContentType(cursor.getString(offset + 4));
-        entity.setVersionCode(cursor.getInt(offset + 5));
-        entity.setStartCommand(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setTimeUploaded(timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 7)));
-        entity.setChecksumMd5(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setChecksumMd5(cursor.getString(offset + 4));
+        entity.setContentType(cursor.getString(offset + 5));
+        entity.setVersionCode(cursor.getInt(offset + 6));
+        entity.setStartCommand(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setTimeUploaded(timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 8)));
      }
     
     @Override
