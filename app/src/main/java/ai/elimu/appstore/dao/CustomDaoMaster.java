@@ -28,11 +28,6 @@ public class CustomDaoMaster extends DaoMaster {
         public void onUpgrade(Database db, int oldVersion, int newVersion) {
             Timber.i("Upgrading schema from version " + oldVersion + " to " + newVersion);
 
-            if (oldVersion < 1003002) {
-                // Upgrade to schemaVersion 1003002
-                DbMigrationHelper.migrate(db, ApplicationDao.class);
-            }
-
             if (oldVersion < 1003004) {
                 dropAllTables(db, true);
                 onCreate(db);
@@ -42,7 +37,8 @@ public class CustomDaoMaster extends DaoMaster {
                 DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
             }
 
-            if (oldVersion < 2000010) {
+            if (oldVersion < 2000011) {
+                // Add checksumMd5
                 DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
             }
         }
