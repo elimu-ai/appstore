@@ -303,7 +303,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             .setCallback(new FutureCallback<File>() {
                                 @Override
                                 public void onCompleted(Exception e, File file) {
-                                    Timber.i("Download completed. File size: " + file.length() + " bytes");
+                                    Timber.i("Download completed.");
                                     Timber.d(e);
                                     downloadCompleteCallback.onDownloadCompleted();
 
