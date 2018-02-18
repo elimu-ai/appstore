@@ -15,6 +15,19 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    productFlavors {
+        elimu {
+            // Default app collection (elimu.ai)
+            dimension 'mode'
+        }
+        custom {
+            // Custom app collection (custom project)
+            applicationId "ai.elimu.appstore_custom"
+            dimension 'mode'
+        }
+    }
+    flavorDimensions 'mode'
+
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
