@@ -9,8 +9,8 @@ android {
         applicationId "ai.elimu.appstore"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2000014
-        versionName "2.0.14"
+        versionCode 2000016
+        versionName "2.0.16-SNAPSHOT"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -87,8 +87,6 @@ dependencies {
     //Logging interceptor for printing out Retrofit request url
     implementation "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingInterceptorVersion"
-
-    implementation "com.koushikdutta.ion:ion:$rootProject.ionVersion"
 
     testImplementation 'junit:junit:4.12'
 
