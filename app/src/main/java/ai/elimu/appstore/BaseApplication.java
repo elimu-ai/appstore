@@ -87,8 +87,7 @@ public class BaseApplication extends Application {
     /**
      * Initializes Retrofit and makes it available to all activities.
      *
-     * @param progressUpdateCallback If the request needs to update progress to user (in case of downloading or
-     *                               uploading
+     * @param progressUpdateCallback If the request needs to update progress to user when downloading
      *                               big file, then pass in a progress update callback
      * @return Retrofit instance
      */
@@ -133,7 +132,7 @@ public class BaseApplication extends Application {
                 .retryOnConnectionFailure(true);
 
         /**
-         * In case of downloading/uploading big files and having necessity to update progress to UI, then add a
+         * In case of downloading big files and having necessity to update progress to UI, then add a
          * progress listener
          */
         if (progressListener != null) {

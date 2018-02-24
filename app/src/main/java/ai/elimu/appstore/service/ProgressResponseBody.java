@@ -11,7 +11,7 @@ import okio.Okio;
 import okio.Source;
 
 /**
- * HTTP response body which supports progress update when downloading/uploading big files
+ * HTTP response body which supports progress update when downloading big files
  */
 public class ProgressResponseBody extends ResponseBody {
 
