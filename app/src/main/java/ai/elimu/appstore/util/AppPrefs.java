@@ -11,8 +11,6 @@ public class AppPrefs {
 
     public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
 
-    public static final String PREF_LICENSE_OPTION = "pref_license_option";
-
     public static final String PREF_LOCALE = "pref_locale";
 
     public static final String PREF_IS_REGISTERED = "pref_is_registered";
@@ -42,25 +40,6 @@ public class AppPrefs {
      */
     public static int getAppVersionCode() {
         return BaseApplication.getSharedPreferences().getInt(PREF_APP_VERSION_CODE, 0);
-    }
-
-    /**
-     * Save user's license option
-     *
-     * @param licenseOption The input license option (yes/no)
-     */
-    public static void saveLicenseOption(String licenseOption) {
-        BaseApplication.getSharedPreferences().edit().putString(PREF_LICENSE_OPTION,
-                licenseOption).apply();
-    }
-
-    /**
-     * Get user's license option
-     *
-     * @return User's license option
-     */
-    public static String getLicenseOption() {
-        return BaseApplication.getSharedPreferences().getString(PREF_LICENSE_OPTION, null);
     }
 
     /**

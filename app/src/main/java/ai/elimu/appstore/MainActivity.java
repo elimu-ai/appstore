@@ -12,7 +12,6 @@ import android.text.TextUtils;
 
 import ai.elimu.appstore.onboarding.DeviceRegistrationActivity;
 import ai.elimu.appstore.onboarding.LicenseNumberActivity;
-import ai.elimu.appstore.onboarding.LicenseOptionActivity;
 import ai.elimu.appstore.onboarding.LocaleActivity;
 import ai.elimu.appstore.synchronization.AppSynchronizationActivity;
 import ai.elimu.appstore.util.AppPrefs;
@@ -58,14 +57,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        // Ask for license number (used in custom projects)
-        String licenseOption = AppPrefs.getLicenseOption();
-        Timber.i("licenseOption: " + licenseOption);
-        if (TextUtils.isEmpty(licenseOption)) {
-            Intent intent = new Intent(this, LicenseOptionActivity.class);
-            startActivity(intent);
-            finish();
-        } else if ("no".equals(licenseOption)) {
+        if ("elimu".equals(BuildConfig.FLAVOR)) {
+            // Default app collection (elimu.ai)
+
             // Ask for locale (only apps for the selected locale will be downloaded)
             String localeAsString = AppPrefs.getLocale();
             Timber.i("localeAsString: " + localeAsString);
@@ -88,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
             }
-        } else if ("yes".equals(licenseOption)) {
+        } else {
+            // Custom app collection (custom project)
+
             Long appCollectionId = AppPrefs.getAppCollectionId();
             Timber.i("appCollectionId: " + appCollectionId);
             if (appCollectionId == 0) {

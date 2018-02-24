@@ -71,7 +71,6 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".onboarding.LicenseOptionActivity" />
         <activity android:name=".onboarding.LicenseNumberActivity" />
         <activity android:name=".onboarding.DeviceRegistrationActivity" />
         <activity android:name=".synchronization.AppSynchronizationActivity" />
