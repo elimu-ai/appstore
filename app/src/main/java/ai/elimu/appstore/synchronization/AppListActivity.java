@@ -84,7 +84,8 @@ public class AppListActivity extends AppCompatActivity {
         // Load the list of Applications stored in the local database
         applicationsList = applicationDao.loadAll();
         Timber.i("applicationsList.size(): " + applicationsList.size());
-        appListAdapter = new AppListAdapter(applicationsList, packageUpdateReceiver);
+        BaseApplication baseApplication = (BaseApplication) getApplication();
+        appListAdapter = new AppListAdapter(applicationsList, packageUpdateReceiver, baseApplication);
         appListRecyclerView.setAdapter(appListAdapter);
 
     }

@@ -53,22 +53,18 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
 
     private DownloadCompleteCallback downloadCompleteCallback;
 
-    private ProgressUpdateCallback progressUpdateCallback;
-
     public DownloadApplicationAsyncTask(@NonNull Context context,
                                         ProgressBar progressBarDownloadProgress,
                                         TextView textViewDownloadProgress,
                                         Button buttonInstall,
                                         Button buttonDownload,
-                                        @NonNull DownloadCompleteCallback downloadCompleteCallback,
-                                        @NonNull ProgressUpdateCallback progressUpdateCallback) {
+                                        @NonNull DownloadCompleteCallback downloadCompleteCallback) {
         this.context = Preconditions.checkNotNull(context);
         this.progressBarDownloadProgress = progressBarDownloadProgress;
         this.textViewDownloadProgress = textViewDownloadProgress;
         this.btnInstall = buttonInstall;
         this.btnDownload = buttonDownload;
         this.downloadCompleteCallback = Preconditions.checkNotNull(downloadCompleteCallback);
-        this.progressUpdateCallback = Preconditions.checkNotNull(progressUpdateCallback);
     }
 
     @Override
@@ -226,7 +222,6 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
                 applicationVersion.getFileSizeInKb() / 1024f, progress);
 
         Timber.d("progressText: " + progressText);
-        progressUpdateCallback.onProgressUpdated(progressText, progress);
     }
 
     @Override
@@ -256,11 +251,7 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
     interface DownloadCompleteCallback {
 
         void onDownloadCompleted();
+        void onDownloadFailed(Integer fileSizeInKbsDownloaded);
     }
 
-    interface ProgressUpdateCallback {
-
-        void onProgressUpdated(String progressText, int progress);
-
-    }
 }
