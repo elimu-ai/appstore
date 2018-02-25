@@ -103,7 +103,7 @@ public class BaseApplication extends Application {
         /**
          * Disable Retrofit logging for download API
          */
-        if (progressUpdateCallback == null){
+        if (progressUpdateCallback == null) {
             logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY :
                     HttpLoggingInterceptor.Level.NONE);
         } else {
@@ -157,6 +157,16 @@ public class BaseApplication extends Application {
 
         OkHttpClient okHttpClient = okHttpClientBuilder.build();
 
+        /**
+         * Each Retrofit instance is associated with a single OkHttpClient, which is also associated with only one
+         * single ProgressListener.
+         When we have many concurrent downloads, each download should have a separate progress update callback.
+         Therefore, it's necessary to initialize a new Retrofit connection for new download so that every download's
+         progress is updated correctly.
+
+         When progressUpdateCallback is null, meaning that no progress update is required, then we can reuse existing
+         Retrofit connection.
+         */
         if (retrofit == null || progressUpdateCallback != null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BuildConfig.REST_URL + "/")
