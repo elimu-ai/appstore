@@ -105,6 +105,9 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                         }
                     });
+
+                    //Display app list when there is no internet connection
+                    displayAppList();
                 } else {
 
                     /**
@@ -163,6 +166,9 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                 }
                             });
                             t.printStackTrace();
+
+                            //Display app list when failing to get application list
+                            displayAppList();
                         }
                     });
 
