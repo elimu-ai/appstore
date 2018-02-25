@@ -99,8 +99,16 @@ public class BaseApplication extends Application {
          * in debug mode
          */
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY :
-                HttpLoggingInterceptor.Level.NONE);
+
+        /**
+         * Disable Retrofit logging for download API
+         */
+        if (progressUpdateCallback == null){
+            logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY :
+                    HttpLoggingInterceptor.Level.NONE);
+        } else {
+            logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+        }
 
         final ProgressResponseBody.ProgressListener progressListener = new ProgressResponseBody.ProgressListener() {
             @Override
