@@ -3,14 +3,19 @@ package ai.elimu.appstore.synchronization;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
@@ -35,6 +40,12 @@ public class AppListActivity extends AppCompatActivity {
     private ApplicationDao applicationDao;
 
     private PackageUpdateReceiver packageUpdateReceiver;
+
+    private ProgressBar progressBarLoading;
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    private Handler uiHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +84,11 @@ public class AppListActivity extends AppCompatActivity {
         appListRecyclerView.setLayoutManager(layoutManager);
 
         textViewLastSynchronization = findViewById(R.id.textViewLastSynchronization);
+        progressBarLoading = findViewById(R.id.progress_bar_loading);
+
+        //Show loading dialog
+        progressBarLoading.setVisibility(View.VISIBLE);
+
         // Display the time of last synchronization with the server
         long timeOfLastSynchronization = AppPrefs.getLastSyncTime();
         Date date = new Date(timeOfLastSynchronization);
@@ -82,11 +98,24 @@ public class AppListActivity extends AppCompatActivity {
                 .last_synchronization), dateAsString));
 
         // Load the list of Applications stored in the local database
-        applicationsList = applicationDao.loadAll();
-        Timber.i("applicationsList.size(): " + applicationsList.size());
-        BaseApplication baseApplication = (BaseApplication) getApplication();
-        appListAdapter = new AppListAdapter(applicationsList, packageUpdateReceiver, baseApplication);
-        appListRecyclerView.setAdapter(appListAdapter);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                applicationsList = applicationDao.loadAll();
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Timber.i("applicationsList.size(): " + applicationsList.size());
+                        BaseApplication baseApplication = (BaseApplication) getApplication();
+                        appListAdapter = new AppListAdapter(applicationsList, packageUpdateReceiver, baseApplication);
+                        appListRecyclerView.setAdapter(appListAdapter);
+
+                        //Hide loading dialog
+                        progressBarLoading.setVisibility(View.GONE);
+                    }
+                });
+            }
+        });
 
     }
 
