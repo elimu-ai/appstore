@@ -47,6 +47,7 @@ import ai.elimu.appstore.receiver.PackageUpdateReceiver;
 import ai.elimu.appstore.service.DownloadApplicationService;
 import ai.elimu.appstore.service.ProgressUpdateCallback;
 import ai.elimu.appstore.util.ChecksumHelper;
+import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.model.enums.Locale;
@@ -229,6 +230,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 @Override
                 public void onClick(View view) {
                     Timber.i("buttonDownload onClick");
+
+                    if (!ConnectivityHelper.isNetworkAvailable(context)) {
+                        Toast.makeText(context, context.getString(R.string.app_list_check_internet_connection),
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
                     Timber.i("Downloading " + application.getPackageName() + " (version " +
                             applicationVersion.getVersionCode() + ")...");

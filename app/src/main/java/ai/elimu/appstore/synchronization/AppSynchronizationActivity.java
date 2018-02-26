@@ -105,6 +105,9 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                         }
                     });
+
+                    //Display app list when there is no internet connection
+                    displayAppList();
                 } else {
 
                     /**
@@ -162,7 +165,10 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 }
                             });
-                            t.printStackTrace();
+                            Timber.e(t, "onFailure getApplicationList");
+
+                            //Display app list when failing to get application list
+                            displayAppList();
                         }
                     });
 
