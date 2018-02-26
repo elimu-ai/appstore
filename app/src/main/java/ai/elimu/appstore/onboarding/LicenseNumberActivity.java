@@ -45,7 +45,7 @@ public class LicenseNumberActivity extends AppCompatActivity {
         setContentView(R.layout.activity_license_number);
 
         BaseApplication baseApplication = (BaseApplication) getApplication();
-        licenseService = baseApplication.getRetrofit().create(LicenseService.class);
+        licenseService = baseApplication.getRetrofit(null).create(LicenseService.class);
 
         licenseNumberDetailsContainer = findViewById(R.id.licenseNumberDetailsContainer);
         editTextLicenseEmail = findViewById(R.id.editTextLicenseEmail);

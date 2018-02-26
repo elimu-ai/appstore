@@ -9,11 +9,24 @@ android {
         applicationId "ai.elimu.appstore"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2000013
-        versionName "2.0.13"
+        versionCode 2000018
+        versionName "2.0.18-SNAPSHOT"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    productFlavors {
+        elimu {
+            // Default app collection (elimu.ai)
+            dimension 'mode'
+        }
+        custom {
+            // Custom app collection (custom project)
+            applicationId "ai.elimu.appstore_custom"
+            dimension 'mode'
+        }
+    }
+    flavorDimensions 'mode'
 
     buildTypes {
         debug {
@@ -74,8 +87,6 @@ dependencies {
     //Logging interceptor for printing out Retrofit request url
     implementation "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingInterceptorVersion"
-
-    implementation "com.koushikdutta.ion:ion:$rootProject.ionVersion"
 
     testImplementation 'junit:junit:4.12'
 

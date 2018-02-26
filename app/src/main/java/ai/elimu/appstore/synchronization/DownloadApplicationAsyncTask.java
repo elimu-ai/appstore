@@ -251,5 +251,7 @@ public class DownloadApplicationAsyncTask extends AsyncTask<ApplicationVersion, 
     interface DownloadCompleteCallback {
 
         void onDownloadCompleted();
+        void onDownloadFailed(Integer fileSizeInKbsDownloaded);
     }
+
 }
