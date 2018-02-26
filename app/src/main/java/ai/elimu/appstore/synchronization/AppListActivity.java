@@ -86,9 +86,6 @@ public class AppListActivity extends AppCompatActivity {
         textViewLastSynchronization = findViewById(R.id.textViewLastSynchronization);
         progressBarLoading = findViewById(R.id.progress_bar_loading);
 
-        //Show loading dialog
-        progressBarLoading.setVisibility(View.VISIBLE);
-
         // Display the time of last synchronization with the server
         long timeOfLastSynchronization = AppPrefs.getLastSyncTime();
         Date date = new Date(timeOfLastSynchronization);
