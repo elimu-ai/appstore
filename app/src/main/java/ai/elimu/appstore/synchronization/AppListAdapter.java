@@ -45,10 +45,12 @@ import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
 import ai.elimu.appstore.receiver.PackageUpdateReceiver;
 import ai.elimu.appstore.service.DownloadApplicationService;
+import ai.elimu.appstore.service.DownloadCompleteCallback;
 import ai.elimu.appstore.service.ProgressUpdateCallback;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
+import ai.elimu.appstore.util.FileUtils;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.model.enums.Locale;
 import ai.elimu.model.enums.admin.ApplicationStatus;
@@ -252,25 +254,37 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     /**
                      * Listen to download completed event to update app icon
                      */
-                    final DownloadApplicationAsyncTask.DownloadCompleteCallback
-                            downloadCompleteCallback = new DownloadApplicationAsyncTask
-                            .DownloadCompleteCallback() {
+                    final DownloadCompleteCallback downloadCompleteCallback = new DownloadCompleteCallback() {
                         @Override
-                        public void onDownloadCompleted() {
-                            downloadStatus.setDownloading(false);
-                            holder.btnDownload.setVisibility(View.GONE);
-                            holder.btnInstall.setVisibility(View.VISIBLE);
-                            appDownloadStatus.set(position, downloadStatus);
+                        public void onDownloadCompleted(String tempApkDir, String apkName) {
 
-                            /**
-                             * Set app icon upon download completion
-                             */
-                            PackageInfo packageInfo = packageManager.getPackageArchiveInfo(existingApkFile.getAbsolutePath(), 0);
-                            if (packageInfo != null) {
-                                packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
-                                packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
-                                Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
-                                holder.imageAppIcon.setImageDrawable(appIcon);
+                            //Move downloaded file to correct folder
+                            String language = UserPrefsHelper.getLocale(context).getLanguage();
+                            File correctApkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
+                                    ".elimu-ai/appstore/apks/" + language);
+
+                            File srcFile = new File(tempApkDir, apkName);
+                            File dstFile = new File(correctApkDirectory, apkName);
+
+                            try {
+                                FileUtils.moveFile(srcFile, dstFile);
+
+                                //Change visibility of download/install buttons upon moving completion
+                                downloadStatus.setDownloading(false);
+                                holder.btnDownload.setVisibility(View.GONE);
+                                holder.btnInstall.setVisibility(View.VISIBLE);
+                                appDownloadStatus.set(position, downloadStatus);
+
+                                //Set app icon upon download completion
+                                PackageInfo packageInfo = packageManager.getPackageArchiveInfo(existingApkFile.getAbsolutePath(), 0);
+                                if (packageInfo != null) {
+                                    packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
+                                    packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
+                                    Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
+                                    holder.imageAppIcon.setImageDrawable(appIcon);
+                                }
+                            } catch (IOException e){
+                                Timber.e(e);
                             }
                         }
 
@@ -327,7 +341,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                         writeResponseBodyToDisk(downloadResponse, applicationVersion,
                                                 new WriteToFileCallback() {
                                                     @Override
-                                                    public void onWriteToFileDone(final Integer fileSizeInKbsDownloaded) {
+                                                    public void onWriteToFileDone(final Integer fileSizeInKbsDownloaded,
+                                                                                  final String tempApkDir,
+                                                                                  final String apkName) {
                                                         // Hide progress indicators
                                                         uiHandler.post(new Runnable() {
                                                             @Override
@@ -341,7 +357,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                                                         (fileSizeInKbsDownloaded <= 0)) {
                                                                     downloadCompleteCallback.onDownloadFailed(fileSizeInKbsDownloaded);
                                                                 } else {
-                                                                    downloadCompleteCallback.onDownloadCompleted();
+                                                                    downloadCompleteCallback.onDownloadCompleted(tempApkDir, apkName);
                                                                 }
                                                             }
                                                         });
@@ -458,9 +474,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         String fileName = applicationVersion.getApplication().getPackageName() + "-" +
                 applicationVersion.getVersionCode() + ".apk";
         Timber.i("fileName: " + fileName);
-        String language = UserPrefsHelper.getLocale(context).getLanguage();
         File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                ".elimu-ai/appstore/apks/" + language);
+                ".elimu-ai/appstore/apks/");
         Timber.i("apkDirectory: " + apkDirectory);
 
         if (!apkDirectory.exists()) {
@@ -471,7 +486,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         Timber.i("apkFile: " + apkFile);
         Timber.i("apkFile.exists(): " + apkFile.exists());
 
-        if (!apkFile.exists()) {
+        //Download if apkFile does not exist, or re-download if apkFile is existing but corrupted
+        if (!apkFile.exists() || (!applicationVersion.getChecksumMd5().equals(ChecksumHelper.calculateMd5(apkFile)))) {
             FileOutputStream fileOutputStream = null;
             String downloadedApkChecksum = "";
 
@@ -528,7 +544,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
             Timber.i("fileSizeInKbsDownloaded: " + fileSizeInKbsDownloaded);
         }
-        writeToFileCallback.onWriteToFileDone(fileSizeInKbsDownloaded);
+        writeToFileCallback.onWriteToFileDone(fileSizeInKbsDownloaded, apkDirectory.getAbsolutePath(), fileName);
         return fileSizeInKbsDownloaded;
     }
 
@@ -641,6 +657,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     interface WriteToFileCallback {
 
-        void onWriteToFileDone(Integer fileSizeInKbsDownloaded);
+        void onWriteToFileDone(Integer fileSizeInKbsDownloaded, String tempApkDir, String apkName);
     }
 }
