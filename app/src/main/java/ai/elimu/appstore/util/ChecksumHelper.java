@@ -89,10 +89,10 @@ public class ChecksumHelper {
     /**
      * Get MD5 hash value of a file
      *
-     * @param updateFile The file whose's MD5 hash value needs to be calculated
+     * @param apkFile The file whose's MD5 hash value needs to be calculated
      * @return The MD5 hash value of input file
      */
-    public static String calculateMd5(File updateFile) {
+    public static String calculateMd5(File apkFile) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");
@@ -103,7 +103,7 @@ public class ChecksumHelper {
 
         InputStream is;
         try {
-            is = new FileInputStream(updateFile);
+            is = new FileInputStream(apkFile);
         } catch (FileNotFoundException e) {
             Timber.e(e);
             return "";
