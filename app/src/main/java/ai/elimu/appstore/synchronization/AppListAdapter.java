@@ -257,6 +257,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     final DownloadCompleteCallback downloadCompleteCallback = new DownloadCompleteCallback() {
                         @Override
                         public void onDownloadCompleted(String tempApkDir, String apkName) {
+                            Timber.i("onDownloadCompleted");
 
                             //Move downloaded file to correct folder
                             String language = UserPrefsHelper.getLocale(context).getLanguage();
@@ -290,6 +291,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                         @Override
                         public void onDownloadFailed(Integer fileSizeInKbsDownloaded) {
+                            Timber.w("onDownloadFailed");
+
                             downloadStatus.setDownloading(false);
                             holder.btnDownload.setVisibility(View.VISIBLE);
                             holder.btnInstall.setVisibility(View.GONE);
@@ -344,20 +347,25 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                                     public void onWriteToFileDone(final Integer fileSizeInKbsDownloaded,
                                                                                   final String tempApkDir,
                                                                                   final String apkName) {
-                                                        // Hide progress indicators
+                                                        Timber.i("onWriteToFileDone");
+
                                                         uiHandler.post(new Runnable() {
                                                             @Override
                                                             public void run() {
+                                                                // Hide progress indicators
                                                                 holder.progressBarDownload.setProgress(0);
                                                                 holder.textDownloadProgress.setText("");
                                                                 holder.progressBarDownload.setVisibility(View.GONE);
                                                                 holder.textDownloadProgress.setVisibility(View.GONE);
 
-                                                                if ((fileSizeInKbsDownloaded == null) ||
-                                                                        (fileSizeInKbsDownloaded <= 0)) {
-                                                                    downloadCompleteCallback.onDownloadFailed(fileSizeInKbsDownloaded);
-                                                                } else {
+                                                                File downloadedApkFile = new File(tempApkDir, apkName);
+                                                                String checksumOfDownloadedApkFile = ChecksumHelper.calculateMd5(downloadedApkFile);
+                                                                Timber.i("checksumOfDownloadedApkFile: " + checksumOfDownloadedApkFile);
+                                                                Timber.i("applicationVersion.getChecksumMd5(): " + applicationVersion.getChecksumMd5());
+                                                                if (applicationVersion.getChecksumMd5().equals(checksumOfDownloadedApkFile)) {
                                                                     downloadCompleteCallback.onDownloadCompleted(tempApkDir, apkName);
+                                                                } else {
+                                                                    downloadCompleteCallback.onDownloadFailed(fileSizeInKbsDownloaded);
                                                                 }
                                                             }
                                                         });
