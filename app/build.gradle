@@ -9,8 +9,8 @@ android {
         applicationId "ai.elimu.appstore"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2000018
-        versionName "2.0.18"
+        versionCode 2000019
+        versionName "2.0.19-SNAPSHOT"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -72,7 +72,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'ai.elimu:model:1.1.67'
-    implementation "org.greenrobot:greendao:$greenDaoVersion"
+    implementation "org.greenrobot:greendao:3.2.2"
     implementation 'commons-io:commons-io:2.5'
     implementation 'com.jakewharton.timber:timber:4.5.1'
     implementation 'com.kofigyan.stateprogressbar:stateprogressbar:0.0.6'
@@ -82,11 +82,11 @@ dependencies {
     implementation "com.android.support:support-annotations:$supportLibVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation "com.scottyab:secure-preferences-lib:$rootProject.securePreferencesVersion"
+    implementation "com.scottyab:secure-preferences-lib:0.1.4"
 
     //Logging interceptor for printing out Retrofit request url
-    implementation "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
-    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.loggingInterceptorVersion"
+    implementation "com.squareup.okhttp3:okhttp:3.6.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.6.0"
 
     testImplementation 'junit:junit:4.12'
 
