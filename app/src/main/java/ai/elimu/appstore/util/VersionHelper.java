@@ -46,7 +46,7 @@ public class VersionHelper {
         if (oldVersionCode < newVersionCode) {
             Timber.i("Upgrading application from version " + oldVersionCode + " to " + newVersionCode + "...");
 
-            if (oldVersionCode < 2000011) {
+            if (oldVersionCode < 2000018) {
                 // Delete downloaded APK files from SD card to prevent testers from having to manually delete corrupt files
                 File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/en/");
                 for (File apkFile : apkDirectory.listFiles()) {
@@ -54,7 +54,7 @@ public class VersionHelper {
                 }
             }
 
-//            if (oldVersionCode < 2000012) {
+//            if (oldVersionCode < 2000019) {
 //                ...
 //            }
 
