@@ -47,6 +47,11 @@ public class CustomDaoMaster extends DaoMaster {
                 // Add listOrder
                 DbMigrationHelper.migrate(db, ApplicationDao.class);
             }
+
+            if (oldVersion < 2001002) {
+                // Remove NOT NULL restriction for listOrder
+                DbMigrationHelper.migrate(db, ApplicationDao.class);
+            }
         }
     }
 }
