@@ -204,7 +204,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                 for (int i = 0; i < jsonArrayApplications.length(); i++) {
                     Type type = new TypeToken<ApplicationGson>(){}.getType();
                     ApplicationGson applicationGson = new Gson().fromJson(jsonArrayApplications.getString(i), type);
-                    Timber.i("Synchronizing APK " + (i + 1) + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (status " + applicationGson.getApplicationStatus() + ")");
+                    int listOrder = i + 1;
+                    Timber.i("Synchronizing APK " + listOrder + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (status " + applicationGson.getApplicationStatus() + ")");
 
                     Application application = applicationDao.load(applicationGson.getId());
                     if (application == null) {
@@ -216,6 +217,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setLiteracySkills(applicationGson.getLiteracySkills());
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
+                        application.setListOrder(listOrder);
                         long id = applicationDao.insert(application);
                         Timber.i("Stored Application in database with id " + id);
 
@@ -250,6 +252,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setLiteracySkills(applicationGson.getLiteracySkills());
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
+                        application.setListOrder(listOrder);
                         applicationDao.update(application);
                         Timber.i("Updated Application in database with id " + application.getId());
 

@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import org.greenrobot.greendao.database.Database;
 
+import ai.elimu.appstore.model.Application;
 import timber.log.Timber;
 
 public class CustomDaoMaster extends DaoMaster {
@@ -40,6 +41,11 @@ public class CustomDaoMaster extends DaoMaster {
             if (oldVersion < 2000011) {
                 // Add checksumMd5
                 DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
+            }
+
+            if (oldVersion < 2001000) {
+                // Add listOrder
+                DbMigrationHelper.migrate(db, ApplicationDao.class);
             }
         }
     }

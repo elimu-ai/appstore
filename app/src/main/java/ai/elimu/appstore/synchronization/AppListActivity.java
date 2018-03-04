@@ -25,13 +25,16 @@ import ai.elimu.appstore.receiver.PackageUpdateReceiver;
 import ai.elimu.appstore.util.AppPrefs;
 import timber.log.Timber;
 
+/**
+ * Loads the Applications stored in the SQLite database and displays them in a list.
+ */
 public class AppListActivity extends AppCompatActivity {
 
     private final String DATE_FORMAT_LAST_SYNC = "yyyy-MM-dd HH:mm";
 
     private TextView textViewLastSynchronization;
 
-    private List<Application> applicationsList;
+    private List<Application> applications;
 
     private AppListAdapter appListAdapter;
 
@@ -98,13 +101,18 @@ public class AppListActivity extends AppCompatActivity {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                applicationsList = applicationDao.loadAll();
+                // Load Applications from database, sorted in the same order as received from the server
+                applications = applicationDao.queryBuilder()
+                        .orderAsc(ApplicationDao.Properties.ListOrder)
+                        .list();
+
+                // Initialize list adapter
                 uiHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Timber.i("applicationsList.size(): " + applicationsList.size());
+                        Timber.i("applications.size(): " + applications.size());
                         BaseApplication baseApplication = (BaseApplication) getApplication();
-                        appListAdapter = new AppListAdapter(applicationsList, packageUpdateReceiver, baseApplication);
+                        appListAdapter = new AppListAdapter(applications, packageUpdateReceiver, baseApplication);
                         appListRecyclerView.setAdapter(appListAdapter);
 
                         //Hide loading dialog
