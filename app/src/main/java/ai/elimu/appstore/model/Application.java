@@ -43,13 +43,13 @@ public class Application {
     /**
      * Keeps track of the application's position in the list, as received in the JSON response.
      */
-    @NotNull
+//    @NotNull
     private Integer listOrder;
 
-    @Generated(hash = 939011956)
+    @Generated(hash = 1797270351)
     public Application(Long id, @NotNull Locale locale, @NotNull String packageName,
             Set<LiteracySkill> literacySkills, Set<NumeracySkill> numeracySkills,
-            @NotNull ApplicationStatus applicationStatus, @NotNull Integer listOrder) {
+            @NotNull ApplicationStatus applicationStatus, Integer listOrder) {
         this.id = id;
         this.locale = locale;
         this.packageName = packageName;

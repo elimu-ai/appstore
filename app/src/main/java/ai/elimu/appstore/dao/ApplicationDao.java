@@ -64,7 +64,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
                 "\"LITERACY_SKILLS\" TEXT," + // 3: literacySkills
                 "\"NUMERACY_SKILLS\" TEXT," + // 4: numeracySkills
                 "\"APPLICATION_STATUS\" TEXT NOT NULL ," + // 5: applicationStatus
-                "\"LIST_ORDER\" INTEGER NOT NULL );"); // 6: listOrder
+                "\"LIST_ORDER\" INTEGER);"); // 6: listOrder
     }
 
     /** Drops the underlying database table. */
@@ -94,7 +94,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
         }
         stmt.bindString(6, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
-        stmt.bindLong(7, entity.getListOrder());
+ 
+        Integer listOrder = entity.getListOrder();
+        if (listOrder != null) {
+            stmt.bindLong(7, listOrder);
+        }
     }
 
     @Override
@@ -118,7 +122,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
         }
         stmt.bindString(6, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
-        stmt.bindLong(7, entity.getListOrder());
+ 
+        Integer listOrder = entity.getListOrder();
+        if (listOrder != null) {
+            stmt.bindLong(7, listOrder);
+        }
     }
 
     @Override
@@ -135,7 +143,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)), // literacySkills
             cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)), // numeracySkills
             applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)), // applicationStatus
-            cursor.getInt(offset + 6) // listOrder
+            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6) // listOrder
         );
         return entity;
     }
@@ -148,7 +156,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         entity.setLiteracySkills(cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)));
         entity.setNumeracySkills(cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)));
         entity.setApplicationStatus(applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)));
-        entity.setListOrder(cursor.getInt(offset + 6));
+        entity.setListOrder(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
      }
     
     @Override
