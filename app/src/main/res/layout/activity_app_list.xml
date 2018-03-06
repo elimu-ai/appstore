@@ -23,6 +23,13 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:background="#33000000" />
 
+    <Button
+        android:id="@+id/btn_download_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/app_list_download_all" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
