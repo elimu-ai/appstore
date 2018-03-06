@@ -283,7 +283,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
                                     holder.imageAppIcon.setImageDrawable(appIcon);
                                 }
-                            } catch (IOException e){
+                            } catch (IOException e) {
                                 Timber.e(e);
                             }
                         }
@@ -328,7 +328,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     downloadApplicationService = baseApplication.getRetrofit(progressUpdateCallback)
                             .create(DownloadApplicationService.class);
                     Call<ResponseBody> call = downloadApplicationService.downloadApplicationFile(getFileUrl
-                            (applicationVersion));
+                            (applicationVersion, context));
 
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override
@@ -468,7 +468,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
      * @param writeToFileCallback The callback triggered when writing is done, to update progress UI
      * @return Downloaded file size
      */
-    private Integer writeResponseBodyToDisk(Response<ResponseBody> response, ApplicationVersion applicationVersion,
+    public static Integer writeResponseBodyToDisk(Response<ResponseBody> response, ApplicationVersion applicationVersion,
                                             WriteToFileCallback writeToFileCallback) {
         Integer fileSizeInKbsDownloaded = 0;
         String fileName = applicationVersion.getApplication().getPackageName() + "-" +
@@ -486,7 +486,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         Timber.i("apkFile: " + apkFile);
         Timber.i("apkFile.exists(): " + apkFile.exists());
 
-        //Download if apkFile does not exist, or re-download if apkFile is existing but corrupted
+        //Download if apkFile does not exist, or re-download if apkFile is existing but corrupted.
+        //Ignore if app was already installed
         if (!apkFile.exists() || (!applicationVersion.getChecksumMd5().equals(ChecksumHelper.calculateMd5(apkFile)))) {
             FileOutputStream fileOutputStream = null;
             String downloadedApkChecksum = "";
@@ -613,6 +614,33 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             imageAppIcon = itemView.findViewById(R.id.iv_app_icon);
         }
 
+        public ImageView getImageAppIcon() {
+            return imageAppIcon;
+        }
+
+        public TextView getTextPkgName() {
+            return textPkgName;
+        }
+
+        public TextView getTextVersion() {
+            return textVersion;
+        }
+
+        public Button getBtnDownload() {
+            return btnDownload;
+        }
+
+        public Button getBtnInstall() {
+            return btnInstall;
+        }
+
+        public ProgressBar getProgressBarDownload() {
+            return progressBarDownload;
+        }
+
+        public TextView getTextDownloadProgress() {
+            return textDownloadProgress;
+        }
     }
 
     /**
@@ -621,7 +649,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
      * @param applicationVersion The application version info of the download file
      * @return The file url
      */
-    private String getFileUrl(ApplicationVersion applicationVersion) {
+    public static String getFileUrl(ApplicationVersion applicationVersion, @NonNull Context context) {
         Timber.i("applicationVersion.getApplication(): " + applicationVersion.getApplication());
         Timber.i("applicationVersion.getFileSizeInKb(): " + applicationVersion
                 .getFileSizeInKb());
@@ -658,6 +686,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 applicationVersion.getFileSizeInKb() + "kB)");
 
         return fileUrl;
+    }
+
+    public List<AppDownloadStatus> getAppDownloadStatus() {
+        return appDownloadStatus;
     }
 
     interface WriteToFileCallback {

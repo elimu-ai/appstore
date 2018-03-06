@@ -1,5 +1,7 @@
 package ai.elimu.appstore.util;
 
+import android.os.Environment;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,6 +31,10 @@ public class FileUtils {
             if (outChannel != null)
                 outChannel.close();
         }
+    }
+
+    public static String getApkFolderPath(String language) {
+        return Environment.getExternalStorageDirectory() + "/" + ".elimu-ai/appstore/apks/" + language;
     }
 
 }
