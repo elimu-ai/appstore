@@ -42,4 +42,6 @@
     <string name="app_list_check_internet_connection">Please check your Internet connection.</string>
     <string name="app_list_download_progress_number">%1$.1f MB/%2$.1f MB\t%3$d%%</string>
     <string name="app_list_download_all">Download all</string>
+
+    <string name="invalid_checksum">Invalid checksum</string>
 </resources>
