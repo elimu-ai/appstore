@@ -37,6 +37,7 @@ import ai.elimu.appstore.receiver.PackageUpdateReceiver;
 import ai.elimu.appstore.service.DownloadApplicationService;
 import ai.elimu.appstore.service.DownloadCompleteCallback;
 import ai.elimu.appstore.service.ProgressUpdateCallback;
+import ai.elimu.appstore.service.download.PrepareDownloadAllCallback;
 import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
@@ -83,6 +84,8 @@ public class AppListActivity extends AppCompatActivity implements View.OnClickLi
     private Handler uiHandler = new Handler();
 
     private AbstractQueue<DownloadTaskInfo> downloadAllTaskQueue;
+
+    private PrepareDownloadAllCallback prepareDownloadCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,8 +173,13 @@ public class AppListActivity extends AppCompatActivity implements View.OnClickLi
      */
     private void prepareDownloadTasks(List<Application> applications, final int position) {
         if (!ConnectivityHelper.isNetworkAvailable(this)) {
-            Toast.makeText(AppListActivity.this, getString(R.string.app_list_check_internet_connection),
-                    Toast.LENGTH_SHORT).show();
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(AppListActivity.this, getString(R.string.app_list_check_internet_connection),
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
             return;
         }
 
@@ -318,6 +326,10 @@ public class AppListActivity extends AppCompatActivity implements View.OnClickLi
             //Queue download task
             downloadAllTaskQueue.add(new DownloadTaskInfo(call, applicationVersion, downloadCompleteCallback));
         }
+
+        if ((position == applications.size() - 1) && prepareDownloadCallback != null) {
+            prepareDownloadCallback.onPrepareCompleted();
+        }
     }
 
     @Override
@@ -344,14 +356,25 @@ public class AppListActivity extends AppCompatActivity implements View.OnClickLi
 
                 language = locale.getLanguage();
 
-                for (int i = 0; i < applications.size(); i++) {
-                    prepareDownloadTasks(applications, i);
-                }
+                prepareDownloadCallback = new PrepareDownloadAllCallback() {
+                    @Override
+                    public void onPrepareCompleted() {
+                        //Start executing prepared download tasks from queue
+                        if (downloadAllTaskQueue.size() > 0) {
+                            executeDownloadTask(downloadAllTaskQueue.remove());
+                        }
+                    }
+                };
 
-                //Start executing prepared download tasks from queue
-                if (downloadAllTaskQueue.size() > 0) {
-                    executeDownloadTask(downloadAllTaskQueue.remove());
-                }
+                downloadAllWorker.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < applications.size(); i++) {
+                            prepareDownloadTasks(applications, i);
+                        }
+                    }
+                });
+
                 break;
 
             default:
