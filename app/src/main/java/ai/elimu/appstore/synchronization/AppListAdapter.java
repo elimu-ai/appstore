@@ -471,7 +471,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         String fileName = applicationVersion.getApplication().getPackageName() + "-" +
                 applicationVersion.getVersionCode() + ".apk";
         Timber.i("fileName: " + fileName);
-        File apkDirectory = new File(FileUtils.getApkFolderPath(null));
+        File apkDirectory = new File(FileUtils.getApkFolderPath(""));
         Timber.i("apkDirectory: " + apkDirectory);
 
         if (!apkDirectory.exists()) {
