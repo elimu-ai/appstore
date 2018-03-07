@@ -1,4 +1,4 @@
-package ai.elimu.appstore.service;
+package ai.elimu.appstore.service.download;
 
 import android.support.annotation.NonNull;
 

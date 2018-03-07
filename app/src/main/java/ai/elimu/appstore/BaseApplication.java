@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
-import ai.elimu.appstore.service.ProgressResponseBody;
-import ai.elimu.appstore.service.ProgressUpdateCallback;
+import ai.elimu.appstore.service.download.ProgressResponseBody;
+import ai.elimu.appstore.service.download.ProgressUpdateCallback;
 import ai.elimu.appstore.util.VersionHelper;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
