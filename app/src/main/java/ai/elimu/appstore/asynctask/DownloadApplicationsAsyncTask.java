@@ -3,7 +3,6 @@ package ai.elimu.appstore.asynctask;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -19,6 +18,7 @@ import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.util.ApkLoader;
 import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
+import ai.elimu.appstore.util.FileUtils;
 import ai.elimu.appstore.util.UserPrefsHelper;
 import ai.elimu.model.gson.admin.ApplicationGson;
 import ai.elimu.model.gson.admin.ApplicationVersionGson;
@@ -207,7 +207,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
         Timber.i("fileName: " + fileName);
 
         String language = UserPrefsHelper.getLocale(context).getLanguage();
-        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
+        File apkDirectory = new File(FileUtils.getApkFolderPath(language));
         Timber.i("apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {
             apkDirectory.mkdirs();

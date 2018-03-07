@@ -32,7 +32,7 @@ public class ApkLoader {
         Timber.i("Downloading from " + urlValue + "...");
 
         String language = Locale.getDefault().getLanguage();
-        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
+        File apkDirectory = new File(FileUtils.getApkFolderPath(language));
         Timber.i("apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {
             apkDirectory.mkdirs();

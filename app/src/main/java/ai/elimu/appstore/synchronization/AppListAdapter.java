@@ -151,8 +151,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             String language = locale.getLanguage();
             String fileName = applicationVersion.getApplication().getPackageName() + "-" +
                     applicationVersion.getVersionCode() + ".apk";
-            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                    ".elimu-ai/appstore/apks/" + language);
+            File apkDirectory = new File(FileUtils.getApkFolderPath(language));
             final File existingApkFile = new File(apkDirectory, fileName);
             Timber.i("existingApkFile: " + existingApkFile);
             Timber.i("existingApkFile.exists(): " + existingApkFile.exists());
@@ -260,8 +259,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                             //Move downloaded file to correct folder
                             String language = UserPrefsHelper.getLocale(context).getLanguage();
-                            File correctApkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                                    ".elimu-ai/appstore/apks/" + language);
+                            File correctApkDirectory = new File(FileUtils.getApkFolderPath(language));
 
                             File srcFile = new File(tempApkDir, apkName);
                             File dstFile = new File(correctApkDirectory, apkName);
@@ -391,8 +389,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     Timber.i("fileName: " + fileName);
 
                     String language = UserPrefsHelper.getLocale(context).getLanguage();
-                    File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                            ".elimu-ai/appstore/apks/" + language);
+                    File apkDirectory = new File(FileUtils.getApkFolderPath(language));
 
                     final File apkFile = new File(apkDirectory, fileName);
                     Timber.i("apkFile: " + apkFile);
@@ -474,8 +471,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         String fileName = applicationVersion.getApplication().getPackageName() + "-" +
                 applicationVersion.getVersionCode() + ".apk";
         Timber.i("fileName: " + fileName);
-        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                ".elimu-ai/appstore/apks/");
+        File apkDirectory = new File(FileUtils.getApkFolderPath(null));
         Timber.i("apkDirectory: " + apkDirectory);
 
         if (!apkDirectory.exists()) {
