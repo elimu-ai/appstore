@@ -283,7 +283,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
                                     holder.imageAppIcon.setImageDrawable(appIcon);
                                 }
-                            } catch (IOException e) {
+                            } catch (IOException e){
                                 Timber.e(e);
                             }
                         }

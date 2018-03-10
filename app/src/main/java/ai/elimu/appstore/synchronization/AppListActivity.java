@@ -75,8 +75,6 @@ public class AppListActivity extends AppCompatActivity implements View.OnClickLi
 
     private ExecutorService downloadAllWorker = Executors.newSingleThreadExecutor();
 
-    private BaseApplication baseApplication;
-
     private ApplicationVersionDao applicationVersionDao;
 
     private String language;
@@ -93,7 +91,7 @@ public class AppListActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_list);
 
-        baseApplication = (BaseApplication) getApplicationContext();
+        BaseApplication baseApplication = (BaseApplication) getApplication();
 
         applicationDao = baseApplication.getDaoSession().getApplicationDao();
         applicationVersionDao = baseApplication.getDaoSession().getApplicationVersionDao();

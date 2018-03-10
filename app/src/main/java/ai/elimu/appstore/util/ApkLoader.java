@@ -2,6 +2,7 @@ package ai.elimu.appstore.util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
 
