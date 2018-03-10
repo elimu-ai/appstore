@@ -2,7 +2,7 @@ package ai.elimu.appstore.model;
 
 import android.support.annotation.NonNull;
 
-import ai.elimu.appstore.service.download.DownloadCompleteCallback;
+import ai.elimu.appstore.service.DownloadCompleteCallback;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 

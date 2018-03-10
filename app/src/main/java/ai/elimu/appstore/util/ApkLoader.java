@@ -2,7 +2,6 @@ package ai.elimu.appstore.util;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
 
@@ -32,7 +31,7 @@ public class ApkLoader {
         Timber.i("Downloading from " + urlValue + "...");
 
         String language = Locale.getDefault().getLanguage();
-        File apkDirectory = new File(FileUtils.getApkFolderPath(language));
+        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/" + language);
         Timber.i("apkDirectory: " + apkDirectory);
         if (!apkDirectory.exists()) {
             apkDirectory.mkdirs();

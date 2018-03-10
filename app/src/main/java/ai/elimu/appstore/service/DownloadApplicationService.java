@@ -1,4 +1,4 @@
-package ai.elimu.appstore.service.download;
+package ai.elimu.appstore.service;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
