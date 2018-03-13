@@ -8,6 +8,7 @@
     <string name="email_address">E-mail addresss</string>
     <string name="install">Install</string>
     <string name="install_update">Install update</string>
+    <string name="uninstall">Uninstall</string>
     <string name="language_am">Amharic</string>
     <string name="language_ar">Arabic</string>
     <string name="language_en">English</string>

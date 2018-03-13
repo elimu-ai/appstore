@@ -178,6 +178,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
             if (isAppInstalled) {
                 holder.btnInstall.setVisibility(View.GONE);
+                holder.btnUninstall.setVisibility(View.VISIBLE);
 
                 // Check if update is available for download
                 try {
@@ -224,8 +225,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
                 Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
                 holder.imageAppIcon.setImageDrawable(appIcon);
+                holder.btnUninstall.setVisibility(View.GONE);
             } else {
                 holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
+                holder.btnUninstall.setVisibility(View.GONE);
             }
 
             holder.btnDownload.setOnClickListener(new View.OnClickListener() {
@@ -416,6 +419,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     Timber.i("onInstallComplete, package: " + packageName);
                                     holder.btnDownload.setVisibility(View.GONE);
                                     holder.btnInstall.setVisibility(View.GONE);
+                                    holder.btnUninstall.setVisibility(View.VISIBLE);
                                     executorService.execute(new Runnable() {
                                         @Override
                                         public void run() {
@@ -431,6 +435,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                 @Override
                                 public void onUninstallComplete(@NonNull String packageName) {
                                     notifyDataSetChanged();
+                                    holder.btnUninstall.setVisibility(View.GONE);
                                 }
                             };
                     packageUpdateReceiver.setPackageUpdateCallback(packageUpdateCallback);
@@ -455,6 +460,16 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
                     }
+                }
+            });
+
+            //Uninstall an application
+            holder.btnUninstall.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent uninstallIntent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
+                    uninstallIntent.setData(Uri.parse("package:" + applicationVersion.getApplication().getPackageName()));
+                    context.startActivity(uninstallIntent);
                 }
             });
         }
@@ -595,6 +610,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         private final Button btnInstall;
 
+        private final Button btnUninstall;
+
         private final ProgressBar progressBarDownload;
 
         private final TextView textDownloadProgress;
@@ -608,6 +625,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             textVersion = itemView.findViewById(R.id.textViewVersion);
             btnDownload = itemView.findViewById(R.id.buttonDownload);
             btnInstall = itemView.findViewById(R.id.buttonInstall);
+            btnUninstall = itemView.findViewById(R.id.buttonUninstall);
             progressBarDownload = itemView.findViewById(R.id.progressBarDownloadProgress);
             textDownloadProgress = itemView.findViewById(R.id.textViewDownloadProgress);
             imageAppIcon = itemView.findViewById(R.id.iv_app_icon);
