@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BIND_JOB_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    
+    <permission android:name="ai.elimu.appstore.provider.READ" />
 
     <application
         android:name=".BaseApplication"
@@ -84,7 +86,7 @@
             android:authorities="ai.elimu.appstore.provider"
             android:name=".provider.AppCollectionProvider"
             android:exported="true"
-            android:permission="ai.elimu.appstore.provider.READ"/>
+            android:readPermission="ai.elimu.appstore.provider.READ"/>
 
     </application>
 
