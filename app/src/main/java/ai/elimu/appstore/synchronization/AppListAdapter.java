@@ -73,6 +73,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     private PackageUpdateReceiver packageUpdateReceiver;
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ExecutorService deleteFileExecutor = Executors.newSingleThreadExecutor();
 
     private DownloadApplicationService downloadApplicationService;
     private BaseApplication baseApplication;
@@ -420,7 +421,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     holder.btnDownload.setVisibility(View.GONE);
                                     holder.btnInstall.setVisibility(View.GONE);
                                     holder.btnUninstall.setVisibility(View.VISIBLE);
-                                    executorService.execute(new Runnable() {
+                                    deleteFileExecutor.execute(new Runnable() {
                                         @Override
                                         public void run() {
                                             for (final File file : apkFiles) {
