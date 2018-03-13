@@ -79,6 +79,12 @@
         <activity
             android:name=".synchronization.AppListActivity"
             android:configChanges="orientation|screenSize"></activity>
+        
+        <provider
+            android:authorities="ai.elimu.appstore.provider"
+            android:name=".provider.AppCollectionProvider"
+            android:exported="true"
+            android:permission="ai.elimu.appstore.provider.READ"/>
 
     </application>
 

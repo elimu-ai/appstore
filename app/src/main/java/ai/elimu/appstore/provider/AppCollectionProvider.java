@@ -16,7 +16,7 @@ import ai.elimu.appstore.util.AppPrefs;
  * Created by sladomic on 12.03.18.
  */
 
-public class LicenseProvider extends ContentProvider {
+public class AppCollectionProvider extends ContentProvider {
     private static final String TABLE_APP_COLLECTION = "appCollection";
 
     /** The authority of this content provider. */
