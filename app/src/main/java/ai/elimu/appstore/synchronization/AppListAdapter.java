@@ -262,6 +262,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             String language = UserPrefsHelper.getLocale(context).getLanguage();
                             File correctApkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
                                     ".elimu-ai/appstore/apks/" + language);
+                            if(!correctApkDirectory.exists()){
+                                correctApkDirectory.mkdirs();
+                            }
 
                             File srcFile = new File(tempApkDir, apkName);
                             File dstFile = new File(correctApkDirectory, apkName);
