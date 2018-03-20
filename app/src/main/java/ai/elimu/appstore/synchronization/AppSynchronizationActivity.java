@@ -218,10 +218,11 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
                         application.setListOrder(listOrder);
-                        long id = applicationDao.insert(application);
-                        Timber.i("Stored Application in database with id " + id);
 
                         if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                            long id = applicationDao.insert(application);
+                            Timber.i("Stored Application in database with id " + id);
+
                             // Store ApplicationVersions
                             List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
                             Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size());
@@ -279,6 +280,9 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     Timber.i("Stored ApplicationVersion in database with id " + applicationVersionId);
                                 }
                             }
+                        } else if (application.getApplicationStatus() == ApplicationStatus.DELETED) {
+                            applicationDao.delete(application);
+                            Timber.i("Deleted Application from database with id " + application.getPackageName());
                         }
                     }
                 }
