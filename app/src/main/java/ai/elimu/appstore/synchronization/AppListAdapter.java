@@ -120,7 +120,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
             // Do not allow APK download
-            holder.textVersion.setText("ApplicationStatus: " + application
+            holder.textViewVersion.setText("ApplicationStatus: " + application
                     .getApplicationStatus());
             holder.btnDownload.setVisibility(View.VISIBLE);
             holder.btnDownload.setEnabled(false);
@@ -137,9 +137,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     .list();
             final ApplicationVersion applicationVersion = applicationVersions.get(0);
 
-            holder.textVersion.setText(context.getText(R.string.version) + ": " +
-                    applicationVersion.getVersionCode() + " (" + (applicationVersion
-                    .getFileSizeInKb() / 1024) + " MB)");
+            // Display the versionName of the Application
+            holder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionName());
 
             // Check if the APK file has already been downloaded to the SD card
             Locale locale = UserPrefsHelper.getLocale(context);
@@ -188,8 +187,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     if (applicationVersion.getVersionCode() > versionCodeInstalled) {
                         // Update is available for download/install
 
-                        // Display version of the application currently installed
-                        holder.textVersion.setText(holder.textVersion.getText() + ". Installed: " + versionCodeInstalled);
+//                        // Display version of the application currently installed
+//                        holder.textViewVersion.setText(holder.textViewVersion.getText() + ". Installed: " + versionCodeInstalled);
 
                         // Change the button text
                         if (!existingApkFile.exists()) {
@@ -592,7 +591,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         private final TextView textPkgName;
 
-        private final TextView textVersion;
+        private final TextView textViewVersion;
 
         private final Button btnDownload;
 
@@ -608,7 +607,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             super(itemView);
 
             textPkgName = itemView.findViewById(R.id.textViewPackageName);
-            textVersion = itemView.findViewById(R.id.textViewVersion);
+            textViewVersion = itemView.findViewById(R.id.textViewVersion);
             btnDownload = itemView.findViewById(R.id.buttonDownload);
             btnInstall = itemView.findViewById(R.id.buttonInstall);
             progressBarDownload = itemView.findViewById(R.id.progressBarDownloadProgress);
