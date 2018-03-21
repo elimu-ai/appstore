@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +67,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     private List<AppDownloadStatus> appDownloadStatus;
 
+    private List<Call<ResponseBody>> appDownloadQueue;
+
     private Context context;
 
     private ApplicationVersionDao applicationVersionDao;
@@ -92,8 +95,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     private void initAppDownloadStatus() {
         appDownloadStatus = new ArrayList<>(applications.size());
+        appDownloadQueue = new ArrayList<>(applications.size());
         for (int i = 0; i < applications.size(); i++) {
             appDownloadStatus.add(new AppDownloadStatus());
+            appDownloadQueue.add(null);
         }
     }
 
@@ -107,12 +112,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         holder.progressBarDownload.setProgress(downloadStatus.getDownloadProgress());
 
         if (downloadStatus.isDownloading()) {
-            holder.progressBarDownload.setVisibility(View.VISIBLE);
-            holder.textDownloadProgress.setVisibility(View.VISIBLE);
+            holder.layoutProgress.setVisibility(View.VISIBLE);
+            holder.ivCancelDownload.setVisibility(View.VISIBLE);
             holder.btnDownload.setVisibility(View.GONE);
         } else {
-            holder.progressBarDownload.setVisibility(View.GONE);
-            holder.textDownloadProgress.setVisibility(View.GONE);
+            holder.layoutProgress.setVisibility(View.GONE);
+            holder.ivCancelDownload.setVisibility(View.GONE);
             holder.progressBarDownload.setProgress(0);
             holder.textDownloadProgress.setText("");
             holder.btnDownload.setVisibility(View.VISIBLE);
@@ -243,8 +248,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             applicationVersion.getVersionCode() + ")...");
 
                     holder.btnDownload.setVisibility(View.GONE);
-                    holder.progressBarDownload.setVisibility(View.VISIBLE);
-                    holder.textDownloadProgress.setVisibility(View.VISIBLE);
+                    holder.layoutProgress.setVisibility(View.VISIBLE);
+                    holder.ivCancelDownload.setVisibility(View.VISIBLE);
                     downloadStatus.setDownloading(true);
                     appDownloadStatus.set(position, downloadStatus);
 
@@ -330,6 +335,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     Call<ResponseBody> call = downloadApplicationService.downloadApplicationFile(getFileUrl
                             (applicationVersion));
 
+                    appDownloadQueue.set(position, call);
+
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -350,8 +357,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                                             public void run() {
                                                                 holder.progressBarDownload.setProgress(0);
                                                                 holder.textDownloadProgress.setText("");
-                                                                holder.progressBarDownload.setVisibility(View.GONE);
-                                                                holder.textDownloadProgress.setVisibility(View.GONE);
+                                                                holder.layoutProgress.setVisibility(View.GONE);
+                                                                holder.ivCancelDownload.setVisibility(View.GONE);
 
                                                                 if ((fileSizeInKbsDownloaded == null) ||
                                                                         (fileSizeInKbsDownloaded <= 0)) {
@@ -374,6 +381,23 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             Timber.e(t, "onFailure DownloadApplicationService");
                         }
                     });
+                }
+            });
+
+            //Cancel a download
+            holder.ivCancelDownload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Call<ResponseBody> call = appDownloadQueue.get(position);
+                    if (call != null) {
+                        call.cancel();
+
+                        downloadStatus.setDownloading(false);
+                        holder.btnDownload.setVisibility(View.VISIBLE);
+                        holder.btnInstall.setVisibility(View.GONE);
+                        holder.progressBarDownload.setProgress(0);
+                        holder.textDownloadProgress.setText("");
+                    }
                 }
             });
 
@@ -599,6 +623,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         private final TextView textDownloadProgress;
 
+        private final LinearLayout layoutProgress;
+
+        private final ImageView ivCancelDownload;
+
         private final ImageView imageAppIcon;
 
         public ViewHolder(View itemView) {
@@ -610,6 +638,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             btnInstall = itemView.findViewById(R.id.buttonInstall);
             progressBarDownload = itemView.findViewById(R.id.progressBarDownloadProgress);
             textDownloadProgress = itemView.findViewById(R.id.textViewDownloadProgress);
+            layoutProgress = itemView.findViewById(R.id.layoutProgress);
+            ivCancelDownload = itemView.findViewById(R.id.iv_cancel_download);
             imageAppIcon = itemView.findViewById(R.id.iv_app_icon);
         }
 
