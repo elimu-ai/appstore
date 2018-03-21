@@ -246,9 +246,12 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
                         application.setListOrder(listOrder);
 
-                        if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                        if (application.getApplicationStatus() != ApplicationStatus.DELETED) {
                             long id = applicationDao.insert(application);
                             Timber.i("Stored Application in database with id " + id);
+                        }
+
+                        if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
 
                             // Store ApplicationVersions
                             List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
