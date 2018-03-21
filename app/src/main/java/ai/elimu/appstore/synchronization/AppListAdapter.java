@@ -397,6 +397,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         holder.btnInstall.setVisibility(View.GONE);
                         holder.progressBarDownload.setProgress(0);
                         holder.textDownloadProgress.setText("");
+                        holder.layoutProgress.setVisibility(View.GONE);
+                        holder.ivCancelDownload.setVisibility(View.GONE);
                     }
                 }
             });
