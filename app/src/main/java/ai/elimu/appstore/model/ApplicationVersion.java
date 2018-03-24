@@ -40,6 +40,9 @@ public class ApplicationVersion {
     @NotNull
     private Integer versionCode;
 
+//    @NotNull
+    private String versionName;
+
     private String startCommand;
 
     @NotNull
@@ -54,12 +57,10 @@ public class ApplicationVersion {
     @Generated(hash = 1339503542)
     private transient ApplicationVersionDao myDao;
 
-    @Generated(hash = 597723545)
-    public ApplicationVersion(Long id, long applicationId,
-            @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
-            @NotNull String checksumMd5, @NotNull String contentType,
-            @NotNull Integer versionCode, String startCommand,
-            @NotNull Calendar timeUploaded) {
+    @Generated(hash = 1833782598)
+    public ApplicationVersion(Long id, long applicationId, @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
+            @NotNull String checksumMd5, @NotNull String contentType, @NotNull Integer versionCode,
+            String versionName, String startCommand, @NotNull Calendar timeUploaded) {
         this.id = id;
         this.applicationId = applicationId;
         this.fileSizeInKb = fileSizeInKb;
@@ -67,6 +68,7 @@ public class ApplicationVersion {
         this.checksumMd5 = checksumMd5;
         this.contentType = contentType;
         this.versionCode = versionCode;
+        this.versionName = versionName;
         this.startCommand = startCommand;
         this.timeUploaded = timeUploaded;
     }
@@ -225,5 +227,13 @@ public class ApplicationVersion {
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getApplicationVersionDao() : null;
+    }
+
+    public String getVersionName() {
+        return this.versionName;
+    }
+
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
     }
 }
