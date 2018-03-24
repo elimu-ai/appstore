@@ -102,7 +102,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         final Application application = applications.get(position);
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
-        holder.textPkgName.setText(application.getPackageName());
+        holder.textViewTitle.setText(application.getPackageName());
         holder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());
         holder.progressBarDownload.setProgress(downloadStatus.getDownloadProgress());
 
@@ -136,6 +136,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     .orderDesc(ApplicationVersionDao.Properties.VersionCode)
                     .list();
             final ApplicationVersion applicationVersion = applicationVersions.get(0);
+
+            if (!TextUtils.isEmpty(applicationVersion.getLabel())) {
+                // Display the label of the Application (instead of packageName)
+                holder.textViewTitle.setText(applicationVersion.getLabel());
+            }
 
             // Display the versionName of the Application
             holder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionName());
@@ -589,7 +594,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView textPkgName;
+        private final TextView textViewTitle;
 
         private final TextView textViewVersion;
 
@@ -606,7 +611,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         public ViewHolder(View itemView) {
             super(itemView);
 
-            textPkgName = itemView.findViewById(R.id.textViewPackageName);
+            textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewVersion = itemView.findViewById(R.id.textViewVersion);
             btnDownload = itemView.findViewById(R.id.buttonDownload);
             btnInstall = itemView.findViewById(R.id.buttonInstall);
