@@ -17,6 +17,9 @@ public class FileUtils {
      */
     public static void moveFile(File src, File dst) throws IOException {
         FileChannel inChannel = new FileInputStream(src).getChannel();
+        if(!dst.exists()){
+            dst.createNewFile();
+        }
         FileChannel outChannel = new FileOutputStream(dst).getChannel();
         try {
             inChannel.transferTo(0, inChannel.size(), outChannel);

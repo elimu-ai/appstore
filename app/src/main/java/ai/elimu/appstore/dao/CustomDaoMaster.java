@@ -52,6 +52,13 @@ public class CustomDaoMaster extends DaoMaster {
                 // Remove NOT NULL restriction for listOrder
                 DbMigrationHelper.migrate(db, ApplicationDao.class);
             }
+
+            if (oldVersion < 2002000) {
+                // Add ApplicationVersion#versionName and ApplicationVersion#label
+                // Drop and re-create entire database since property values of existing ApplicationVersions in the database are not overwritten
+                dropAllTables(db, true);
+                onCreate(db);
+            }
         }
     }
 }
