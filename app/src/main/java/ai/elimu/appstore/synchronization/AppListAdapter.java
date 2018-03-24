@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
@@ -67,7 +68,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     private List<AppDownloadStatus> appDownloadStatus;
 
-    private List<Call<ResponseBody>> appDownloadQueue;
+    private List<Call<ResponseBody>> appDownloadRequests;
+
+    private List<Future<?>> appDownloadResponses;
 
     private Context context;
 
@@ -95,10 +98,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     private void initAppDownloadStatus() {
         appDownloadStatus = new ArrayList<>(applications.size());
-        appDownloadQueue = new ArrayList<>(applications.size());
+        appDownloadRequests = new ArrayList<>(applications.size());
+        appDownloadResponses = new ArrayList<>(applications.size());
         for (int i = 0; i < applications.size(); i++) {
             appDownloadStatus.add(new AppDownloadStatus());
-            appDownloadQueue.add(null);
+            appDownloadRequests.add(null);
+            appDownloadResponses.add(null);
         }
     }
 
@@ -338,14 +343,14 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     Call<ResponseBody> call = downloadApplicationService.downloadApplicationFile(getFileUrl
                             (applicationVersion));
 
-                    appDownloadQueue.set(position, call);
+                    appDownloadRequests.set(position, call);
 
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        public void onResponse(final Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response != null) {
                                 final Response<ResponseBody> downloadResponse = response;
-                                executorService.execute(new Runnable() {
+                                Future<?> future = executorService.submit(new Runnable() {
                                     @Override
                                     public void run() {
                                         writeResponseBodyToDisk(downloadResponse, applicationVersion,
@@ -375,6 +380,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                                 });
                                     }
                                 });
+
+                                appDownloadResponses.set(position, future);
                             }
 
                         }
@@ -391,7 +398,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             holder.ivCancelDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Call<ResponseBody> call = appDownloadQueue.get(position);
+                    Call<ResponseBody> call = appDownloadRequests.get(position);
                     if (call != null) {
                         call.cancel();
 
@@ -402,6 +409,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         holder.textDownloadProgress.setText("");
                         holder.layoutProgress.setVisibility(View.GONE);
                         holder.ivCancelDownload.setVisibility(View.GONE);
+                    }
+
+                    Future<?> futureDownloadResponse = appDownloadResponses.get(position);
+                    if (futureDownloadResponse != null) {
+                        futureDownloadResponse.cancel(true);
                     }
                 }
             });
