@@ -10,12 +10,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
+import com.crashlytics.android.Crashlytics;
+
 import ai.elimu.appstore.onboarding.DeviceRegistrationActivity;
 import ai.elimu.appstore.onboarding.LicenseNumberActivity;
 import ai.elimu.appstore.onboarding.LocaleActivity;
 import ai.elimu.appstore.synchronization.AppSynchronizationActivity;
 import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.appstore.util.RootUtil;
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
         super.onCreate(savedInstanceState);
+
+        //Initialize Crashlytics for crash reporting
+        Fabric.with(this, new Crashlytics());
 
         setContentView(R.layout.activity_main);
     }

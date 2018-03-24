@@ -38,8 +38,10 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         public final static Property ChecksumMd5 = new Property(4, String.class, "checksumMd5", false, "CHECKSUM_MD5");
         public final static Property ContentType = new Property(5, String.class, "contentType", false, "CONTENT_TYPE");
         public final static Property VersionCode = new Property(6, Integer.class, "versionCode", false, "VERSION_CODE");
-        public final static Property StartCommand = new Property(7, String.class, "startCommand", false, "START_COMMAND");
-        public final static Property TimeUploaded = new Property(8, long.class, "timeUploaded", false, "TIME_UPLOADED");
+        public final static Property VersionName = new Property(7, String.class, "versionName", false, "VERSION_NAME");
+        public final static Property Label = new Property(8, String.class, "label", false, "LABEL");
+        public final static Property StartCommand = new Property(9, String.class, "startCommand", false, "START_COMMAND");
+        public final static Property TimeUploaded = new Property(10, long.class, "timeUploaded", false, "TIME_UPLOADED");
     }
 
     private DaoSession daoSession;
@@ -66,8 +68,10 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
                 "\"CHECKSUM_MD5\" TEXT NOT NULL ," + // 4: checksumMd5
                 "\"CONTENT_TYPE\" TEXT NOT NULL ," + // 5: contentType
                 "\"VERSION_CODE\" INTEGER NOT NULL ," + // 6: versionCode
-                "\"START_COMMAND\" TEXT," + // 7: startCommand
-                "\"TIME_UPLOADED\" INTEGER NOT NULL );"); // 8: timeUploaded
+                "\"VERSION_NAME\" TEXT," + // 7: versionName
+                "\"LABEL\" TEXT," + // 8: label
+                "\"START_COMMAND\" TEXT," + // 9: startCommand
+                "\"TIME_UPLOADED\" INTEGER NOT NULL );"); // 10: timeUploaded
     }
 
     /** Drops the underlying database table. */
@@ -91,11 +95,21 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         stmt.bindString(6, entity.getContentType());
         stmt.bindLong(7, entity.getVersionCode());
  
+        String versionName = entity.getVersionName();
+        if (versionName != null) {
+            stmt.bindString(8, versionName);
+        }
+ 
+        String label = entity.getLabel();
+        if (label != null) {
+            stmt.bindString(9, label);
+        }
+ 
         String startCommand = entity.getStartCommand();
         if (startCommand != null) {
-            stmt.bindString(8, startCommand);
+            stmt.bindString(10, startCommand);
         }
-        stmt.bindLong(9, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
+        stmt.bindLong(11, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
     }
 
     @Override
@@ -113,11 +127,21 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         stmt.bindString(6, entity.getContentType());
         stmt.bindLong(7, entity.getVersionCode());
  
+        String versionName = entity.getVersionName();
+        if (versionName != null) {
+            stmt.bindString(8, versionName);
+        }
+ 
+        String label = entity.getLabel();
+        if (label != null) {
+            stmt.bindString(9, label);
+        }
+ 
         String startCommand = entity.getStartCommand();
         if (startCommand != null) {
-            stmt.bindString(8, startCommand);
+            stmt.bindString(10, startCommand);
         }
-        stmt.bindLong(9, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
+        stmt.bindLong(11, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
     }
 
     @Override
@@ -141,8 +165,10 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
             cursor.getString(offset + 4), // checksumMd5
             cursor.getString(offset + 5), // contentType
             cursor.getInt(offset + 6), // versionCode
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // startCommand
-            timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 8)) // timeUploaded
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // versionName
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // label
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // startCommand
+            timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 10)) // timeUploaded
         );
         return entity;
     }
@@ -156,8 +182,10 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         entity.setChecksumMd5(cursor.getString(offset + 4));
         entity.setContentType(cursor.getString(offset + 5));
         entity.setVersionCode(cursor.getInt(offset + 6));
-        entity.setStartCommand(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setTimeUploaded(timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 8)));
+        entity.setVersionName(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setLabel(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setStartCommand(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setTimeUploaded(timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 10)));
      }
     
     @Override
