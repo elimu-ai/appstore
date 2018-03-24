@@ -43,6 +43,9 @@ public class ApplicationVersion {
 //    @NotNull
     private String versionName;
 
+//    @NotNull
+    private String label;
+
     private String startCommand;
 
     @NotNull
@@ -57,10 +60,10 @@ public class ApplicationVersion {
     @Generated(hash = 1339503542)
     private transient ApplicationVersionDao myDao;
 
-    @Generated(hash = 1833782598)
+    @Generated(hash = 985154034)
     public ApplicationVersion(Long id, long applicationId, @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
             @NotNull String checksumMd5, @NotNull String contentType, @NotNull Integer versionCode,
-            String versionName, String startCommand, @NotNull Calendar timeUploaded) {
+            String versionName, String label, String startCommand, @NotNull Calendar timeUploaded) {
         this.id = id;
         this.applicationId = applicationId;
         this.fileSizeInKb = fileSizeInKb;
@@ -69,6 +72,7 @@ public class ApplicationVersion {
         this.contentType = contentType;
         this.versionCode = versionCode;
         this.versionName = versionName;
+        this.label = label;
         this.startCommand = startCommand;
         this.timeUploaded = timeUploaded;
     }
@@ -235,5 +239,13 @@ public class ApplicationVersion {
 
     public void setVersionName(String versionName) {
         this.versionName = versionName;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }
