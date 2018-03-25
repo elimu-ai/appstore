@@ -9,6 +9,7 @@ import android.content.pm.Signature;
 import android.util.Base64;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.securepreferences.SecurePreferences;
 
 import org.greenrobot.greendao.database.Database;
@@ -23,6 +24,7 @@ import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.service.ProgressResponseBody;
 import ai.elimu.appstore.service.ProgressUpdateCallback;
 import ai.elimu.appstore.util.VersionHelper;
+import io.fabric.sdk.android.Fabric;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
@@ -71,6 +73,11 @@ public class BaseApplication extends Application {
             });
         }
         Timber.i("onCreate");
+
+//        if ("release".equals(BuildConfig.BUILD_TYPE)) {
+//            // Initialize Crashlytics (crash reporting)
+//            Fabric.with(this, new Crashlytics());
+//        }
 
         // greenDAO config
         CustomDaoMaster.DevOpenHelper helper = new CustomDaoMaster.DevOpenHelper(this, "appstore-db");
