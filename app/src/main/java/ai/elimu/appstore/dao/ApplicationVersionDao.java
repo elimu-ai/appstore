@@ -40,8 +40,9 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         public final static Property VersionCode = new Property(6, Integer.class, "versionCode", false, "VERSION_CODE");
         public final static Property VersionName = new Property(7, String.class, "versionName", false, "VERSION_NAME");
         public final static Property Label = new Property(8, String.class, "label", false, "LABEL");
-        public final static Property StartCommand = new Property(9, String.class, "startCommand", false, "START_COMMAND");
-        public final static Property TimeUploaded = new Property(10, long.class, "timeUploaded", false, "TIME_UPLOADED");
+        public final static Property MinSdkVersion = new Property(9, Integer.class, "minSdkVersion", false, "MIN_SDK_VERSION");
+        public final static Property StartCommand = new Property(10, String.class, "startCommand", false, "START_COMMAND");
+        public final static Property TimeUploaded = new Property(11, long.class, "timeUploaded", false, "TIME_UPLOADED");
     }
 
     private DaoSession daoSession;
@@ -70,8 +71,9 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
                 "\"VERSION_CODE\" INTEGER NOT NULL ," + // 6: versionCode
                 "\"VERSION_NAME\" TEXT," + // 7: versionName
                 "\"LABEL\" TEXT," + // 8: label
-                "\"START_COMMAND\" TEXT," + // 9: startCommand
-                "\"TIME_UPLOADED\" INTEGER NOT NULL );"); // 10: timeUploaded
+                "\"MIN_SDK_VERSION\" INTEGER," + // 9: minSdkVersion
+                "\"START_COMMAND\" TEXT," + // 10: startCommand
+                "\"TIME_UPLOADED\" INTEGER NOT NULL );"); // 11: timeUploaded
     }
 
     /** Drops the underlying database table. */
@@ -105,11 +107,16 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
             stmt.bindString(9, label);
         }
  
+        Integer minSdkVersion = entity.getMinSdkVersion();
+        if (minSdkVersion != null) {
+            stmt.bindLong(10, minSdkVersion);
+        }
+ 
         String startCommand = entity.getStartCommand();
         if (startCommand != null) {
-            stmt.bindString(10, startCommand);
+            stmt.bindString(11, startCommand);
         }
-        stmt.bindLong(11, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
+        stmt.bindLong(12, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
     }
 
     @Override
@@ -137,11 +144,16 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
             stmt.bindString(9, label);
         }
  
+        Integer minSdkVersion = entity.getMinSdkVersion();
+        if (minSdkVersion != null) {
+            stmt.bindLong(10, minSdkVersion);
+        }
+ 
         String startCommand = entity.getStartCommand();
         if (startCommand != null) {
-            stmt.bindString(10, startCommand);
+            stmt.bindString(11, startCommand);
         }
-        stmt.bindLong(11, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
+        stmt.bindLong(12, timeUploadedConverter.convertToDatabaseValue(entity.getTimeUploaded()));
     }
 
     @Override
@@ -167,8 +179,9 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
             cursor.getInt(offset + 6), // versionCode
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // versionName
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // label
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // startCommand
-            timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 10)) // timeUploaded
+            cursor.isNull(offset + 9) ? null : cursor.getInt(offset + 9), // minSdkVersion
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // startCommand
+            timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 11)) // timeUploaded
         );
         return entity;
     }
@@ -184,8 +197,9 @@ public class ApplicationVersionDao extends AbstractDao<ApplicationVersion, Long>
         entity.setVersionCode(cursor.getInt(offset + 6));
         entity.setVersionName(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
         entity.setLabel(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setStartCommand(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setTimeUploaded(timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 10)));
+        entity.setMinSdkVersion(cursor.isNull(offset + 9) ? null : cursor.getInt(offset + 9));
+        entity.setStartCommand(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setTimeUploaded(timeUploadedConverter.convertToEntityProperty(cursor.getLong(offset + 11)));
      }
     
     @Override

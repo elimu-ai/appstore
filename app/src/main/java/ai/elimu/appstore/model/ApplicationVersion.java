@@ -46,6 +46,9 @@ public class ApplicationVersion {
 //    @NotNull
     private String label;
 
+//    @NotNull
+    private Integer minSdkVersion;
+
     private String startCommand;
 
     @NotNull
@@ -60,10 +63,11 @@ public class ApplicationVersion {
     @Generated(hash = 1339503542)
     private transient ApplicationVersionDao myDao;
 
-    @Generated(hash = 985154034)
+    @Generated(hash = 932028413)
     public ApplicationVersion(Long id, long applicationId, @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
             @NotNull String checksumMd5, @NotNull String contentType, @NotNull Integer versionCode,
-            String versionName, String label, String startCommand, @NotNull Calendar timeUploaded) {
+            String versionName, String label, Integer minSdkVersion, String startCommand,
+            @NotNull Calendar timeUploaded) {
         this.id = id;
         this.applicationId = applicationId;
         this.fileSizeInKb = fileSizeInKb;
@@ -73,6 +77,7 @@ public class ApplicationVersion {
         this.versionCode = versionCode;
         this.versionName = versionName;
         this.label = label;
+        this.minSdkVersion = minSdkVersion;
         this.startCommand = startCommand;
         this.timeUploaded = timeUploaded;
     }
@@ -247,5 +252,13 @@ public class ApplicationVersion {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public Integer getMinSdkVersion() {
+        return this.minSdkVersion;
+    }
+
+    public void setMinSdkVersion(Integer minSdkVersion) {
+        this.minSdkVersion = minSdkVersion;
     }
 }
