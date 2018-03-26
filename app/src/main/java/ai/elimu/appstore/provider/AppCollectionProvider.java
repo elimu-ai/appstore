@@ -70,14 +70,12 @@ public class AppCollectionProvider extends ContentProvider {
             ApplicationDao applicationDao = daoSession.getApplicationDao();
             Cursor cursor = applicationDao.queryBuilder()
                     .where(
-                            ApplicationDao.Properties.Locale.eq(AppPrefs.getLocale()),
+//                            ApplicationDao.Properties.Locale.eq(AppPrefs.getLocale()),
                             ApplicationDao.Properties.ApplicationStatus.eq(ApplicationStatus.ACTIVE)
                     )
                     .orderAsc(ApplicationDao.Properties.ListOrder)
                     .buildCursor().forCurrentThread().query();
-            Timber.d("cursor.getNotificationUri(): " + cursor.getNotificationUri());
             cursor.setNotificationUri(context.getContentResolver(), uri);
-            Timber.d("cursor.getNotificationUri(): " + cursor.getNotificationUri());
             return cursor;
         } else {
             throw new IllegalArgumentException("Unknown URI: " + uri);
