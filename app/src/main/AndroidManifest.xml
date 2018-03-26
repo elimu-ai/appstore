@@ -88,6 +88,8 @@
             android:exported="true"
             android:readPermission="ai.elimu.appstore.provider.READ"/>
 
+        <!--<meta-data-->
+            <!--android:name="io.fabric.ApiKey"-->
+            <!--android:value="api-key-value" />-->
     </application>
-
 </manifest>

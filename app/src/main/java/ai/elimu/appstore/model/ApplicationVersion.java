@@ -40,6 +40,15 @@ public class ApplicationVersion {
     @NotNull
     private Integer versionCode;
 
+//    @NotNull
+    private String versionName;
+
+//    @NotNull
+    private String label;
+
+//    @NotNull
+    private Integer minSdkVersion;
+
     private String startCommand;
 
     @NotNull
@@ -54,11 +63,10 @@ public class ApplicationVersion {
     @Generated(hash = 1339503542)
     private transient ApplicationVersionDao myDao;
 
-    @Generated(hash = 597723545)
-    public ApplicationVersion(Long id, long applicationId,
-            @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
-            @NotNull String checksumMd5, @NotNull String contentType,
-            @NotNull Integer versionCode, String startCommand,
+    @Generated(hash = 932028413)
+    public ApplicationVersion(Long id, long applicationId, @NotNull Integer fileSizeInKb, @NotNull String fileUrl,
+            @NotNull String checksumMd5, @NotNull String contentType, @NotNull Integer versionCode,
+            String versionName, String label, Integer minSdkVersion, String startCommand,
             @NotNull Calendar timeUploaded) {
         this.id = id;
         this.applicationId = applicationId;
@@ -67,6 +75,9 @@ public class ApplicationVersion {
         this.checksumMd5 = checksumMd5;
         this.contentType = contentType;
         this.versionCode = versionCode;
+        this.versionName = versionName;
+        this.label = label;
+        this.minSdkVersion = minSdkVersion;
         this.startCommand = startCommand;
         this.timeUploaded = timeUploaded;
     }
@@ -225,5 +236,29 @@ public class ApplicationVersion {
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getApplicationVersionDao() : null;
+    }
+
+    public String getVersionName() {
+        return this.versionName;
+    }
+
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public Integer getMinSdkVersion() {
+        return this.minSdkVersion;
+    }
+
+    public void setMinSdkVersion(Integer minSdkVersion) {
+        this.minSdkVersion = minSdkVersion;
     }
 }
