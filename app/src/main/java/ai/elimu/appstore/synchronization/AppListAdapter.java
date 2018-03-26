@@ -193,8 +193,16 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                         // Change the button text
                         if (!existingApkFile.exists()) {
-                            holder.btnDownload.setVisibility(View.VISIBLE);
                             holder.btnDownload.setText(R.string.download_update);
+
+                            //If download update is ongoing, hide the download update button
+                            //Otherwise, show the download update button
+                            if (!downloadStatus.isDownloading()) {
+                                holder.btnDownload.setVisibility(View.VISIBLE);
+                            } else {
+                                holder.btnDownload.setVisibility(View.GONE);
+                            }
+
                         } else {
                             holder.btnInstall.setVisibility(View.VISIBLE);
                             holder.btnInstall.setText(R.string.install_update);
