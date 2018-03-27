@@ -12,6 +12,10 @@
     <uses-permission android:name="android.permission.BIND_JOB_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
+    <!-- Permission needed in order to use ACTION_UNINSTALL_PACKAGE when targeting APIs P or greater
+    Refer to https://developer.android.com/reference/android/Manifest.permission.html#REQUEST_DELETE_PACKAGES -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
     <application
         android:name=".BaseApplication"
         android:allowBackup="false"
