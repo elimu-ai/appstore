@@ -39,7 +39,6 @@ import ai.elimu.appstore.util.ChecksumHelper;
 import ai.elimu.appstore.util.ConnectivityHelper;
 import ai.elimu.appstore.util.DeviceInfoHelper;
 import ai.elimu.appstore.util.UserPrefsHelper;
-import ai.elimu.model.enums.Locale;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import ai.elimu.model.gson.admin.ApplicationGson;
 import ai.elimu.model.gson.admin.ApplicationVersionGson;
@@ -209,32 +208,6 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                     Timber.i("Synchronizing APK " + listOrder + "/" + jsonArrayApplications.length() + ": " + applicationGson.getPackageName() + " (status " + applicationGson.getApplicationStatus() + ")");
 
                     Application application = applicationDao.load(applicationGson.getId());
-
-                    //Delete existing apk if an application has DELETED status
-                    if (applicationGson.getApplicationStatus() == ApplicationStatus.DELETED) {
-                        // Check if the APK file has already been downloaded to the SD card
-                        Locale locale = UserPrefsHelper.getLocale(AppSynchronizationActivity.this);
-                        if (locale == null) {
-                            // The user typed a License for a custom Project, which does not use a specific Locale.
-                            // Fall back to English
-                            locale = Locale.EN;
-                        }
-                        String language = locale.getLanguage();
-                        List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
-                        if (applicationVersionGsons != null && applicationVersionGsons.size() > 0) {
-                            String fileName = applicationGson.getPackageName() + "-" +
-                                    applicationVersionGsons.get(0).getVersionCode() + ".apk";
-                            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                                    ".elimu-ai/appstore/apks/" + language);
-                            final File existingApkFile = new File(apkDirectory, fileName);
-
-                            if (existingApkFile.exists()) {
-                                existingApkFile.delete();
-                                Timber.d("Deleted existing APK: " + existingApkFile.getAbsolutePath());
-                            }
-                        }
-                    }
-
                     if (application == null) {
                         // Store new Application in database
                         application = new Application();
@@ -245,14 +218,10 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
                         application.setListOrder(listOrder);
-
-                        if (application.getApplicationStatus() != ApplicationStatus.DELETED) {
-                            long id = applicationDao.insert(application);
-                            Timber.i("Stored Application in database with id " + id);
-                        }
+                        long id = applicationDao.insert(application);
+                        Timber.i("Stored Application in database with id " + id);
 
                         if (application.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-
                             // Store ApplicationVersions
                             List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
                             Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size());
@@ -314,9 +283,6 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     Timber.i("Stored ApplicationVersion in database with id " + applicationVersionId);
                                 }
                             }
-                        } else if (application.getApplicationStatus() == ApplicationStatus.DELETED) {
-                            applicationDao.delete(application);
-                            Timber.i("Deleted Application from database with id " + application.getPackageName());
                         }
                     }
                 }

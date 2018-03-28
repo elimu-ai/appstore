@@ -23,6 +23,7 @@ import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.receiver.PackageUpdateReceiver;
 import ai.elimu.appstore.util.AppPrefs;
+import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
 /**
@@ -103,6 +104,7 @@ public class AppListActivity extends AppCompatActivity {
             public void run() {
                 // Load Applications from database, sorted in the same order as received from the server
                 applications = applicationDao.queryBuilder()
+                        .where(ApplicationDao.Properties.ApplicationStatus.notEq(ApplicationStatus.DELETED))
                         .orderAsc(ApplicationDao.Properties.ListOrder)
                         .list();
 
