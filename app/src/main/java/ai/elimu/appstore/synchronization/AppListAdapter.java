@@ -121,11 +121,47 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
             // Do not allow APK download
-            holder.textViewVersion.setText("ApplicationStatus: " + application
-                    .getApplicationStatus());
-            holder.btnDownload.setVisibility(View.VISIBLE);
-            holder.btnDownload.setEnabled(false);
-            holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
+            holder.textViewVersion.setText("ApplicationStatus: " + application.getApplicationStatus());
+
+            //Show Uninstall button if application status is DELETED, but is currently installed
+            if (application.getApplicationStatus().equals(ApplicationStatus.DELETED)
+                    && AppListActivity.isApplicationInstalled(application, context.getPackageManager())) {
+                holder.btnUninstall.setVisibility(View.VISIBLE);
+                holder.btnUninstall.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent uninstallIntent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
+                        uninstallIntent.setData(Uri.parse("package:" + application.getPackageName()));
+                        context.startActivity(uninstallIntent);
+
+                        //Listen to uninstall completion event, to update app list
+                        PackageUpdateReceiver.PackageUpdateCallback packageUpdateCallback = new
+                                PackageUpdateReceiver.PackageUpdateCallback() {
+                                    @Override
+                                    public void onInstallComplete(@NonNull String packageName) {
+                                    }
+
+                                    @Override
+                                    public void onUninstallComplete(@NonNull String packageName) {
+
+                                        //Remove just-uninstalled application from app list and reload UI
+                                        List<Application> displayApplications = getData();
+                                        displayApplications.remove(application);
+
+                                        replaceData(displayApplications);
+                                    }
+                                };
+                        packageUpdateReceiver.setPackageUpdateCallback(packageUpdateCallback);
+                    }
+                });
+                holder.btnDownload.setVisibility(View.GONE);
+            } else {
+                holder.btnUninstall.setVisibility(View.GONE);
+                holder.btnDownload.setVisibility(View.VISIBLE);
+                holder.btnDownload.setEnabled(false);
+                holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
+            }
+
             holder.btnInstall.setVisibility(View.GONE);
             // TODO: hide applications that are not active?
         } else {

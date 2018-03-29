@@ -2,8 +2,10 @@ package ai.elimu.appstore.synchronization;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -104,7 +107,6 @@ public class AppListActivity extends AppCompatActivity {
             public void run() {
                 // Load Applications from database, sorted in the same order as received from the server
                 applications = applicationDao.queryBuilder()
-                        .where(ApplicationDao.Properties.ApplicationStatus.notEq(ApplicationStatus.DELETED))
                         .orderAsc(ApplicationDao.Properties.ListOrder)
                         .list();
 
@@ -113,8 +115,20 @@ public class AppListActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Timber.i("applications.size(): " + applications.size());
+
+                        //Filter out all apps whose status is DELETED and not currently installed
+                        List<Application> displayedApplications = new ArrayList<>();
+                        for (Application application : applications) {
+
+                            //Adding non-DELETED applications, or DELETED but installed applications to display list
+                            if (!application.getApplicationStatus().equals(ApplicationStatus.DELETED)
+                                    || isApplicationInstalled(application, getPackageManager())) {
+                                displayedApplications.add(application);
+                            }
+                        }
+
                         BaseApplication baseApplication = (BaseApplication) getApplication();
-                        appListAdapter = new AppListAdapter(applications, packageUpdateReceiver, baseApplication);
+                        appListAdapter = new AppListAdapter(displayedApplications, packageUpdateReceiver, baseApplication);
                         appListRecyclerView.setAdapter(appListAdapter);
 
                         //Hide loading dialog
@@ -124,6 +138,23 @@ public class AppListActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    /**
+     * Check if an Application is currently installed or not
+     *
+     * @param application    The Application to be checked
+     * @param packageManager The PackageManager instance
+     * @return true if currently installed, false otherwise
+     */
+    public static boolean isApplicationInstalled(Application application, @NonNull PackageManager packageManager) {
+        boolean isAppInstalled = true;
+        try {
+            packageManager.getApplicationInfo(application.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            isAppInstalled = false;
+        }
+        return isAppInstalled;
     }
 
     @Override
