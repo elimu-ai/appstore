@@ -283,6 +283,9 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     applicationVersion.setTimeUploaded(applicationVersionGson.getTimeUploaded());
                                     long applicationVersionId = applicationVersionDao.insert(applicationVersion);
                                     Timber.i("Stored ApplicationVersion in database with id " + applicationVersionId);
+                                } else {
+                                    // Update existing ApplicationVersion in database
+                                    // TODO
                                 }
                             }
                         }

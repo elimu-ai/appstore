@@ -17,6 +17,7 @@ import ai.elimu.appstore.util.AppPrefs;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
+// TODO: refactor into ApplicationProvider
 public class AppCollectionProvider extends ContentProvider {
 
     // The authority of this content provider
