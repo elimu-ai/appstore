@@ -239,6 +239,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
                                     applicationVersion.setVersionName(applicationVersionGson.getVersionName());
                                     applicationVersion.setLabel(applicationVersionGson.getLabel());
+                                    applicationVersion.setMinSdkVersion(applicationVersionGson.getMinSdkVersion());
                                     applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());
                                     applicationVersion.setTimeUploaded(applicationVersionGson.getTimeUploaded());
                                     long applicationVersionId = applicationVersionDao.insert(applicationVersion);
@@ -277,6 +278,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                     applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
                                     applicationVersion.setVersionName(applicationVersionGson.getVersionName());
                                     applicationVersion.setLabel(applicationVersionGson.getLabel());
+                                    applicationVersion.setMinSdkVersion(applicationVersionGson.getMinSdkVersion());
                                     applicationVersion.setStartCommand(applicationVersionGson.getStartCommand());
                                     applicationVersion.setTimeUploaded(applicationVersionGson.getTimeUploaded());
                                     long applicationVersionId = applicationVersionDao.insert(applicationVersion);

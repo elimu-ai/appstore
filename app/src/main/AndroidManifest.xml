@@ -80,6 +80,8 @@
             android:name=".synchronization.AppListActivity"
             android:configChanges="orientation|screenSize"></activity>
 
+        <!--<meta-data-->
+            <!--android:name="io.fabric.ApiKey"-->
+            <!--android:value="api-key-value" />-->
     </application>
-
 </manifest>

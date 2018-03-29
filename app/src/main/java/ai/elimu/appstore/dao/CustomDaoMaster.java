@@ -59,6 +59,11 @@ public class CustomDaoMaster extends DaoMaster {
                 dropAllTables(db, true);
                 onCreate(db);
             }
+
+            if (oldVersion < 2002002) {
+                // Add minSdkVersion
+                DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
+            }
         }
     }
 }
