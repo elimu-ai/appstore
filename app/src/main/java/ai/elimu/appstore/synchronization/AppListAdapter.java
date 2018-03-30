@@ -293,6 +293,19 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                 downloadStatus.setDownloading(false);
                                 holder.btnDownload.setVisibility(View.GONE);
                                 holder.btnInstall.setVisibility(View.VISIBLE);
+
+                                //Get installed version code of current application
+                                int appInstalledVersion = getAppInstalledVersion(context, application.getPackageName());
+
+                                //If the current application was installed, and having out-dated version, then change
+                                //the button text to Install Update
+                                if ((applicationVersion.getVersionCode() > appInstalledVersion) &&
+                                        appInstalledVersion > 0) {
+                                    holder.btnInstall.setText(context.getString(R.string.install_update));
+                                } else {
+                                    holder.btnInstall.setText(context.getString(R.string.install));
+                                }
+
                                 appDownloadStatus.set(position, downloadStatus);
 
                                 //Set app icon upon download completion
@@ -478,6 +491,25 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 }
             });
         }
+    }
+
+    /**
+     * Get version code of a currently installed application
+     *
+     * @param context     Context for getting PackageManager instance
+     * @param packageName The application's package name
+     * @return Installed application's version code, or -1 if application is not present
+     */
+    private int getAppInstalledVersion(@NonNull Context context, @NonNull String packageName) {
+        int versionCodeInstalled = -1;
+        final PackageManager packageManager = context.getPackageManager();
+        try {
+            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
+            versionCodeInstalled = packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return versionCodeInstalled;
     }
 
     /**
