@@ -68,8 +68,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     private List<AppDownloadStatus> appDownloadStatus;
 
+    //List which contains pending and cancellable download requests
     private List<Call<ResponseBody>> appDownloadRequests;
 
+    //List which contains pending and cancellable download responses, which will be processed one
+    //by one by executorService
     private List<Future<?>> appDownloadResponses;
 
     private Context context;
@@ -98,6 +101,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     private void initAppDownloadStatus() {
         appDownloadStatus = new ArrayList<>(applications.size());
+
+        //Initialize lists of download requests & download responses
         appDownloadRequests = new ArrayList<>(applications.size());
         appDownloadResponses = new ArrayList<>(applications.size());
         for (int i = 0; i < applications.size(); i++) {
@@ -347,6 +352,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     Call<ResponseBody> call = downloadApplicationService.downloadApplicationFile(getFileUrl
                             (applicationVersion));
 
+                    //Put a download request into requests list from where pending requests can be
+                    //taken out and cancelled by user
                     appDownloadRequests.set(position, call);
 
                     call.enqueue(new Callback<ResponseBody>() {
@@ -385,6 +392,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     }
                                 });
 
+                                //Put a download response into a waiting list, from where responses
+                                //could be taken out and cancelled if user cancels a download
                                 appDownloadResponses.set(position, future);
                             }
 
