@@ -81,12 +81,18 @@
         <activity
             android:name=".synchronization.AppListActivity"
             android:configChanges="orientation|screenSize"></activity>
-        
+
+        <provider
+            android:authorities="ai.elimu.appstore.provider"
+            android:name=".provider.ApplicationProvider"
+            android:exported="true"
+            android:readPermission="ai.elimu.appstore.provider.READ" />
+
         <provider
             android:authorities="ai.elimu.appstore.provider"
             android:name=".provider.AppCollectionProvider"
             android:exported="true"
-            android:readPermission="ai.elimu.appstore.provider.READ"/>
+            android:readPermission="ai.elimu.appstore.provider.READ" />
 
         <!--<meta-data-->
             <!--android:name="io.fabric.ApiKey"-->

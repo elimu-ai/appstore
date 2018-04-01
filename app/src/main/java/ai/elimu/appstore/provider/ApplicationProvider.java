@@ -5,28 +5,30 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import ai.elimu.appstore.util.AppPrefs;
+import ai.elimu.appstore.BaseApplication;
+import ai.elimu.appstore.dao.ApplicationDao;
+import ai.elimu.appstore.dao.DaoSession;
+import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
-public class AppCollectionProvider extends ContentProvider {
+public class ApplicationProvider extends ContentProvider {
 
     // The authority of this content provider
     public static final String AUTHORITY = "ai.elimu.appstore.provider";
 
-    private static final String TABLE_APP_COLLECTION = "appCollection";
-    private static final int CODE_APP_COLLECTION_DIR = 1;
-    public static final Uri URI_APP_COLLECTION = Uri.parse("content://" + AUTHORITY + "/" + TABLE_APP_COLLECTION);
+    private static final String TABLE_APPLICATION = "application";
+    private static final int CODE_APPLICATION_DIR = 2;
+    public static final Uri URI_APPLICATION = Uri.parse("content://" + AUTHORITY + "/" + TABLE_APPLICATION);
 
     // The URI matcher
     private static final UriMatcher MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        MATCHER.addURI(AUTHORITY, TABLE_APP_COLLECTION, CODE_APP_COLLECTION_DIR);
+        MATCHER.addURI(AUTHORITY, TABLE_APPLICATION, CODE_APPLICATION_DIR);
     }
 
     @Override
@@ -41,14 +43,21 @@ public class AppCollectionProvider extends ContentProvider {
         Timber.i("query");
 
         final int code = MATCHER.match(uri);
-        if (code == CODE_APP_COLLECTION_DIR) {
+        if (code == CODE_APPLICATION_DIR) {
             Context context = getContext();
             if (context == null) {
                 return null;
             }
-            MatrixCursor cursor = new MatrixCursor(new String[]{"_ID", "appCollectionId"});
-            MatrixCursor.RowBuilder rowBuilder = cursor.newRow();
-            rowBuilder.add("appCollectionId", AppPrefs.getAppCollectionId());
+            BaseApplication baseApplication = (BaseApplication) context;
+            DaoSession daoSession = baseApplication.getDaoSession();
+            ApplicationDao applicationDao = daoSession.getApplicationDao();
+            Cursor cursor = applicationDao.queryBuilder()
+                    .where(
+//                            ApplicationDao.Properties.Locale.eq(AppPrefs.getLocale()),
+                            ApplicationDao.Properties.ApplicationStatus.eq(ApplicationStatus.ACTIVE)
+                    )
+                    .orderAsc(ApplicationDao.Properties.ListOrder)
+                    .buildCursor().forCurrentThread().query();
             cursor.setNotificationUri(context.getContentResolver(), uri);
             return cursor;
         } else {
@@ -62,8 +71,8 @@ public class AppCollectionProvider extends ContentProvider {
         Timber.i("getType");
 
         switch (MATCHER.match(uri)) {
-            case CODE_APP_COLLECTION_DIR:
-                return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_APP_COLLECTION;
+            case CODE_APPLICATION_DIR:
+                return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_APPLICATION;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
