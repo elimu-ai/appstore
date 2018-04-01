@@ -143,7 +143,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             }
 
             // Display the versionName of the Application
-            holder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionName());
+            if (!TextUtils.isEmpty(applicationVersion.getVersionName())) {
+                holder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionName());
+            } else {
+                // If versionName empty (not returned from server), fall back to versionCode
+                holder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionCode());
+            }
 
             // Check if the APK file has already been downloaded to the SD card
             Locale locale = UserPrefsHelper.getLocale(context);
@@ -197,8 +202,16 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                         // Change the button text
                         if (!existingApkFile.exists()) {
-                            holder.btnDownload.setVisibility(View.VISIBLE);
                             holder.btnDownload.setText(R.string.download_update);
+
+                            //If download update is ongoing, hide the download update button
+                            //Otherwise, show the download update button
+                            if (!downloadStatus.isDownloading()) {
+                                holder.btnDownload.setVisibility(View.VISIBLE);
+                            } else {
+                                holder.btnDownload.setVisibility(View.GONE);
+                            }
+
                         } else {
                             holder.btnInstall.setVisibility(View.VISIBLE);
                             holder.btnInstall.setText(R.string.install_update);
