@@ -10,13 +10,14 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.util.AppPrefs;
 import timber.log.Timber;
 
 public class AppCollectionProvider extends ContentProvider {
 
     // The authority of this content provider
-    public static final String AUTHORITY = "ai.elimu.appstore.provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
     private static final String TABLE_APP_COLLECTION = "appCollection";
     private static final int CODE_APP_COLLECTION_DIR = 1;
