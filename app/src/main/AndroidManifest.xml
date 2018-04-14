@@ -83,13 +83,13 @@
             android:configChanges="orientation|screenSize"></activity>
 
         <provider
-            android:authorities="ai.elimu.appstore.provider"
+            android:authorities="${applicationId}.provider"
             android:name=".provider.ApplicationProvider"
             android:exported="true"
             android:readPermission="ai.elimu.appstore.provider.READ" />
 
         <provider
-            android:authorities="ai.elimu.appstore.provider"
+            android:authorities="${applicationId}.provider"
             android:name=".provider.AppCollectionProvider"
             android:exported="true"
             android:readPermission="ai.elimu.appstore.provider.READ" />
