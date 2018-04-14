@@ -33,6 +33,9 @@ public class AppCollectionProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Timber.i("onCreate");
+
+        Timber.i("URI_APP_COLLECTION: " + URI_APP_COLLECTION);
+
         return true;
     }
 
@@ -40,6 +43,8 @@ public class AppCollectionProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
         Timber.i("query");
+
+        Timber.i("uri: " + uri);
 
         final int code = MATCHER.match(uri);
         if (code == CODE_APP_COLLECTION_DIR) {

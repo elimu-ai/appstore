@@ -35,6 +35,9 @@ public class ApplicationProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Timber.i("onCreate");
+
+        Timber.i("URI_APPLICATION: " + URI_APPLICATION);
+
         return true;
     }
 
@@ -42,6 +45,8 @@ public class ApplicationProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Timber.i("query");
+
+        Timber.i("uri: " + uri);
 
         final int code = MATCHER.match(uri);
         if (code == CODE_APPLICATION_DIR) {
