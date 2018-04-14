@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import ai.elimu.appstore.BaseApplication;
+import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.model.enums.admin.ApplicationStatus;
@@ -18,7 +19,7 @@ import timber.log.Timber;
 public class ApplicationProvider extends ContentProvider {
 
     // The authority of this content provider
-    public static final String AUTHORITY = "ai.elimu.appstore.provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
     private static final String TABLE_APPLICATION = "application";
     private static final int CODE_APPLICATION_DIR = 2;
