@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
-import android.support.v4.util.Preconditions;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -75,17 +74,16 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private DownloadApplicationService downloadApplicationService;
+
     private BaseApplication baseApplication;
 
     private ProgressUpdateCallback progressUpdateCallback;
 
     private Handler uiHandler;
 
-    public AppListAdapter(List<Application> applications,
-                          @NonNull PackageUpdateReceiver packageUpdateReceiver,
-                          @NonNull BaseApplication baseApplication) {
+    public AppListAdapter(List<Application> applications, PackageUpdateReceiver packageUpdateReceiver, BaseApplication baseApplication) {
         this.applications = applications;
-        this.packageUpdateReceiver = Preconditions.checkNotNull(packageUpdateReceiver);
+        this.packageUpdateReceiver = packageUpdateReceiver;
         this.baseApplication = baseApplication;
         initAppDownloadStatus();
     }
@@ -99,6 +97,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+        Timber.i("onBindViewHolder");
 
         final Application application = applications.get(position);
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
@@ -120,8 +119,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
             // Do not allow APK download
-            holder.textViewVersion.setText("ApplicationStatus: " + application
-                    .getApplicationStatus());
+            holder.textViewVersion.setText("ApplicationStatus: " + application.getApplicationStatus());
             holder.btnDownload.setVisibility(View.VISIBLE);
             holder.btnDownload.setEnabled(false);
             holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
@@ -158,10 +156,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 locale = Locale.EN;
             }
             String language = locale.getLanguage();
-            String fileName = applicationVersion.getApplication().getPackageName() + "-" +
-                    applicationVersion.getVersionCode() + ".apk";
-            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                    ".elimu-ai/appstore/apks/" + language);
+            String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
+            File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" + ".elimu-ai/appstore/apks/" + language);
             final File existingApkFile = new File(apkDirectory, fileName);
             Timber.i("existingApkFile: " + existingApkFile);
             Timber.i("existingApkFile.exists(): " + existingApkFile.exists());
@@ -190,22 +186,17 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                 // Check if update is available for download
                 try {
-                    PackageInfo packageInfo = packageManager.getPackageInfo(application
-                            .getPackageName(), 0);
+                    PackageInfo packageInfo = packageManager.getPackageInfo(application.getPackageName(), 0);
                     int versionCodeInstalled = packageInfo.versionCode;
                     Timber.i("versionCodeInstalled: " + versionCodeInstalled);
                     if (applicationVersion.getVersionCode() > versionCodeInstalled) {
                         // Update is available for download/install
 
-//                        // Display version of the application currently installed
-//                        holder.textViewVersion.setText(holder.textViewVersion.getText() + ". Installed: " + versionCodeInstalled);
-
                         // Change the button text
                         if (!existingApkFile.exists()) {
                             holder.btnDownload.setText(R.string.download_update);
 
-                            //If download update is ongoing, hide the download update button
-                            //Otherwise, show the download update button
+                            // If download update is ongoing, hide the download update button. Otherwise, show the download update button.
                             if (!downloadStatus.isDownloading()) {
                                 holder.btnDownload.setVisibility(View.VISIBLE);
                             } else {
@@ -221,22 +212,17 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         holder.btnInstall.setVisibility(View.GONE);
                     }
 
-                    /**
-                     * Extract icon from installed application
-                     */
-                    ApplicationInfo applicationInfo = packageManager.getApplicationInfo
-                            (application.getPackageName(), PackageManager.GET_META_DATA);
-                    Resources resources = packageManager.getResourcesForApplication(application
-                            .getPackageName());
-                    Drawable appIcon = resources.getDrawableForDensity(applicationInfo.icon,
-                            resources.getDisplayMetrics().densityDpi, null);
+                    // Extract icon from installed application
+                    ApplicationInfo applicationInfo = packageManager.getApplicationInfo(application.getPackageName(), PackageManager.GET_META_DATA);
+                    Resources resources = packageManager.getResourcesForApplication(application.getPackageName());
+                    Drawable appIcon = resources.getDrawableForDensity(applicationInfo.icon, resources.getDisplayMetrics().densityDpi, null);
                     holder.imageAppIcon.setImageDrawable(appIcon);
                 } catch (PackageManager.NameNotFoundException e) {
-                    Timber.e(e, null);
+                    Timber.e(e);
                 }
-            } else if (existingApkFile.exists()) {  //Extract app icon from downloaded APK if found
-                PackageInfo packageInfo = packageManager.getPackageArchiveInfo(existingApkFile
-                        .getAbsolutePath(), 0);
+            } else if (existingApkFile.exists()) {
+                // Extract app icon from downloaded APK if found
+                PackageInfo packageInfo = packageManager.getPackageArchiveInfo(existingApkFile.getAbsolutePath(), 0);
                 packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
                 packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
                 Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
@@ -251,13 +237,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     Timber.i("buttonDownload onClick");
 
                     if (!ConnectivityHelper.isNetworkAvailable(context)) {
-                        Toast.makeText(context, context.getString(R.string.app_list_check_internet_connection),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.app_list_check_internet_connection), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    Timber.i("Downloading " + application.getPackageName() + " (version " +
-                            applicationVersion.getVersionCode() + ")...");
+                    Timber.i("Downloading " + application.getPackageName() + " (version " + applicationVersion.getVersionCode() + ")...");
 
                     holder.btnDownload.setVisibility(View.GONE);
                     holder.progressBarDownload.setVisibility(View.VISIBLE);
@@ -268,17 +252,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     // Initiate download of the latest APK version
                     Timber.i("applicationVersion: " + applicationVersion);
 
-                    /**
-                     * Listen to download completed event to update app icon
-                     */
+                    // Listen to download completed event to update app icon
                     final DownloadCompleteCallback downloadCompleteCallback = new DownloadCompleteCallback() {
                         @Override
                         public void onDownloadCompleted(String tempApkDir, String apkName) {
+                            Timber.i("onDownloadCompleted");
 
-                            //Move downloaded file to correct folder
+                            // Move downloaded file to correct folder
                             String language = UserPrefsHelper.getLocale(context).getLanguage();
-                            File correctApkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                                    ".elimu-ai/appstore/apks/" + language);
+                            File correctApkDirectory = new File(Environment.getExternalStorageDirectory() + "/" + ".elimu-ai/appstore/apks/" + language);
                             if(!correctApkDirectory.exists()){
                                 correctApkDirectory.mkdirs();
                             }
@@ -289,13 +271,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             try {
                                 FileUtils.moveFile(srcFile, dstFile);
 
-                                //Change visibility of download/install buttons upon moving completion
+                                // Change visibility of download/install buttons upon moving completion
                                 downloadStatus.setDownloading(false);
                                 holder.btnDownload.setVisibility(View.GONE);
                                 holder.btnInstall.setVisibility(View.VISIBLE);
                                 appDownloadStatus.set(position, downloadStatus);
 
-                                //Set app icon upon download completion
+                                // Set app icon upon download completion
                                 PackageInfo packageInfo = packageManager.getPackageArchiveInfo(existingApkFile.getAbsolutePath(), 0);
                                 if (packageInfo != null) {
                                     packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
@@ -310,12 +292,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                         @Override
                         public void onDownloadFailed(Integer fileSizeInKbsDownloaded) {
+                            Timber.i("onDownloadFailed");
+
                             downloadStatus.setDownloading(false);
                             holder.btnDownload.setVisibility(View.VISIBLE);
                             holder.btnInstall.setVisibility(View.GONE);
                             if (fileSizeInKbsDownloaded == 0 || fileSizeInKbsDownloaded == null) {
-                                Toast.makeText(context, context.getString(R.string.app_list_check_internet_connection),
-                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, context.getString(R.string.app_list_check_internet_connection), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(context, "Invalid checkSum", Toast.LENGTH_SHORT).show();
                             }
@@ -324,10 +307,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         }
                     };
 
-                    /**
-                     * Listen to download progress update to reflect progress in data and UI,
-                     * in case adapter is refreshed
-                     */
+                    // Listen to download progress update to reflect progress in data and UI, in case adapter is refreshed
                     progressUpdateCallback = new ProgressUpdateCallback() {
                         @Override
                         public void onProgressUpdated(final String progressText, final int progress) {
@@ -337,22 +317,20 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     downloadStatus.setDownloadProgressText(progressText);
                                     downloadStatus.setDownloadProgress(progress);
                                     appDownloadStatus.set(position, downloadStatus);
-                                    holder.textDownloadProgress.setText(downloadStatus
-                                            .getDownloadProgressText());
+                                    holder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());
                                     holder.progressBarDownload.setProgress(progress);
                                 }
                             });
                         }
                     };
 
-                    downloadApplicationService = baseApplication.getRetrofit(progressUpdateCallback)
-                            .create(DownloadApplicationService.class);
-                    Call<ResponseBody> call = downloadApplicationService.downloadApplicationFile(getFileUrl
-                            (applicationVersion));
-
+                    downloadApplicationService = baseApplication.getRetrofit(progressUpdateCallback).create(DownloadApplicationService.class);
+                    Call<ResponseBody> call = downloadApplicationService.downloadApplicationFile(getFileUrl(applicationVersion));
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            Timber.i("onResponse");
+
                             if (response != null) {
                                 final Response<ResponseBody> downloadResponse = response;
                                 executorService.execute(new Runnable() {
@@ -364,6 +342,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                                     public void onWriteToFileDone(final Integer fileSizeInKbsDownloaded,
                                                                                   final String tempApkDir,
                                                                                   final String apkName) {
+                                                        Timber.i("onWriteToFileDone");
+
                                                         // Hide progress indicators
                                                         uiHandler.post(new Runnable() {
                                                             @Override
@@ -386,7 +366,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     }
                                 });
                             }
-
                         }
 
                         @Override
@@ -403,29 +382,22 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     Timber.i("btnInstall onClick");
 
                     // Initiate installation of the latest APK version
-                    Timber.i("Installing " + applicationVersion.getApplication().getPackageName()
-                            + " (version " + applicationVersion.getVersionCode() + ")...");
+                    Timber.i("Installing " + applicationVersion.getApplication().getPackageName() + " (version " + applicationVersion.getVersionCode() + ")...");
 
-                    String fileName = applicationVersion.getApplication().getPackageName() + "-"
-                            + applicationVersion.getVersionCode() + ".apk";
+                    String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
                     Timber.i("fileName: " + fileName);
 
                     String language = UserPrefsHelper.getLocale(context).getLanguage();
-                    File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                            ".elimu-ai/appstore/apks/" + language);
+                    File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" + ".elimu-ai/appstore/apks/" + language);
 
                     final File apkFile = new File(apkDirectory, fileName);
                     Timber.i("apkFile: " + apkFile);
 
-                    /**
-                     * Get all local versions of current APK file for deleting
-                     */
+                    // Get all local versions of current APK file for deleting
                     final File[] apkFiles = apkDirectory.listFiles(new FilenameFilter() {
                         @Override
                         public boolean accept(File file, String name) {
-                            return (name.startsWith(applicationVersion.getApplication()
-                                    .getPackageName())
-                                    && name.endsWith(".apk"));
+                            return (name.startsWith(applicationVersion.getApplication().getPackageName()) && name.endsWith(".apk"));
                         }
                     });
 
@@ -434,6 +406,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                 @Override
                                 public void onInstallComplete(@NonNull String packageName) {
                                     Timber.i("onInstallComplete, package: " + packageName);
+
                                     holder.btnDownload.setVisibility(View.GONE);
                                     holder.btnInstall.setVisibility(View.GONE);
                                     executorService.execute(new Runnable() {
@@ -441,8 +414,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                         public void run() {
                                             for (final File file : apkFiles) {
                                                 file.delete();
-                                                Timber.i("APK " + file.getAbsolutePath() + " is " +
-                                                        "deleted successfully");
+                                                Timber.i("APK " + file.getAbsolutePath() + " is " + "deleted successfully");
                                             }
                                         }
                                     });
@@ -460,10 +432,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     // TODO: Check for root access. If root access, install APK without prompting
                     // for user confirmation.
                     if (Build.VERSION.SDK_INT >= 24) {
-                        // See https://developer.android.com/guide/topics/permissions/requesting
-                        // .html#install-unknown-apps
-                        Uri apkUri = FileProvider.getUriForFile(context, BuildConfig
-                                .APPLICATION_ID + ".apk.provider", apkFile);
+                        // See https://developer.android.com/guide/topics/permissions/requesting.html#install-unknown-apps
+                        Uri apkUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".apk.provider", apkFile);
                         Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                         intent.setData(apkUri);
                         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -483,19 +453,18 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     /**
      * Write downloaded content to file on disk
      *
-     * @param response            The API response
-     * @param applicationVersion  The application version of downloaded file
+     * @param response The API response
+     * @param applicationVersion The application version of downloaded file
      * @param writeToFileCallback The callback triggered when writing is done, to update progress UI
      * @return Downloaded file size
      */
-    private Integer writeResponseBodyToDisk(Response<ResponseBody> response, ApplicationVersion applicationVersion,
-                                            WriteToFileCallback writeToFileCallback) {
+    private Integer writeResponseBodyToDisk(Response<ResponseBody> response, ApplicationVersion applicationVersion, WriteToFileCallback writeToFileCallback) {
+        Timber.i("writeResponseBodyToDisk");
+
         Integer fileSizeInKbsDownloaded = 0;
-        String fileName = applicationVersion.getApplication().getPackageName() + "-" +
-                applicationVersion.getVersionCode() + ".apk";
+        String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
         Timber.i("fileName: " + fileName);
-        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" +
-                ".elimu-ai/appstore/apks/");
+        File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" + ".elimu-ai/appstore/apks/");
         Timber.i("apkDirectory: " + apkDirectory);
 
         if (!apkDirectory.exists()) {
@@ -506,7 +475,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         Timber.i("apkFile: " + apkFile);
         Timber.i("apkFile.exists(): " + apkFile.exists());
 
-        //Download if apkFile does not exist, or re-download if apkFile is existing but corrupted
+        // Download if apkFile does not exist, or re-download if apkFile is existing but corrupted
         if (!apkFile.exists() || (!applicationVersion.getChecksumMd5().equals(ChecksumHelper.calculateMd5(apkFile)))) {
             FileOutputStream fileOutputStream = null;
             String downloadedApkChecksum = "";
@@ -523,19 +492,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     return 0;
                 }
 
-//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead = 0;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
-//                    byteArrayOutputStream.write(buffer, 0, bytesRead);
                     fileOutputStream.write(buffer, 0, bytesRead);
-
                     fileSizeInKbsDownloaded += (bytesRead / 1024);
                 }
-//                byte[] bytes = byteArrayOutputStream.toByteArray();
-
-//                fileOutputStream = new FileOutputStream(apkFile);
-//                fileOutputStream.write(bytes);
                 fileOutputStream.flush();
 
                 downloadedApkChecksum = ChecksumHelper.calculateMd5(apkFile);
@@ -552,9 +514,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                     }
                 }
 
-                /**
-                 * Delete downloaded APK file in case its checksum is invalid
-                 */
+                // Delete downloaded APK file in case its checksum is invalid
                 if (!downloadedApkChecksum.equals(applicationVersion.getChecksumMd5())) {
                     Timber.w("Invalid checksum. Deleting downloaded APK file: " + apkFile);
                     apkFile.delete();
@@ -584,21 +544,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view;
+        Timber.i("onCreateViewHolder");
+
         context = parent.getContext();
         uiHandler = new Handler();
         BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
         applicationVersionDao = baseApplication.getDaoSession().getApplicationVersionDao();
 
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_app_list_item,
-                parent, false);
-
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_app_list_item, parent, false);
         return new ViewHolder(view);
-    }
-
-    public void replaceData(List<Application> apps) {
-        applications = apps;
-        notifyDataSetChanged();
     }
 
     public List<Application> getData() {
@@ -632,7 +586,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             textDownloadProgress = itemView.findViewById(R.id.textViewDownloadProgress);
             imageAppIcon = itemView.findViewById(R.id.iv_app_icon);
         }
-
     }
 
     /**
@@ -642,16 +595,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
      * @return The file url
      */
     private String getFileUrl(ApplicationVersion applicationVersion) {
+        Timber.i("getFileUrl");
+
         Timber.i("applicationVersion.getApplication(): " + applicationVersion.getApplication());
-        Timber.i("applicationVersion.getFileSizeInKb(): " + applicationVersion
-                .getFileSizeInKb());
+        Timber.i("applicationVersion.getFileSizeInKb(): " + applicationVersion.getFileSizeInKb());
         Timber.i("applicationVersion.getFileUrl(): " + applicationVersion.getFileUrl());
         Timber.i("applicationVersion.getContentType(): " + applicationVersion.getContentType());
         Timber.i("applicationVersion.getVersionCode(): " + applicationVersion.getVersionCode());
-        Timber.i("applicationVersion.getStartCommand(): " + applicationVersion
-                .getStartCommand());
-        Timber.i("applicationVersion.getTimeUploaded().getTime(): " + applicationVersion
-                .getTimeUploaded().getTime());
+        Timber.i("applicationVersion.getStartCommand(): " + applicationVersion.getStartCommand());
+        Timber.i("applicationVersion.getTimeUploaded().getTime(): " + applicationVersion.getTimeUploaded().getTime());
 
         // Download APK file and store it on SD card
         String fileUrl = BuildConfig.BASE_URL + applicationVersion.getFileUrl() +
@@ -669,13 +621,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         }
         Timber.i("fileUrl: " + fileUrl);
 
-        String fileName = applicationVersion.getApplication().getPackageName() + "-" +
-                applicationVersion.getVersionCode() + ".apk";
+        String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
         Timber.i("fileName: " + fileName);
 
-        Timber.i("Downloading APK: " + applicationVersion.getApplication().getPackageName() +
-                " (version " + applicationVersion.getVersionCode() + ", " +
-                applicationVersion.getFileSizeInKb() + "kB)");
+        Timber.i("Downloading APK: " + applicationVersion.getApplication().getPackageName() + " (version " + applicationVersion.getVersionCode() + ", " + applicationVersion.getFileSizeInKb() + "kB)");
 
         return fileUrl;
     }
