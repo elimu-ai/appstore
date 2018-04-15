@@ -463,7 +463,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                         // See https://developer.android.com/guide/topics/permissions/requesting
                         // .html#install-unknown-apps
                         Uri apkUri = FileProvider.getUriForFile(context, BuildConfig
-                                .APPLICATION_ID + ".provider", apkFile);
+                                .APPLICATION_ID + ".apk.provider", apkFile);
                         Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                         intent.setData(apkUri);
                         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
