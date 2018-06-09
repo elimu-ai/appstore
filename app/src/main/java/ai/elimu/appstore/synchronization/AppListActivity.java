@@ -115,7 +115,7 @@ public class AppListActivity extends AppCompatActivity {
                         appListAdapter = new AppListAdapter(applications, packageUpdateReceiver, baseApplication);
                         appListRecyclerView.setAdapter(appListAdapter);
 
-                        //Hide loading dialog
+                        // Hide loading dialog
                         progressBarLoading.setVisibility(View.GONE);
                     }
                 });
