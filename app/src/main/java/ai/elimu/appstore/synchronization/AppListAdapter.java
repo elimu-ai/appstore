@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -33,6 +32,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,7 +63,17 @@ import timber.log.Timber;
 
 public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHolder> {
 
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_HEADER = 1;
+
+    /**
+     * This list can contain either an Application or a section header (String)
+     */
+    private List<Object> listItems = new ArrayList<>();
+    
     private List<Application> applications;
+
+    private Set<Integer> sectionHeaderSet = new TreeSet<>();
 
     private List<AppDownloadStatus> appDownloadStatus;
 
@@ -84,6 +95,20 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     public AppListAdapter(List<Application> applications, PackageUpdateReceiver packageUpdateReceiver, BaseApplication baseApplication) {
         this.applications = applications;
+
+        for (int i = 0; i < applications.size(); i++) {
+            Application application = applications.get(i);
+
+//            // TODO: set section header programmatically
+//            if (i == 0) {
+//                // Add section header
+//                listItems.add("Infrastructure Apps");
+//                sectionHeaderSet.add(listItems.size());
+//            }
+
+            listItems.add(application);
+        }
+        
         this.packageUpdateReceiver = packageUpdateReceiver;
         this.baseApplication = baseApplication;
         initAppDownloadStatus();
@@ -100,7 +125,14 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         Timber.i("onBindViewHolder");
 
-        final Application application = applications.get(position);
+        if (getItemViewType(position) == TYPE_HEADER) {
+            String header = (String) listItems.get(position);
+            Timber.i("header: " + header);
+            // TODO: set header
+            return;
+        }
+
+        final Application application = (Application) listItems.get(position);
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
         viewHolder.textViewTitle.setText(application.getPackageName());
         viewHolder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());
@@ -286,7 +318,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
                                     viewHolder.imageAppIcon.setImageDrawable(appIcon);
                                 }
-                            } catch (IOException e){
+                            } catch (IOException e) {
                                 Timber.e(e);
                             }
                         }
@@ -540,7 +572,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        return position;
+        return (listItems.get(position) instanceof String) ? TYPE_HEADER : TYPE_ITEM;
     }
 
     @Override
@@ -552,7 +584,14 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
         applicationVersionDao = baseApplication.getDaoSession().getApplicationVersionDao();
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_app_list_item, parent, false);
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        View view;
+        if (viewType == TYPE_ITEM) {
+            view = layoutInflater.inflate(R.layout.activity_app_list_item, parent, false);
+        } else {
+            // viewType == TYPE_HEADER
+            view = layoutInflater.inflate(R.layout.activity_app_list_header, parent, false);
+        }
         return new ViewHolder(view);
     }
 
