@@ -96,37 +96,37 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         Timber.i("onBindViewHolder");
 
         final Application application = applications.get(position);
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
-        holder.textViewTitle.setText(application.getPackageName());
-        holder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());
-        holder.progressBarDownload.setProgress(downloadStatus.getDownloadProgress());
+        viewHolder.textViewTitle.setText(application.getPackageName());
+        viewHolder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());
+        viewHolder.progressBarDownload.setProgress(downloadStatus.getDownloadProgress());
 
         if (downloadStatus.isDownloading()) {
-            holder.progressBarDownload.setVisibility(View.VISIBLE);
-            holder.textDownloadProgress.setVisibility(View.VISIBLE);
-            holder.btnDownload.setVisibility(View.GONE);
+            viewHolder.progressBarDownload.setVisibility(View.VISIBLE);
+            viewHolder.textDownloadProgress.setVisibility(View.VISIBLE);
+            viewHolder.btnDownload.setVisibility(View.GONE);
         } else {
-            holder.progressBarDownload.setVisibility(View.GONE);
-            holder.textDownloadProgress.setVisibility(View.GONE);
-            holder.progressBarDownload.setProgress(0);
-            holder.textDownloadProgress.setText("");
-            holder.btnDownload.setVisibility(View.VISIBLE);
+            viewHolder.progressBarDownload.setVisibility(View.GONE);
+            viewHolder.textDownloadProgress.setVisibility(View.GONE);
+            viewHolder.progressBarDownload.setProgress(0);
+            viewHolder.textDownloadProgress.setText("");
+            viewHolder.btnDownload.setVisibility(View.VISIBLE);
         }
 
         if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
             // Do not allow APK download
-            holder.textViewVersion.setText("ApplicationStatus: " + application.getApplicationStatus());
-            holder.btnDownload.setVisibility(View.VISIBLE);
-            holder.btnDownload.setEnabled(false);
-            holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
-            holder.btnInstall.setVisibility(View.GONE);
+            viewHolder.textViewVersion.setText("ApplicationStatus: " + application.getApplicationStatus());
+            viewHolder.btnDownload.setVisibility(View.VISIBLE);
+            viewHolder.btnDownload.setEnabled(false);
+            viewHolder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
+            viewHolder.btnInstall.setVisibility(View.GONE);
             // TODO: hide applications that are not active?
         } else {
-            holder.btnDownload.setEnabled(true);
+            viewHolder.btnDownload.setEnabled(true);
 
             // Fetch the latest APK version
             List<ApplicationVersion> applicationVersions = applicationVersionDao.queryBuilder()
@@ -137,15 +137,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
             if (!TextUtils.isEmpty(applicationVersion.getLabel())) {
                 // Display the label of the Application (instead of packageName)
-                holder.textViewTitle.setText(applicationVersion.getLabel());
+                viewHolder.textViewTitle.setText(applicationVersion.getLabel());
             }
 
             // Display the versionName of the Application
             if (!TextUtils.isEmpty(applicationVersion.getVersionName())) {
-                holder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionName());
+                viewHolder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionName());
             } else {
                 // If versionName empty (not returned from server), fall back to versionCode
-                holder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionCode());
+                viewHolder.textViewVersion.setText((applicationVersion.getFileSizeInKb() / 1024) + " MB • " + applicationVersion.getVersionCode());
             }
 
             // Check if the APK file has already been downloaded to the SD card
@@ -162,13 +162,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             Timber.i("existingApkFile: " + existingApkFile);
             Timber.i("existingApkFile.exists(): " + existingApkFile.exists());
             if (existingApkFile.exists()) {
-                holder.btnDownload.setVisibility(View.GONE);
-                holder.btnInstall.setVisibility(View.VISIBLE);
+                viewHolder.btnDownload.setVisibility(View.GONE);
+                viewHolder.btnInstall.setVisibility(View.VISIBLE);
             } else {
                 if (!downloadStatus.isDownloading()) {
-                    holder.btnDownload.setVisibility(View.VISIBLE);
+                    viewHolder.btnDownload.setVisibility(View.VISIBLE);
                 }
-                holder.btnInstall.setVisibility(View.GONE);
+                viewHolder.btnInstall.setVisibility(View.GONE);
             }
 
             // Check if the APK file has already been installed
@@ -182,7 +182,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             Timber.i("isAppInstalled: " + isAppInstalled);
 
             if (isAppInstalled) {
-                holder.btnInstall.setVisibility(View.GONE);
+                viewHolder.btnInstall.setVisibility(View.GONE);
 
                 // Check if update is available for download
                 try {
@@ -194,29 +194,29 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                         // Change the button text
                         if (!existingApkFile.exists()) {
-                            holder.btnDownload.setText(R.string.download_update);
+                            viewHolder.btnDownload.setText(R.string.download_update);
 
                             // If download update is ongoing, hide the download update button. Otherwise, show the download update button.
                             if (!downloadStatus.isDownloading()) {
-                                holder.btnDownload.setVisibility(View.VISIBLE);
+                                viewHolder.btnDownload.setVisibility(View.VISIBLE);
                             } else {
-                                holder.btnDownload.setVisibility(View.GONE);
+                                viewHolder.btnDownload.setVisibility(View.GONE);
                             }
 
                         } else {
-                            holder.btnInstall.setVisibility(View.VISIBLE);
-                            holder.btnInstall.setText(R.string.install_update);
+                            viewHolder.btnInstall.setVisibility(View.VISIBLE);
+                            viewHolder.btnInstall.setText(R.string.install_update);
                         }
                     } else {
-                        holder.btnDownload.setVisibility(View.GONE);
-                        holder.btnInstall.setVisibility(View.GONE);
+                        viewHolder.btnDownload.setVisibility(View.GONE);
+                        viewHolder.btnInstall.setVisibility(View.GONE);
                     }
 
                     // Extract icon from installed application
                     ApplicationInfo applicationInfo = packageManager.getApplicationInfo(application.getPackageName(), PackageManager.GET_META_DATA);
                     Resources resources = packageManager.getResourcesForApplication(application.getPackageName());
                     Drawable appIcon = resources.getDrawableForDensity(applicationInfo.icon, resources.getDisplayMetrics().densityDpi, null);
-                    holder.imageAppIcon.setImageDrawable(appIcon);
+                    viewHolder.imageAppIcon.setImageDrawable(appIcon);
                 } catch (PackageManager.NameNotFoundException e) {
                     Timber.e(e);
                 }
@@ -226,12 +226,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
                 packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
                 Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
-                holder.imageAppIcon.setImageDrawable(appIcon);
+                viewHolder.imageAppIcon.setImageDrawable(appIcon);
             } else {
-                holder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
+                viewHolder.imageAppIcon.setImageDrawable(context.getDrawable(R.drawable.ic_launcher));
             }
 
-            holder.btnDownload.setOnClickListener(new View.OnClickListener() {
+            viewHolder.btnDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Timber.i("buttonDownload onClick");
@@ -243,9 +243,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                     Timber.i("Downloading " + application.getPackageName() + " (version " + applicationVersion.getVersionCode() + ")...");
 
-                    holder.btnDownload.setVisibility(View.GONE);
-                    holder.progressBarDownload.setVisibility(View.VISIBLE);
-                    holder.textDownloadProgress.setVisibility(View.VISIBLE);
+                    viewHolder.btnDownload.setVisibility(View.GONE);
+                    viewHolder.progressBarDownload.setVisibility(View.VISIBLE);
+                    viewHolder.textDownloadProgress.setVisibility(View.VISIBLE);
                     downloadStatus.setDownloading(true);
                     appDownloadStatus.set(position, downloadStatus);
 
@@ -273,8 +273,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
                                 // Change visibility of download/install buttons upon moving completion
                                 downloadStatus.setDownloading(false);
-                                holder.btnDownload.setVisibility(View.GONE);
-                                holder.btnInstall.setVisibility(View.VISIBLE);
+                                viewHolder.btnDownload.setVisibility(View.GONE);
+                                viewHolder.btnInstall.setVisibility(View.VISIBLE);
                                 appDownloadStatus.set(position, downloadStatus);
 
                                 // Set app icon upon download completion
@@ -283,7 +283,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     packageInfo.applicationInfo.sourceDir = existingApkFile.getAbsolutePath();
                                     packageInfo.applicationInfo.publicSourceDir = existingApkFile.getAbsolutePath();
                                     Drawable appIcon = packageInfo.applicationInfo.loadIcon(packageManager);
-                                    holder.imageAppIcon.setImageDrawable(appIcon);
+                                    viewHolder.imageAppIcon.setImageDrawable(appIcon);
                                 }
                             } catch (IOException e){
                                 Timber.e(e);
@@ -295,15 +295,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                             Timber.i("onDownloadFailed");
 
                             downloadStatus.setDownloading(false);
-                            holder.btnDownload.setVisibility(View.VISIBLE);
-                            holder.btnInstall.setVisibility(View.GONE);
+                            viewHolder.btnDownload.setVisibility(View.VISIBLE);
+                            viewHolder.btnInstall.setVisibility(View.GONE);
                             if (fileSizeInKbsDownloaded == 0 || fileSizeInKbsDownloaded == null) {
                                 Toast.makeText(context, context.getString(R.string.app_list_check_internet_connection), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(context, "Invalid checkSum", Toast.LENGTH_SHORT).show();
                             }
-                            holder.progressBarDownload.setProgress(0);
-                            holder.textDownloadProgress.setText("");
+                            viewHolder.progressBarDownload.setProgress(0);
+                            viewHolder.textDownloadProgress.setText("");
                         }
                     };
 
@@ -317,8 +317,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                     downloadStatus.setDownloadProgressText(progressText);
                                     downloadStatus.setDownloadProgress(progress);
                                     appDownloadStatus.set(position, downloadStatus);
-                                    holder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());
-                                    holder.progressBarDownload.setProgress(progress);
+                                    viewHolder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());
+                                    viewHolder.progressBarDownload.setProgress(progress);
                                 }
                             });
                         }
@@ -348,10 +348,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                                         uiHandler.post(new Runnable() {
                                                             @Override
                                                             public void run() {
-                                                                holder.progressBarDownload.setProgress(0);
-                                                                holder.textDownloadProgress.setText("");
-                                                                holder.progressBarDownload.setVisibility(View.GONE);
-                                                                holder.textDownloadProgress.setVisibility(View.GONE);
+                                                                viewHolder.progressBarDownload.setProgress(0);
+                                                                viewHolder.textDownloadProgress.setText("");
+                                                                viewHolder.progressBarDownload.setVisibility(View.GONE);
+                                                                viewHolder.textDownloadProgress.setVisibility(View.GONE);
 
                                                                 if ((fileSizeInKbsDownloaded == null) ||
                                                                         (fileSizeInKbsDownloaded <= 0)) {
@@ -376,7 +376,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 }
             });
 
-            holder.btnInstall.setOnClickListener(new View.OnClickListener() {
+            viewHolder.btnInstall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Timber.i("btnInstall onClick");
@@ -407,8 +407,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                                 public void onInstallComplete(@NonNull String packageName) {
                                     Timber.i("onInstallComplete, package: " + packageName);
 
-                                    holder.btnDownload.setVisibility(View.GONE);
-                                    holder.btnInstall.setVisibility(View.GONE);
+                                    viewHolder.btnDownload.setVisibility(View.GONE);
+                                    viewHolder.btnInstall.setVisibility(View.GONE);
                                     executorService.execute(new Runnable() {
                                         @Override
                                         public void run() {

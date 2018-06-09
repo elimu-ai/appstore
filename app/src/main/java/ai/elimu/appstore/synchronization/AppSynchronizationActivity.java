@@ -56,16 +56,12 @@ public class AppSynchronizationActivity extends AppCompatActivity {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Handler mainThreadHandler;
 
-    public static final String PREF_LAST_SYNCHRONIZATION = "pref_last_synchronization";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
         super.onCreate(savedInstanceState);
 
-        /**
-         * Create a Handler in UI thread to use for updating view from background threads
-         */
+        // Create a Handler in UI thread to use for updating view from background threads
         mainThreadHandler = new Handler();
 
         setContentView(R.layout.activity_app_synchronization);
@@ -87,9 +83,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
         boolean isWifiConnected = ConnectivityHelper.isWifiConnected(this);
         Timber.i("isWifiConnected: " + isWifiConnected);
 
-        /**
-         * Check if server is reachable to start network API call
-         */
+        // Check if server is reachable to start network API call
         executorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -106,13 +100,10 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         }
                     });
 
-                    //Display app list when there is no internet connection
+                    // Display app list when there is no internet connection
                     displayAppList();
                 } else {
-
-                    /**
-                     * Start download applications info
-                     */
+                    // Start download applications info
                     appSyncLoadingContainer.setVisibility(View.VISIBLE);
 
                     // If AppCollection from custom Project, use a different URL (see LicenseNumberActivity)
@@ -121,20 +112,14 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                     Call<ResponseBody> call;
                     if (appCollectionId > 0) {
                         // See https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#read-applications
-                        /**
-                         * Download apps using app collection id
-                         */
+                        // Download apps using app collection id
                         call = appCollectionService.getApplicationListByCollectionId(
                                 appCollectionId,
                                 AppPrefs.getLicenseEmail(),
                                 AppPrefs.getLicenseNumber()
                         );
-
                     } else {
-
-                        /**
-                         * Download apps using device info
-                         */
+                        // Download apps using device info
                         call = mApplicationService.getApplicationList(
                                 DeviceInfoHelper.getDeviceId(getApplicationContext()),
                                 ChecksumHelper.getChecksum(getApplicationContext()),
@@ -143,7 +128,6 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                 Build.VERSION.SDK_INT,
                                 DeviceInfoHelper.getApplicationId(getApplicationContext()),
                                 DeviceInfoHelper.getAppVersionCode(getApplicationContext()));
-
                     }
 
                     call.enqueue(new Callback<ResponseBody>() {
@@ -152,7 +136,6 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                             appSyncLoadingContainer.setVisibility(View.GONE);
                             processAppListData(response);
                             displayAppList();
-
                         }
 
                         @Override
@@ -183,6 +166,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
      * @param response The API response
      */
     private void processAppListData(@NonNull Response<ResponseBody> response) {
+        Timber.i("processAppListData");
 
         ApplicationDao applicationDao = ((BaseApplication) getApplicationContext()).getDaoSession().getApplicationDao();
         ApplicationVersionDao applicationVersionDao = ((BaseApplication) getApplicationContext()).getDaoSession().getApplicationVersionDao();
