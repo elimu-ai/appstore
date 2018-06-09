@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -553,10 +554,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_app_list_item, parent, false);
         return new ViewHolder(view);
-    }
-
-    public List<Application> getData() {
-        return this.applications;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
