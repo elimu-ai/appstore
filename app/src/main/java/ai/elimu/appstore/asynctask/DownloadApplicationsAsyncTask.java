@@ -85,6 +85,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 //                            application.setId(applicationGson.getId());
 //                            application.setLocale(applicationGson.getLocale());
 //                            application.setPackageName(applicationGson.getPackageName());
+//                            application.setInfrastructural(applicationGson.isInfrastructural());
 //                            application.setLiteracySkills(applicationGson.getLiteracySkills());
 //                            application.setNumeracySkills(applicationGson.getNumeracySkills());
 //                            application.setApplicationStatus(applicationGson.getApplicationStatus());
@@ -100,6 +101,7 @@ public class DownloadApplicationsAsyncTask extends AsyncTask<Object, String, Voi
 //                            application.setId(applicationGson.getId());
 //                            application.setLocale(applicationGson.getLocale());
 //                            application.setPackageName(applicationGson.getPackageName());
+//                            application.setInfrastructural(applicationGson.isInfrastructural());
 //                            application.setLiteracySkills(applicationGson.getLiteracySkills());
 //                            application.setNumeracySkills(applicationGson.getNumeracySkills());
 //                            application.setApplicationStatus(applicationGson.getApplicationStatus());

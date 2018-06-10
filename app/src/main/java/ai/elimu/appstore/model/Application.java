@@ -30,6 +30,8 @@ public class Application {
     @NotNull
     private String packageName;
 
+    private Boolean infrastructural;
+
     @Convert(converter = LiteracySkillSetConverter.class, columnType = String.class)
     private Set<LiteracySkill> literacySkills;
 
@@ -46,13 +48,15 @@ public class Application {
 //    @NotNull
     private Integer listOrder;
 
-    @Generated(hash = 1797270351)
+    @Generated(hash = 1317695014)
     public Application(Long id, @NotNull Locale locale, @NotNull String packageName,
-            Set<LiteracySkill> literacySkills, Set<NumeracySkill> numeracySkills,
-            @NotNull ApplicationStatus applicationStatus, Integer listOrder) {
+            Boolean infrastructural, Set<LiteracySkill> literacySkills,
+            Set<NumeracySkill> numeracySkills, @NotNull ApplicationStatus applicationStatus,
+            Integer listOrder) {
         this.id = id;
         this.locale = locale;
         this.packageName = packageName;
+        this.infrastructural = infrastructural;
         this.literacySkills = literacySkills;
         this.numeracySkills = numeracySkills;
         this.applicationStatus = applicationStatus;
@@ -117,5 +121,17 @@ public class Application {
 
     public void setListOrder(Integer listOrder) {
         this.listOrder = listOrder;
+    }
+
+    public boolean getInfrastructural() {
+        return this.infrastructural;
+    }
+
+    public void setInfrastructural(boolean infrastructural) {
+        this.infrastructural = infrastructural;
+    }
+
+    public void setInfrastructural(Boolean infrastructural) {
+        this.infrastructural = infrastructural;
     }
 }

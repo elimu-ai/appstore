@@ -64,6 +64,11 @@ public class CustomDaoMaster extends DaoMaster {
                 // Add minSdkVersion
                 DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
             }
+
+            if (oldVersion < 2002004) {
+                // Add new property: infrastructural
+                DbMigrationHelper.migrate(db, ApplicationDao.class);
+            }
         }
     }
 }

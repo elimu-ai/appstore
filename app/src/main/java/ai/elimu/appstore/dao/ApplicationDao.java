@@ -35,10 +35,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Locale = new Property(1, String.class, "locale", false, "LOCALE");
         public final static Property PackageName = new Property(2, String.class, "packageName", false, "PACKAGE_NAME");
-        public final static Property LiteracySkills = new Property(3, String.class, "literacySkills", false, "LITERACY_SKILLS");
-        public final static Property NumeracySkills = new Property(4, String.class, "numeracySkills", false, "NUMERACY_SKILLS");
-        public final static Property ApplicationStatus = new Property(5, String.class, "applicationStatus", false, "APPLICATION_STATUS");
-        public final static Property ListOrder = new Property(6, Integer.class, "listOrder", false, "LIST_ORDER");
+        public final static Property Infrastructural = new Property(3, Boolean.class, "infrastructural", false, "INFRASTRUCTURAL");
+        public final static Property LiteracySkills = new Property(4, String.class, "literacySkills", false, "LITERACY_SKILLS");
+        public final static Property NumeracySkills = new Property(5, String.class, "numeracySkills", false, "NUMERACY_SKILLS");
+        public final static Property ApplicationStatus = new Property(6, String.class, "applicationStatus", false, "APPLICATION_STATUS");
+        public final static Property ListOrder = new Property(7, Integer.class, "listOrder", false, "LIST_ORDER");
     }
 
     private final LocaleConverter localeConverter = new LocaleConverter();
@@ -61,10 +62,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"LOCALE\" TEXT NOT NULL ," + // 1: locale
                 "\"PACKAGE_NAME\" TEXT NOT NULL ," + // 2: packageName
-                "\"LITERACY_SKILLS\" TEXT," + // 3: literacySkills
-                "\"NUMERACY_SKILLS\" TEXT," + // 4: numeracySkills
-                "\"APPLICATION_STATUS\" TEXT NOT NULL ," + // 5: applicationStatus
-                "\"LIST_ORDER\" INTEGER);"); // 6: listOrder
+                "\"INFRASTRUCTURAL\" INTEGER," + // 3: infrastructural
+                "\"LITERACY_SKILLS\" TEXT," + // 4: literacySkills
+                "\"NUMERACY_SKILLS\" TEXT," + // 5: numeracySkills
+                "\"APPLICATION_STATUS\" TEXT NOT NULL ," + // 6: applicationStatus
+                "\"LIST_ORDER\" INTEGER);"); // 7: listOrder
     }
 
     /** Drops the underlying database table. */
@@ -84,20 +86,25 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         stmt.bindString(2, localeConverter.convertToDatabaseValue(entity.getLocale()));
         stmt.bindString(3, entity.getPackageName());
  
+        Boolean infrastructural = entity.getInfrastructural();
+        if (infrastructural != null) {
+            stmt.bindLong(4, infrastructural ? 1L: 0L);
+        }
+ 
         Set literacySkills = entity.getLiteracySkills();
         if (literacySkills != null) {
-            stmt.bindString(4, literacySkillsConverter.convertToDatabaseValue(literacySkills));
+            stmt.bindString(5, literacySkillsConverter.convertToDatabaseValue(literacySkills));
         }
  
         Set numeracySkills = entity.getNumeracySkills();
         if (numeracySkills != null) {
-            stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
+            stmt.bindString(6, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
         }
-        stmt.bindString(6, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
+        stmt.bindString(7, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
  
         Integer listOrder = entity.getListOrder();
         if (listOrder != null) {
-            stmt.bindLong(7, listOrder);
+            stmt.bindLong(8, listOrder);
         }
     }
 
@@ -112,20 +119,25 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         stmt.bindString(2, localeConverter.convertToDatabaseValue(entity.getLocale()));
         stmt.bindString(3, entity.getPackageName());
  
+        Boolean infrastructural = entity.getInfrastructural();
+        if (infrastructural != null) {
+            stmt.bindLong(4, infrastructural ? 1L: 0L);
+        }
+ 
         Set literacySkills = entity.getLiteracySkills();
         if (literacySkills != null) {
-            stmt.bindString(4, literacySkillsConverter.convertToDatabaseValue(literacySkills));
+            stmt.bindString(5, literacySkillsConverter.convertToDatabaseValue(literacySkills));
         }
  
         Set numeracySkills = entity.getNumeracySkills();
         if (numeracySkills != null) {
-            stmt.bindString(5, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
+            stmt.bindString(6, numeracySkillsConverter.convertToDatabaseValue(numeracySkills));
         }
-        stmt.bindString(6, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
+        stmt.bindString(7, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
  
         Integer listOrder = entity.getListOrder();
         if (listOrder != null) {
-            stmt.bindLong(7, listOrder);
+            stmt.bindLong(8, listOrder);
         }
     }
 
@@ -140,10 +152,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             localeConverter.convertToEntityProperty(cursor.getString(offset + 1)), // locale
             cursor.getString(offset + 2), // packageName
-            cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)), // literacySkills
-            cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)), // numeracySkills
-            applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)), // applicationStatus
-            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6) // listOrder
+            cursor.isNull(offset + 3) ? null : cursor.getShort(offset + 3) != 0, // infrastructural
+            cursor.isNull(offset + 4) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)), // literacySkills
+            cursor.isNull(offset + 5) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 5)), // numeracySkills
+            applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 6)), // applicationStatus
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7) // listOrder
         );
         return entity;
     }
@@ -153,10 +166,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setLocale(localeConverter.convertToEntityProperty(cursor.getString(offset + 1)));
         entity.setPackageName(cursor.getString(offset + 2));
-        entity.setLiteracySkills(cursor.isNull(offset + 3) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 3)));
-        entity.setNumeracySkills(cursor.isNull(offset + 4) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)));
-        entity.setApplicationStatus(applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 5)));
-        entity.setListOrder(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
+        entity.setInfrastructural(cursor.isNull(offset + 3) ? null : cursor.getShort(offset + 3) != 0);
+        entity.setLiteracySkills(cursor.isNull(offset + 4) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)));
+        entity.setNumeracySkills(cursor.isNull(offset + 5) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 5)));
+        entity.setApplicationStatus(applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 6)));
+        entity.setListOrder(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
      }
     
     @Override
