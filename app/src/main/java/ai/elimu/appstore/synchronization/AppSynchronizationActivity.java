@@ -198,6 +198,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setId(applicationGson.getId());
                         application.setLocale(applicationGson.getLocale());
                         application.setPackageName(applicationGson.getPackageName());
+                        application.setInfrastructural(applicationGson.isInfrastructural());
                         application.setLiteracySkills(applicationGson.getLiteracySkills());
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
@@ -236,6 +237,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setId(applicationGson.getId());
                         application.setLocale(applicationGson.getLocale());
                         application.setPackageName(applicationGson.getPackageName());
+                        application.setInfrastructural(applicationGson.isInfrastructural());
                         application.setLiteracySkills(applicationGson.getLiteracySkills());
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
