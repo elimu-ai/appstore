@@ -69,6 +69,22 @@ public class CustomDaoMaster extends DaoMaster {
                 // Add new property: infrastructural
                 DbMigrationHelper.migrate(db, ApplicationDao.class);
             }
+
+            if (oldVersion < 2002008) {
+                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+                DbMigrationHelper.migrate(db,
+                        ApplicationDao.class, // Added "appGroup"
+                        AppGroupDao.class
+                );
+            }
+
+            if (oldVersion < 2002009) {
+                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+                DbMigrationHelper.migrate(db,
+                        AppCategoryDao.class,
+                        AppGroupDao.class // Added "appCategory"
+                );
+            }
         }
     }
 }
