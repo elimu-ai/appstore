@@ -28,8 +28,10 @@ import java.util.concurrent.Executors;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
+import ai.elimu.appstore.dao.AppGroupDao;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
+import ai.elimu.appstore.model.AppGroup;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
 import ai.elimu.appstore.service.AppCollectionService;
@@ -170,6 +172,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
 
         ApplicationDao applicationDao = ((BaseApplication) getApplicationContext()).getDaoSession().getApplicationDao();
         ApplicationVersionDao applicationVersionDao = ((BaseApplication) getApplicationContext()).getDaoSession().getApplicationVersionDao();
+        AppGroupDao appGroupDao = ((BaseApplication) getApplicationContext()).getDaoSession().getAppGroupDao();
 
         // If AppCollection from custom Project, use a different URL (see LicenseNumberActivity)
         Long appCollectionId = AppPrefs.getAppCollectionId();
@@ -202,6 +205,18 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setLiteracySkills(applicationGson.getLiteracySkills());
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
+                        if (applicationGson.getAppGroup() != null) {
+                            // Custom Project
+                            AppGroup appGroup = appGroupDao.load(applicationGson.getAppGroup().getId());
+                            if (appGroup == null) {
+                                // Store new AppGroup in database
+                                appGroup = new AppGroup();
+                                appGroup.setId(applicationGson.getAppGroup().getId());
+                                long appGroupId = appGroupDao.insert(appGroup);
+                                Timber.i("Stored AppGroup in database with id " + appGroupId);
+                            }
+                            application.setAppGroup(appGroup);
+                        }
                         application.setListOrder(listOrder);
                         long id = applicationDao.insert(application);
                         Timber.i("Stored Application in database with id " + id);
@@ -241,6 +256,18 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setLiteracySkills(applicationGson.getLiteracySkills());
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
+                        if (applicationGson.getAppGroup() != null) {
+                            // Custom Project
+                            AppGroup appGroup = appGroupDao.load(applicationGson.getAppGroup().getId());
+                            if (appGroup == null) {
+                                // Store new AppGroup in database
+                                appGroup = new AppGroup();
+                                appGroup.setId(applicationGson.getAppGroup().getId());
+                                long appGroupId = appGroupDao.insert(appGroup);
+                                Timber.i("Stored AppGroup in database with id " + appGroupId);
+                            }
+                            application.setAppGroup(appGroup);
+                        }
                         application.setListOrder(listOrder);
                         applicationDao.update(application);
                         Timber.i("Updated Application in database with id " + application.getId());

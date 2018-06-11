@@ -8,9 +8,11 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 import org.greenrobot.greendao.internal.DaoConfig;
 
+import ai.elimu.appstore.model.AppGroup;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
 
+import ai.elimu.appstore.dao.AppGroupDao;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
 
@@ -23,9 +25,11 @@ import ai.elimu.appstore.dao.ApplicationVersionDao;
  */
 public class DaoSession extends AbstractDaoSession {
 
+    private final DaoConfig appGroupDaoConfig;
     private final DaoConfig applicationDaoConfig;
     private final DaoConfig applicationVersionDaoConfig;
 
+    private final AppGroupDao appGroupDao;
     private final ApplicationDao applicationDao;
     private final ApplicationVersionDao applicationVersionDao;
 
@@ -33,22 +37,32 @@ public class DaoSession extends AbstractDaoSession {
             daoConfigMap) {
         super(db);
 
+        appGroupDaoConfig = daoConfigMap.get(AppGroupDao.class).clone();
+        appGroupDaoConfig.initIdentityScope(type);
+
         applicationDaoConfig = daoConfigMap.get(ApplicationDao.class).clone();
         applicationDaoConfig.initIdentityScope(type);
 
         applicationVersionDaoConfig = daoConfigMap.get(ApplicationVersionDao.class).clone();
         applicationVersionDaoConfig.initIdentityScope(type);
 
+        appGroupDao = new AppGroupDao(appGroupDaoConfig, this);
         applicationDao = new ApplicationDao(applicationDaoConfig, this);
         applicationVersionDao = new ApplicationVersionDao(applicationVersionDaoConfig, this);
 
+        registerDao(AppGroup.class, appGroupDao);
         registerDao(Application.class, applicationDao);
         registerDao(ApplicationVersion.class, applicationVersionDao);
     }
     
     public void clear() {
+        appGroupDaoConfig.clearIdentityScope();
         applicationDaoConfig.clearIdentityScope();
         applicationVersionDaoConfig.clearIdentityScope();
+    }
+
+    public AppGroupDao getAppGroupDao() {
+        return appGroupDao;
     }
 
     public ApplicationDao getApplicationDao() {
