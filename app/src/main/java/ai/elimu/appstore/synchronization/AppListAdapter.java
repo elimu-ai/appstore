@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -96,15 +97,23 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     public AppListAdapter(List<Application> applications, PackageUpdateReceiver packageUpdateReceiver, BaseApplication baseApplication) {
         this.applications = applications;
 
+        String sectionHeader = "";
         for (int i = 0; i < applications.size(); i++) {
             Application application = applications.get(i);
 
-//            // TODO: set section header programmatically
-//            if (i == 0) {
-//                // Add section header
-//                listItems.add("Infrastructure Apps");
-//                sectionHeaderSet.add(listItems.size());
-//            }
+            if (application.getAppGroup() != null) {
+                // Custom Project
+                if (application.getAppGroup().getAppCategory() != null) {
+                    // Add section header
+                    String appCategoryName = application.getAppGroup().getAppCategory().getName();
+                    Timber.i("appCategoryName: " + appCategoryName);
+                    if (!sectionHeader.equals(appCategoryName)) {
+                        sectionHeader = appCategoryName;
+                        listItems.add(appCategoryName);
+                        sectionHeaderSet.add(listItems.size());
+                    }
+                }
+            }
 
             listItems.add(application);
         }
@@ -128,11 +137,25 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         if (getItemViewType(position) == TYPE_HEADER) {
             String header = (String) listItems.get(position);
             Timber.i("header: " + header);
-            // TODO: set header
+            TextView appListHeader = viewHolder.itemView.findViewById(R.id.appListHeader);
+            appListHeader.setText(header);
+
             return;
         }
 
         final Application application = (Application) listItems.get(position);
+
+        if ((application.getAppGroup() != null) && (application.getAppGroup().getAppCategory() != null)) {
+            String backgroundColor = application.getAppGroup().getAppCategory().getBackgroundColor();
+            Timber.d("backgroundColor: " + backgroundColor);
+            if (!TextUtils.isEmpty(backgroundColor)) {
+                String[] rgbStringArray = backgroundColor.split(",");
+                Timber.d("rgbStringArray: " + rgbStringArray);
+                int color = Color.argb(20, Integer.valueOf(rgbStringArray[0]), Integer.valueOf(rgbStringArray[1]), Integer.valueOf(rgbStringArray[2]));
+                viewHolder.itemView.setBackgroundColor(color);
+            }
+        }
+
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
         viewHolder.textViewTitle.setText(application.getPackageName());
         viewHolder.textDownloadProgress.setText(downloadStatus.getDownloadProgressText());

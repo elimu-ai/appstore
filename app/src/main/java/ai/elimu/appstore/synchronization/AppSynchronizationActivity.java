@@ -28,9 +28,11 @@ import java.util.concurrent.Executors;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
+import ai.elimu.appstore.dao.AppCategoryDao;
 import ai.elimu.appstore.dao.AppGroupDao;
 import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
+import ai.elimu.appstore.model.AppCategory;
 import ai.elimu.appstore.model.AppGroup;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
@@ -173,6 +175,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
         ApplicationDao applicationDao = ((BaseApplication) getApplicationContext()).getDaoSession().getApplicationDao();
         ApplicationVersionDao applicationVersionDao = ((BaseApplication) getApplicationContext()).getDaoSession().getApplicationVersionDao();
         AppGroupDao appGroupDao = ((BaseApplication) getApplicationContext()).getDaoSession().getAppGroupDao();
+        AppCategoryDao appCategoryDao = ((BaseApplication) getApplicationContext()).getDaoSession().getAppCategoryDao();
 
         // If AppCollection from custom Project, use a different URL (see LicenseNumberActivity)
         Long appCollectionId = AppPrefs.getAppCollectionId();
@@ -212,6 +215,19 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                 // Store new AppGroup in database
                                 appGroup = new AppGroup();
                                 appGroup.setId(applicationGson.getAppGroup().getId());
+                                if (applicationGson.getAppGroup().getAppCategory() != null) {
+                                    AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
+                                    if (appCategory == null) {
+                                        // Store new AppCategory in database
+                                        appCategory = new AppCategory();
+                                        appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
+                                        appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
+                                        appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
+                                        long appCategoryId = appCategoryDao.insert(appCategory);
+                                        Timber.i("Stored AppCategory in database with id " + appCategoryId);
+                                    }
+                                    appGroup.setAppCategory(appCategory);
+                                }
                                 long appGroupId = appGroupDao.insert(appGroup);
                                 Timber.i("Stored AppGroup in database with id " + appGroupId);
                             }
@@ -263,6 +279,19 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                 // Store new AppGroup in database
                                 appGroup = new AppGroup();
                                 appGroup.setId(applicationGson.getAppGroup().getId());
+                                if (applicationGson.getAppGroup().getAppCategory() != null) {
+                                    AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
+                                    if (appCategory == null) {
+                                        // Store new AppCategory in database
+                                        appCategory = new AppCategory();
+                                        appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
+                                        appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
+                                        appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
+                                        long appCategoryId = appCategoryDao.insert(appCategory);
+                                        Timber.i("Stored AppCategory in database with id " + appCategoryId);
+                                    }
+                                    appGroup.setAppCategory(appCategory);
+                                }
                                 long appGroupId = appGroupDao.insert(appGroup);
                                 Timber.i("Stored AppGroup in database with id " + appGroupId);
                             }

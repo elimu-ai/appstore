@@ -1,13 +1,18 @@
 package ai.elimu.appstore.dao;
 
+import java.util.List;
+import java.util.ArrayList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
+import org.greenrobot.greendao.internal.SqlUtils;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
+
+import ai.elimu.appstore.model.AppCategory;
 
 import ai.elimu.appstore.model.AppGroup;
 
@@ -25,7 +30,10 @@ public class AppGroupDao extends AbstractDao<AppGroup, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property AppCategoryId = new Property(1, Long.class, "appCategoryId", false, "APP_CATEGORY_ID");
     }
+
+    private DaoSession daoSession;
 
 
     public AppGroupDao(DaoConfig config) {
@@ -34,13 +42,15 @@ public class AppGroupDao extends AbstractDao<AppGroup, Long> {
     
     public AppGroupDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
+        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"APP_GROUP\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY );"); // 0: id
+                "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"APP_CATEGORY_ID\" INTEGER);"); // 1: appCategoryId
     }
 
     /** Drops the underlying database table. */
@@ -57,6 +67,11 @@ public class AppGroupDao extends AbstractDao<AppGroup, Long> {
         if (id != null) {
             stmt.bindLong(1, id);
         }
+ 
+        Long appCategoryId = entity.getAppCategoryId();
+        if (appCategoryId != null) {
+            stmt.bindLong(2, appCategoryId);
+        }
     }
 
     @Override
@@ -67,6 +82,17 @@ public class AppGroupDao extends AbstractDao<AppGroup, Long> {
         if (id != null) {
             stmt.bindLong(1, id);
         }
+ 
+        Long appCategoryId = entity.getAppCategoryId();
+        if (appCategoryId != null) {
+            stmt.bindLong(2, appCategoryId);
+        }
+    }
+
+    @Override
+    protected final void attachEntity(AppGroup entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
     }
 
     @Override
@@ -77,7 +103,8 @@ public class AppGroupDao extends AbstractDao<AppGroup, Long> {
     @Override
     public AppGroup readEntity(Cursor cursor, int offset) {
         AppGroup entity = new AppGroup( //
-            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0) // id
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1) // appCategoryId
         );
         return entity;
     }
@@ -85,6 +112,7 @@ public class AppGroupDao extends AbstractDao<AppGroup, Long> {
     @Override
     public void readEntity(Cursor cursor, AppGroup entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setAppCategoryId(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
      }
     
     @Override
@@ -112,4 +140,95 @@ public class AppGroupDao extends AbstractDao<AppGroup, Long> {
         return true;
     }
     
+    private String selectDeep;
+
+    protected String getSelectDeep() {
+        if (selectDeep == null) {
+            StringBuilder builder = new StringBuilder("SELECT ");
+            SqlUtils.appendColumns(builder, "T", getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T0", daoSession.getAppCategoryDao().getAllColumns());
+            builder.append(" FROM APP_GROUP T");
+            builder.append(" LEFT JOIN APP_CATEGORY T0 ON T.\"APP_CATEGORY_ID\"=T0.\"_id\"");
+            builder.append(' ');
+            selectDeep = builder.toString();
+        }
+        return selectDeep;
+    }
+    
+    protected AppGroup loadCurrentDeep(Cursor cursor, boolean lock) {
+        AppGroup entity = loadCurrent(cursor, 0, lock);
+        int offset = getAllColumns().length;
+
+        AppCategory appCategory = loadCurrentOther(daoSession.getAppCategoryDao(), cursor, offset);
+        entity.setAppCategory(appCategory);
+
+        return entity;    
+    }
+
+    public AppGroup loadDeep(Long key) {
+        assertSinglePk();
+        if (key == null) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder(getSelectDeep());
+        builder.append("WHERE ");
+        SqlUtils.appendColumnsEqValue(builder, "T", getPkColumns());
+        String sql = builder.toString();
+        
+        String[] keyArray = new String[] { key.toString() };
+        Cursor cursor = db.rawQuery(sql, keyArray);
+        
+        try {
+            boolean available = cursor.moveToFirst();
+            if (!available) {
+                return null;
+            } else if (!cursor.isLast()) {
+                throw new IllegalStateException("Expected unique result, but count was " + cursor.getCount());
+            }
+            return loadCurrentDeep(cursor, true);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+    /** Reads all available rows from the given cursor and returns a list of new ImageTO objects. */
+    public List<AppGroup> loadAllDeepFromCursor(Cursor cursor) {
+        int count = cursor.getCount();
+        List<AppGroup> list = new ArrayList<AppGroup>(count);
+        
+        if (cursor.moveToFirst()) {
+            if (identityScope != null) {
+                identityScope.lock();
+                identityScope.reserveRoom(count);
+            }
+            try {
+                do {
+                    list.add(loadCurrentDeep(cursor, false));
+                } while (cursor.moveToNext());
+            } finally {
+                if (identityScope != null) {
+                    identityScope.unlock();
+                }
+            }
+        }
+        return list;
+    }
+    
+    protected List<AppGroup> loadDeepAllAndCloseCursor(Cursor cursor) {
+        try {
+            return loadAllDeepFromCursor(cursor);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+
+    /** A raw-style query where you can pass any WHERE clause and arguments. */
+    public List<AppGroup> queryDeep(String where, String... selectionArg) {
+        Cursor cursor = db.rawQuery(getSelectDeep() + where, selectionArg);
+        return loadDeepAllAndCloseCursor(cursor);
+    }
+ 
 }
