@@ -109,11 +109,19 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 //                    Timber.i("appCategoryName: " + appCategoryName);
 //                    if (!sectionHeader.equals(appCategoryName)) {
 //                        sectionHeader = appCategoryName;
-//                        listItems.add(appCategoryName);
+//                        listItems.add(sectionHeader);
 //                        sectionHeaderSet.add(listItems.size());
 //                    }
 //                }
 //            }
+            Timber.d("application.getName(): " + application.getName());
+            if (!TextUtils.isEmpty(application.getName())) {
+                if (!sectionHeader.equals(application.getName())) {
+                    sectionHeader = application.getName();
+                    listItems.add(sectionHeader);
+                    sectionHeaderSet.add(listItems.size());
+                }
+            }
 
             listItems.add(application);
         }
@@ -155,6 +163,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 //                viewHolder.itemView.setBackgroundColor(color);
 //            }
 //        }
+        if (!TextUtils.isEmpty(application.getBackgroundColor())) {
+            String[] rgbStringArray = application.getBackgroundColor().split(",");
+            Timber.d("rgbStringArray: " + rgbStringArray);
+            int color = Color.argb(20, Integer.valueOf(rgbStringArray[0]), Integer.valueOf(rgbStringArray[1]), Integer.valueOf(rgbStringArray[2]));
+            viewHolder.itemView.setBackgroundColor(color);
+        }
 
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
         viewHolder.textViewTitle.setText(application.getPackageName());

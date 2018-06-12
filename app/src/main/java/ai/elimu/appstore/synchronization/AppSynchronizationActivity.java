@@ -117,7 +117,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                     if (appCollectionId > 0) {
                         // See https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#read-applications
                         // Download apps using app collection id
-                        call = appCollectionService.getAppCollection(
+                        call = appCollectionService.getApplicationListByCollectionId(
                                 appCollectionId,
                                 AppPrefs.getLicenseEmail(),
                                 AppPrefs.getLicenseNumber()
@@ -233,6 +233,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
 //                            }
 //                            application.setAppGroup(appGroup);
 //                        }
+                        application.setName(applicationGson.getName());
+                        application.setBackgroundColor(applicationGson.getBackgroundColor());
                         application.setListOrder(listOrder);
                         long id = applicationDao.insert(application);
                         Timber.i("Stored Application in database with id " + id);
@@ -297,6 +299,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
 //                            }
 //                            application.setAppGroup(appGroup);
 //                        }
+                        application.setName(applicationGson.getName());
+                        application.setBackgroundColor(applicationGson.getBackgroundColor());
                         application.setListOrder(listOrder);
                         applicationDao.update(application);
                         Timber.i("Updated Application in database with id " + application.getId());
