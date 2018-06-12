@@ -57,11 +57,13 @@ public class Application {
     /**
      * AppCategory name. This property is only set if the Application belongs to a Custom Project.
      */
+    @Deprecated // TODO: replace with usage of AppGroup
     private String name;
 
     /**
      * AppCategory backgroundColor. This property is only set if the Application belongs to a Custom Project.
      */
+    @Deprecated // TODO: replace with usage of AppGroup
     private String backgroundColor;
 
     /**
