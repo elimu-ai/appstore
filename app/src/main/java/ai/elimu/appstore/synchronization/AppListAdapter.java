@@ -101,19 +101,19 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         for (int i = 0; i < applications.size(); i++) {
             Application application = applications.get(i);
 
-            if (application.getAppGroup() != null) {
-                // Custom Project
-                if (application.getAppGroup().getAppCategory() != null) {
-                    // Add section header
-                    String appCategoryName = application.getAppGroup().getAppCategory().getName();
-                    Timber.i("appCategoryName: " + appCategoryName);
-                    if (!sectionHeader.equals(appCategoryName)) {
-                        sectionHeader = appCategoryName;
-                        listItems.add(appCategoryName);
-                        sectionHeaderSet.add(listItems.size());
-                    }
-                }
-            }
+//            if (application.getAppGroup() != null) {
+//                // Custom Project
+//                if (application.getAppGroup().getAppCategory() != null) {
+//                    // Add section header
+//                    String appCategoryName = application.getAppGroup().getAppCategory().getName();
+//                    Timber.i("appCategoryName: " + appCategoryName);
+//                    if (!sectionHeader.equals(appCategoryName)) {
+//                        sectionHeader = appCategoryName;
+//                        listItems.add(appCategoryName);
+//                        sectionHeaderSet.add(listItems.size());
+//                    }
+//                }
+//            }
 
             listItems.add(application);
         }
@@ -145,16 +145,16 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         final Application application = (Application) listItems.get(position);
 
-        if ((application.getAppGroup() != null) && (application.getAppGroup().getAppCategory() != null)) {
-            String backgroundColor = application.getAppGroup().getAppCategory().getBackgroundColor();
-            Timber.d("backgroundColor: " + backgroundColor);
-            if (!TextUtils.isEmpty(backgroundColor)) {
-                String[] rgbStringArray = backgroundColor.split(",");
-                Timber.d("rgbStringArray: " + rgbStringArray);
-                int color = Color.argb(20, Integer.valueOf(rgbStringArray[0]), Integer.valueOf(rgbStringArray[1]), Integer.valueOf(rgbStringArray[2]));
-                viewHolder.itemView.setBackgroundColor(color);
-            }
-        }
+//        if ((application.getAppGroup() != null) && (application.getAppGroup().getAppCategory() != null)) {
+//            String backgroundColor = application.getAppGroup().getAppCategory().getBackgroundColor();
+//            Timber.d("backgroundColor: " + backgroundColor);
+//            if (!TextUtils.isEmpty(backgroundColor)) {
+//                String[] rgbStringArray = backgroundColor.split(",");
+//                Timber.d("rgbStringArray: " + rgbStringArray);
+//                int color = Color.argb(20, Integer.valueOf(rgbStringArray[0]), Integer.valueOf(rgbStringArray[1]), Integer.valueOf(rgbStringArray[2]));
+//                viewHolder.itemView.setBackgroundColor(color);
+//            }
+//        }
 
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
         viewHolder.textViewTitle.setText(application.getPackageName());

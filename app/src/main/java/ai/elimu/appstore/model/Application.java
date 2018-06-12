@@ -47,9 +47,22 @@ public class Application {
     @Convert(converter = ApplicationStatusConverter.class, columnType = String.class)
     private ApplicationStatus applicationStatus;
 
-    private Long appGroupId;
-    @ToOne(joinProperty = "appGroupId")
-    private AppGroup appGroup;
+//    /**
+//     * AppCategory name. This property is only set if the Application belongs to a Custom Project.
+//     */
+//    private Long appGroupId;
+//    @ToOne(joinProperty = "appGroupId")
+//    private AppGroup appGroup;
+
+    /**
+     * AppCategory name. This property is only set if the Application belongs to a Custom Project.
+     */
+    private String name;
+
+    /**
+     * AppCategory backgroundColor. This property is only set if the Application belongs to a Custom Project.
+     */
+    private String backgroundColor;
 
     /**
      * Keeps track of the application's position in the list, as received in the JSON response.
@@ -57,19 +70,11 @@ public class Application {
 //    @NotNull
     private Integer listOrder;
 
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-
-    /** Used for active entity operations. */
-    @Generated(hash = 843119501)
-    private transient ApplicationDao myDao;
-
-    @Generated(hash = 1701894269)
-    public Application(Long id, @NotNull Locale locale, @NotNull String packageName,
-            Boolean infrastructural, Set<LiteracySkill> literacySkills,
-            Set<NumeracySkill> numeracySkills, @NotNull ApplicationStatus applicationStatus,
-            Long appGroupId, Integer listOrder) {
+    @Generated(hash = 1342442865)
+    public Application(Long id, @NotNull Locale locale, @NotNull String packageName, Boolean infrastructural,
+            Set<LiteracySkill> literacySkills, Set<NumeracySkill> numeracySkills,
+            @NotNull ApplicationStatus applicationStatus, String name, String backgroundColor,
+            Integer listOrder) {
         this.id = id;
         this.locale = locale;
         this.packageName = packageName;
@@ -77,7 +82,8 @@ public class Application {
         this.literacySkills = literacySkills;
         this.numeracySkills = numeracySkills;
         this.applicationStatus = applicationStatus;
-        this.appGroupId = appGroupId;
+        this.name = name;
+        this.backgroundColor = backgroundColor;
         this.listOrder = listOrder;
     }
 
@@ -141,12 +147,20 @@ public class Application {
         this.applicationStatus = applicationStatus;
     }
 
-    public Long getAppGroupId() {
-        return this.appGroupId;
+    public String getName() {
+        return this.name;
     }
 
-    public void setAppGroupId(Long appGroupId) {
-        this.appGroupId = appGroupId;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getBackgroundColor() {
+        return this.backgroundColor;
+    }
+
+    public void setBackgroundColor(String backgroundColor) {
+        this.backgroundColor = backgroundColor;
     }
 
     public Integer getListOrder() {
@@ -155,80 +169,5 @@ public class Application {
 
     public void setListOrder(Integer listOrder) {
         this.listOrder = listOrder;
-    }
-
-    @Generated(hash = 759378586)
-    private transient Long appGroup__resolvedKey;
-
-    /** To-one relationship, resolved on first access. */
-    @Generated(hash = 1728555289)
-    public AppGroup getAppGroup() {
-        Long __key = this.appGroupId;
-        if (appGroup__resolvedKey == null || !appGroup__resolvedKey.equals(__key)) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            AppGroupDao targetDao = daoSession.getAppGroupDao();
-            AppGroup appGroupNew = targetDao.load(__key);
-            synchronized (this) {
-                appGroup = appGroupNew;
-                appGroup__resolvedKey = __key;
-            }
-        }
-        return appGroup;
-    }
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1753195535)
-    public void setAppGroup(AppGroup appGroup) {
-        synchronized (this) {
-            this.appGroup = appGroup;
-            appGroupId = appGroup == null ? null : appGroup.getId();
-            appGroup__resolvedKey = appGroupId;
-        }
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1259587109)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getApplicationDao() : null;
     }
 }
