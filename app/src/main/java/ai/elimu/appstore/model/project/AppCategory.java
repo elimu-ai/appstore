@@ -1,4 +1,4 @@
-package ai.elimu.appstore.model;
+package ai.elimu.appstore.model.project;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;

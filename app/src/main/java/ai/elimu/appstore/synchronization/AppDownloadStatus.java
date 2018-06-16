@@ -1,4 +1,4 @@
-package ai.elimu.appstore.model;
+package ai.elimu.appstore.synchronization;
 
 public class AppDownloadStatus {
 

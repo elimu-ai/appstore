@@ -1,4 +1,4 @@
-package ai.elimu.appstore.provider;
+package ai.elimu.appstore.provider.project;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

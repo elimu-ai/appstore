@@ -74,7 +74,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".onboarding.LicenseNumberActivity" />
+        <activity android:name=".onboarding.project.LicenseNumberActivity" />
         <activity android:name=".onboarding.DeviceRegistrationActivity" />
         <activity android:name=".synchronization.AppSynchronizationActivity" />
 
@@ -90,7 +90,7 @@
 
         <provider
             android:authorities="${applicationId}.provider"
-            android:name=".provider.AppCollectionProvider"
+            android:name=".provider.project.AppCollectionProvider"
             android:exported="true"
             android:readPermission="ai.elimu.appstore.provider.READ" />
 

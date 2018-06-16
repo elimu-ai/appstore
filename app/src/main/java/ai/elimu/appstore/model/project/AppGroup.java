@@ -1,4 +1,4 @@
-package ai.elimu.appstore.model;
+package ai.elimu.appstore.model.project;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
@@ -8,6 +8,7 @@ import org.greenrobot.greendao.DaoException;
 import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.dao.AppCategoryDao;
 import ai.elimu.appstore.dao.AppGroupDao;
+import ai.elimu.appstore.model.project.AppCategory;
 
 @Entity
 public class AppGroup {
