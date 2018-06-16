@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.BIND_JOB_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     
-    <permission android:name="ai.elimu.appstore.provider.READ" />
+    <permission android:name="${applicationId}.provider.READ" />
 
     <application
         android:name=".BaseApplication"
@@ -86,13 +86,13 @@
             android:authorities="${applicationId}.provider"
             android:name=".provider.ApplicationProvider"
             android:exported="true"
-            android:readPermission="ai.elimu.appstore.provider.READ" />
+            android:readPermission="${applicationId}.provider.READ" />
 
         <provider
             android:authorities="${applicationId}.provider"
             android:name=".provider.project.AppCollectionProvider"
             android:exported="true"
-            android:readPermission="ai.elimu.appstore.provider.READ" />
+            android:readPermission="${applicationId}.provider.READ" />
 
         <!--<meta-data-->
             <!--android:name="io.fabric.ApiKey"-->
