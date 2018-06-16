@@ -89,6 +89,14 @@ public class LicenseNumberActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 Timber.i("editTextLicenseNumber onTextChanged");
 
+                if ((charSequence.length() == 4)
+                        || (charSequence.length() == (8+1))
+                        || (charSequence.length() == (12+2))) {
+                    // Prepend "-" automatically to make it easier for the user to type the license number
+                    editTextLicenseNumber.setText(charSequence + "-");
+                    editTextLicenseNumber.setSelection(editTextLicenseNumber.getText().length());
+                }
+
                 updateSubmitButton();
             }
 
