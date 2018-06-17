@@ -34,6 +34,8 @@ import ai.elimu.appstore.dao.ApplicationDao;
 import ai.elimu.appstore.dao.ApplicationVersionDao;
 import ai.elimu.appstore.model.Application;
 import ai.elimu.appstore.model.ApplicationVersion;
+import ai.elimu.appstore.model.project.AppCategory;
+import ai.elimu.appstore.model.project.AppGroup;
 import ai.elimu.appstore.rest.project.AppCollectionService;
 import ai.elimu.appstore.rest.ApplicationService;
 import ai.elimu.appstore.util.AppPrefs;
@@ -206,33 +208,31 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setLiteracySkills(applicationGson.getLiteracySkills());
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
-//                        if (applicationGson.getAppGroup() != null) {
-//                            // Custom Project
-//                            AppGroup appGroup = appGroupDao.load(applicationGson.getAppGroup().getId());
-//                            if (appGroup == null) {
-//                                // Store new AppGroup in database
-//                                appGroup = new AppGroup();
-//                                appGroup.setId(applicationGson.getAppGroup().getId());
-//                                if (applicationGson.getAppGroup().getAppCategory() != null) {
-//                                    AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
-//                                    if (appCategory == null) {
-//                                        // Store new AppCategory in database
-//                                        appCategory = new AppCategory();
-//                                        appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
-//                                        appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
-//                                        appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
-//                                        long appCategoryId = appCategoryDao.insert(appCategory);
-//                                        Timber.i("Stored AppCategory in database with id " + appCategoryId);
-//                                    }
-//                                    appGroup.setAppCategory(appCategory);
-//                                }
-//                                long appGroupId = appGroupDao.insert(appGroup);
-//                                Timber.i("Stored AppGroup in database with id " + appGroupId);
-//                            }
-//                            application.setAppGroup(appGroup);
-//                        }
-                        application.setName(applicationGson.getName());
-                        application.setBackgroundColor(applicationGson.getBackgroundColor());
+                        if (applicationGson.getAppGroup() != null) {
+                            // Custom Project
+                            AppGroup appGroup = appGroupDao.load(applicationGson.getAppGroup().getId());
+                            if (appGroup == null) {
+                                // Store new AppGroup in database
+                                appGroup = new AppGroup();
+                                appGroup.setId(applicationGson.getAppGroup().getId());
+                                if (applicationGson.getAppGroup().getAppCategory() != null) {
+                                    AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
+                                    if (appCategory == null) {
+                                        // Store new AppCategory in database
+                                        appCategory = new AppCategory();
+                                        appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
+                                        appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
+                                        appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
+                                        long appCategoryId = appCategoryDao.insert(appCategory);
+                                        Timber.i("Stored AppCategory in database with id " + appCategoryId);
+                                    }
+                                    appGroup.setAppCategory(appCategory);
+                                }
+                                long appGroupId = appGroupDao.insert(appGroup);
+                                Timber.i("Stored AppGroup in database with id " + appGroupId);
+                            }
+                            application.setAppGroup(appGroup);
+                        }
                         application.setListOrder(listOrder);
                         long id = applicationDao.insert(application);
                         Timber.i("Stored Application in database with id " + id);
@@ -272,33 +272,31 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                         application.setLiteracySkills(applicationGson.getLiteracySkills());
                         application.setNumeracySkills(applicationGson.getNumeracySkills());
                         application.setApplicationStatus(applicationGson.getApplicationStatus());
-//                        if (applicationGson.getAppGroup() != null) {
-//                            // Custom Project
-//                            AppGroup appGroup = appGroupDao.load(applicationGson.getAppGroup().getId());
-//                            if (appGroup == null) {
-//                                // Store new AppGroup in database
-//                                appGroup = new AppGroup();
-//                                appGroup.setId(applicationGson.getAppGroup().getId());
-//                                if (applicationGson.getAppGroup().getAppCategory() != null) {
-//                                    AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
-//                                    if (appCategory == null) {
-//                                        // Store new AppCategory in database
-//                                        appCategory = new AppCategory();
-//                                        appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
-//                                        appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
-//                                        appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
-//                                        long appCategoryId = appCategoryDao.insert(appCategory);
-//                                        Timber.i("Stored AppCategory in database with id " + appCategoryId);
-//                                    }
-//                                    appGroup.setAppCategory(appCategory);
-//                                }
-//                                long appGroupId = appGroupDao.insert(appGroup);
-//                                Timber.i("Stored AppGroup in database with id " + appGroupId);
-//                            }
-//                            application.setAppGroup(appGroup);
-//                        }
-                        application.setName(applicationGson.getName());
-                        application.setBackgroundColor(applicationGson.getBackgroundColor());
+                        if (applicationGson.getAppGroup() != null) {
+                            // Custom Project
+                            AppGroup appGroup = appGroupDao.load(applicationGson.getAppGroup().getId());
+                            if (appGroup == null) {
+                                // Store new AppGroup in database
+                                appGroup = new AppGroup();
+                                appGroup.setId(applicationGson.getAppGroup().getId());
+                                if (applicationGson.getAppGroup().getAppCategory() != null) {
+                                    AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
+                                    if (appCategory == null) {
+                                        // Store new AppCategory in database
+                                        appCategory = new AppCategory();
+                                        appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
+                                        appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
+                                        appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
+                                        long appCategoryId = appCategoryDao.insert(appCategory);
+                                        Timber.i("Stored AppCategory in database with id " + appCategoryId);
+                                    }
+                                    appGroup.setAppCategory(appCategory);
+                                }
+                                long appGroupId = appGroupDao.insert(appGroup);
+                                Timber.i("Stored AppGroup in database with id " + appGroupId);
+                            }
+                            application.setAppGroup(appGroup);
+                        }
                         application.setListOrder(listOrder);
                         applicationDao.update(application);
                         Timber.i("Updated Application in database with id " + application.getId());

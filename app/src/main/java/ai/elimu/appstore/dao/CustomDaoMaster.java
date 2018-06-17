@@ -101,6 +101,13 @@ public class CustomDaoMaster extends DaoMaster {
                         AppCategoryDao.class // Added "listOrder"
                 );
             }
+
+            if (oldVersion < 2002013) {
+                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+                DbMigrationHelper.migrate(db,
+                        ApplicationDao.class // Added "appGroup"
+                );
+            }
         }
     }
 }

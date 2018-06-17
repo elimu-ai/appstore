@@ -100,23 +100,14 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         for (int i = 0; i < applications.size(); i++) {
             Application application = applications.get(i);
 
-//            if (application.getAppGroup() != null) {
-//                // Custom Project
-//                if (application.getAppGroup().getAppCategory() != null) {
-//                    // Add section header
-//                    String appCategoryName = application.getAppGroup().getAppCategory().getName();
-//                    Timber.i("appCategoryName: " + appCategoryName);
-//                    if (!sectionHeader.equals(appCategoryName)) {
-//                        sectionHeader = appCategoryName;
-//                        listItems.add(sectionHeader);
-//                        sectionHeaderSet.add(listItems.size());
-//                    }
-//                }
-//            }
-            Timber.d("application.getName(): " + application.getName());
-            if (!TextUtils.isEmpty(application.getName())) {
-                if (!sectionHeader.equals(application.getName())) {
-                    sectionHeader = application.getName();
+            if (application.getAppGroup() != null) {
+                // Custom Project
+
+                // Add section header
+                String appCategoryName = application.getAppGroup().getAppCategory().getName();
+                Timber.i("appCategoryName: " + appCategoryName);
+                if (!sectionHeader.equals(appCategoryName)) {
+                    sectionHeader = appCategoryName;
                     listItems.add(sectionHeader);
                     sectionHeaderSet.add(listItems.size());
                 }
@@ -131,8 +122,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     }
 
     private void initAppDownloadStatus() {
-        appDownloadStatus = new ArrayList<>(applications.size());
-        for (int i = 0; i < applications.size(); i++) {
+        appDownloadStatus = new ArrayList<>(listItems.size());
+        for (int i = 0; i < listItems.size(); i++) {
             appDownloadStatus.add(new AppDownloadStatus());
         }
     }
@@ -152,21 +143,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         final Application application = (Application) listItems.get(position);
 
-//        if ((application.getAppGroup() != null) && (application.getAppGroup().getAppCategory() != null)) {
-//            String backgroundColor = application.getAppGroup().getAppCategory().getBackgroundColor();
-//            Timber.d("backgroundColor: " + backgroundColor);
-//            if (!TextUtils.isEmpty(backgroundColor)) {
-//                String[] rgbStringArray = backgroundColor.split(",");
-//                Timber.d("rgbStringArray: " + rgbStringArray);
-//                int color = Color.argb(20, Integer.valueOf(rgbStringArray[0]), Integer.valueOf(rgbStringArray[1]), Integer.valueOf(rgbStringArray[2]));
-//                viewHolder.itemView.setBackgroundColor(color);
-//            }
-//        }
-        if (!TextUtils.isEmpty(application.getBackgroundColor())) {
-            String[] rgbStringArray = application.getBackgroundColor().split(",");
-            Timber.d("rgbStringArray: " + rgbStringArray);
-            int color = Color.argb(20, Integer.valueOf(rgbStringArray[0]), Integer.valueOf(rgbStringArray[1]), Integer.valueOf(rgbStringArray[2]));
-            viewHolder.itemView.setBackgroundColor(color);
+        if (application.getAppGroup() != null) {
+            String backgroundColor = application.getAppGroup().getAppCategory().getBackgroundColor();
+            Timber.d("backgroundColor: " + backgroundColor);
+            if (!TextUtils.isEmpty(backgroundColor)) {
+                String[] rgbStringArray = backgroundColor.split(",");
+                Timber.d("rgbStringArray: " + rgbStringArray);
+                int color = Color.argb(20, Integer.valueOf(rgbStringArray[0]), Integer.valueOf(rgbStringArray[1]), Integer.valueOf(rgbStringArray[2]));
+                viewHolder.itemView.setBackgroundColor(color);
+            }
         }
 
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
@@ -599,8 +584,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        if (applications != null) {
-            return applications.size();
+        if (listItems != null) {
+            return listItems.size();
         } else {
             return 0;
         }
