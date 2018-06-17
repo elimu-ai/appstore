@@ -48,7 +48,7 @@ public class AppGroupProvider extends ContentProvider {
         Timber.i("selectionClause: " + selectionClause);
         Timber.i("selectionArgs: " + selectionArgs);
         Timber.i("selectionArgs[0]: " + selectionArgs[0]);
-        Long appCategoryId = Long.parseLong(selectionArgs[0]);
+        Long appCategoryId = Long.valueOf(selectionArgs[0]);
         Timber.i("appCategoryId: " + appCategoryId);
 
         final int code = MATCHER.match(uri);
