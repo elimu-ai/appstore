@@ -67,7 +67,7 @@ public class Application {
     private String backgroundColor;
 
     /**
-     * Keeps track of the application's position in the list, as received in the JSON response.
+     * Keeps track of the Application's position in the list, as received in the JSON response.
      */
 //    @NotNull
     private Integer listOrder;

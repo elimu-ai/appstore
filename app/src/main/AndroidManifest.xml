@@ -90,6 +90,12 @@
 
         <provider
             android:authorities="${applicationId}.provider"
+            android:name=".provider.project.AppCategoryProvider"
+            android:exported="true"
+            android:readPermission="${applicationId}.provider.READ" />
+
+        <provider
+            android:authorities="${applicationId}.provider"
             android:name=".provider.project.AppCollectionProvider"
             android:exported="true"
             android:readPermission="${applicationId}.provider.READ" />
