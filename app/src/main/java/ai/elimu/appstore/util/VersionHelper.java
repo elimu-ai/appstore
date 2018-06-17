@@ -29,7 +29,7 @@ public class VersionHelper {
      * Stores the versionCode of the application currently installed. And detects upgrades from previously installed
      * versions.
      */
-    public static void updateAppVersion (Context context) {
+    public static void updateAppVersion(Context context) {
         Timber.i("updateAppVersion");
 
         // Check if the application's versionCode was upgraded
@@ -54,7 +54,17 @@ public class VersionHelper {
                 }
             }
 
-//            if (oldVersionCode < 2000019) {
+            if (oldVersionCode < 2002013) {
+                // Delete previously stored .json file from SD card (replaced by ContentProvider)
+                File jsonFile = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/", "app-collection.json");
+                Timber.i("jsonFile: " + jsonFile);
+                if (jsonFile.exists()) {
+                    boolean isDeletionSuccessful = jsonFile.delete();
+                    Timber.i("isDeletionSuccessful: " + isDeletionSuccessful);
+                }
+            }
+
+//            if (oldVersionCode < ???) {
 //                ...
 //            }
 

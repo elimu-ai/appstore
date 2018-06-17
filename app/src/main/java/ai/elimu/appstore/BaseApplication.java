@@ -72,6 +72,8 @@ public class BaseApplication extends Application {
         }
         Timber.i("onCreate");
 
+        VersionHelper.updateAppVersion(getApplicationContext());
+
 //        if ("release".equals(BuildConfig.BUILD_TYPE)) {
 //            // Initialize Crashlytics (crash reporting)
 //            Fabric.with(this, new Crashlytics());
@@ -81,8 +83,6 @@ public class BaseApplication extends Application {
         CustomDaoMaster.DevOpenHelper helper = new CustomDaoMaster.DevOpenHelper(this, "appstore-db");
         Database db = helper.getWritableDb();
         daoSession = new CustomDaoMaster(db).newSession();
-
-        VersionHelper.updateAppVersion(getApplicationContext());
     }
 
     public DaoSession getDaoSession() {
