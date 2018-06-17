@@ -20,7 +20,7 @@ import timber.log.Timber;
 public class AppCategoryProvider extends ContentProvider {
 
     // The authority of this content provider
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.app_category_provider";
 
     private static final String TABLE_APP_CATEGORY = "appCategory";
     private static final int CODE_APP_CATEGORY_DIR = 3;
@@ -37,7 +37,7 @@ public class AppCategoryProvider extends ContentProvider {
     public boolean onCreate() {
         Timber.i("onCreate");
 
-        Timber.i("URI_APP_GROUP: " + URI_APP_CATEGORY);
+        Timber.i("URI_APP_CATEGORY: " + URI_APP_CATEGORY);
 
         return true;
     }

@@ -17,7 +17,7 @@ import timber.log.Timber;
 public class AppGroupProvider extends ContentProvider {
 
     // The authority of this content provider
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.app_group_provider";
 
     private static final String TABLE_APP_GROUP = "appGroup";
     private static final int CODE_APP_GROUP_DIR = 4;

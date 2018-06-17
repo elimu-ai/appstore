@@ -17,7 +17,7 @@ import timber.log.Timber;
 public class AppCollectionProvider extends ContentProvider {
 
     // The authority of this content provider
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.app_collection_provider";
 
     private static final String TABLE_APP_COLLECTION = "appCollection";
     private static final int CODE_APP_COLLECTION_DIR = 1;

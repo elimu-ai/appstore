@@ -19,7 +19,7 @@ import timber.log.Timber;
 public class ApplicationProvider extends ContentProvider {
 
     // The authority of this content provider
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.application_provider";
 
     private static final String TABLE_APPLICATION = "application";
     private static final int CODE_APPLICATION_DIR = 2;
