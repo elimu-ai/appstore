@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import ai.elimu.appstore.onboarding.DeviceRegistrationActivity;
-import ai.elimu.appstore.onboarding.LicenseNumberActivity;
+import ai.elimu.appstore.onboarding.project.LicenseNumberActivity;
 import ai.elimu.appstore.onboarding.LocaleActivity;
 import ai.elimu.appstore.synchronization.AppSynchronizationActivity;
 import ai.elimu.appstore.util.AppPrefs;

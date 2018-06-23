@@ -1,4 +1,4 @@
-package ai.elimu.appstore.model;
+package ai.elimu.appstore.model.project;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
@@ -8,6 +8,7 @@ import org.greenrobot.greendao.DaoException;
 import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.appstore.dao.AppCategoryDao;
 import ai.elimu.appstore.dao.AppGroupDao;
+import ai.elimu.appstore.model.project.AppCategory;
 
 @Entity
 public class AppGroup {
@@ -19,6 +20,14 @@ public class AppGroup {
     @ToOne(joinProperty = "appCategoryId")
     private AppCategory appCategory;
 
+    /**
+     * Keeps track of the AppGroup's position in the list, as received in the JSON response.
+     *
+     * TODO: add listOrder to backend
+     */
+//    @NotNull
+    private Integer listOrder;
+
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -27,13 +36,11 @@ public class AppGroup {
     @Generated(hash = 454501991)
     private transient AppGroupDao myDao;
 
-    @Generated(hash = 1404519891)
-    private transient Long appCategory__resolvedKey;
-
-    @Generated(hash = 1254552308)
-    public AppGroup(Long id, Long appCategoryId) {
+    @Generated(hash = 1222688584)
+    public AppGroup(Long id, Long appCategoryId, Integer listOrder) {
         this.id = id;
         this.appCategoryId = appCategoryId;
+        this.listOrder = listOrder;
     }
 
     @Generated(hash = 1988496527)
@@ -56,12 +63,22 @@ public class AppGroup {
         this.appCategoryId = appCategoryId;
     }
 
+    public Integer getListOrder() {
+        return this.listOrder;
+    }
+
+    public void setListOrder(Integer listOrder) {
+        this.listOrder = listOrder;
+    }
+
+    @Generated(hash = 1404519891)
+    private transient Long appCategory__resolvedKey;
+
     /** To-one relationship, resolved on first access. */
     @Generated(hash = 676421978)
     public AppCategory getAppCategory() {
         Long __key = this.appCategoryId;
-        if (appCategory__resolvedKey == null
-                || !appCategory__resolvedKey.equals(__key)) {
+        if (appCategory__resolvedKey == null || !appCategory__resolvedKey.equals(__key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");

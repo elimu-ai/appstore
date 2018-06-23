@@ -9,7 +9,6 @@ import android.content.pm.Signature;
 import android.util.Base64;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.securepreferences.SecurePreferences;
 
 import org.greenrobot.greendao.database.Database;
@@ -21,10 +20,9 @@ import java.util.concurrent.TimeUnit;
 
 import ai.elimu.appstore.dao.CustomDaoMaster;
 import ai.elimu.appstore.dao.DaoSession;
-import ai.elimu.appstore.service.ProgressResponseBody;
-import ai.elimu.appstore.service.ProgressUpdateCallback;
+import ai.elimu.appstore.rest.ProgressResponseBody;
+import ai.elimu.appstore.rest.ProgressUpdateCallback;
 import ai.elimu.appstore.util.VersionHelper;
-import io.fabric.sdk.android.Fabric;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
@@ -74,6 +72,8 @@ public class BaseApplication extends Application {
         }
         Timber.i("onCreate");
 
+        VersionHelper.updateAppVersion(getApplicationContext());
+
 //        if ("release".equals(BuildConfig.BUILD_TYPE)) {
 //            // Initialize Crashlytics (crash reporting)
 //            Fabric.with(this, new Crashlytics());
@@ -83,8 +83,6 @@ public class BaseApplication extends Application {
         CustomDaoMaster.DevOpenHelper helper = new CustomDaoMaster.DevOpenHelper(this, "appstore-db");
         Database db = helper.getWritableDb();
         daoSession = new CustomDaoMaster(db).newSession();
-
-        VersionHelper.updateAppVersion(getApplicationContext());
     }
 
     public DaoSession getDaoSession() {

@@ -1,60 +1,70 @@
-package ai.elimu.appstore.provider;
+package ai.elimu.appstore.provider.project;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
-import ai.elimu.appstore.util.AppPrefs;
+import ai.elimu.appstore.dao.AppGroupDao;
 import timber.log.Timber;
 
-public class AppCollectionProvider extends ContentProvider {
+public class AppGroupProvider extends ContentProvider {
 
     // The authority of this content provider
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.app_group_provider";
 
-    private static final String TABLE_APP_COLLECTION = "appCollection";
-    private static final int CODE_APP_COLLECTION_DIR = 1;
-    public static final Uri URI_APP_COLLECTION = Uri.parse("content://" + AUTHORITY + "/" + TABLE_APP_COLLECTION);
+    private static final String TABLE_APP_GROUP = "appGroup";
+    private static final int CODE_APP_GROUP_DIR = 4;
+    public static final Uri URI_APP_GROUP = Uri.parse("content://" + AUTHORITY + "/" + TABLE_APP_GROUP);
 
     // The URI matcher
     private static final UriMatcher MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        MATCHER.addURI(AUTHORITY, TABLE_APP_COLLECTION, CODE_APP_COLLECTION_DIR);
+        MATCHER.addURI(AUTHORITY, TABLE_APP_GROUP, CODE_APP_GROUP_DIR);
     }
 
     @Override
     public boolean onCreate() {
         Timber.i("onCreate");
 
-        Timber.i("URI_APP_COLLECTION: " + URI_APP_COLLECTION);
+        Timber.i("URI_APP_GROUP: " + URI_APP_GROUP);
 
         return true;
     }
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String selectionClause, @Nullable String[] selectionArgs, @Nullable String s1) {
         Timber.i("query");
 
         Timber.i("uri: " + uri);
+        Timber.i("selectionClause: " + selectionClause);
+        Timber.i("selectionArgs: " + selectionArgs);
+        Timber.i("selectionArgs[0]: " + selectionArgs[0]);
+        Long appCategoryId = Long.valueOf(selectionArgs[0]);
+        Timber.i("appCategoryId: " + appCategoryId);
 
         final int code = MATCHER.match(uri);
-        if (code == CODE_APP_COLLECTION_DIR) {
+        if (code == CODE_APP_GROUP_DIR) {
             Context context = getContext();
             if (context == null) {
                 return null;
             }
-            MatrixCursor cursor = new MatrixCursor(new String[]{"_ID", "appCollectionId"});
-            MatrixCursor.RowBuilder rowBuilder = cursor.newRow();
-            rowBuilder.add("appCollectionId", AppPrefs.getAppCollectionId());
+            BaseApplication baseApplication = (BaseApplication) context;
+            AppGroupDao appGroupDao = baseApplication.getDaoSession().getAppGroupDao();
+            Cursor cursor = appGroupDao.queryBuilder()
+                    .where(
+                            AppGroupDao.Properties.AppCategoryId.eq(appCategoryId)
+                    )
+                    .orderAsc(AppGroupDao.Properties.ListOrder)
+                    .buildCursor().forCurrentThread().query();
             cursor.setNotificationUri(context.getContentResolver(), uri);
             return cursor;
         } else {
@@ -68,8 +78,8 @@ public class AppCollectionProvider extends ContentProvider {
         Timber.i("getType");
 
         switch (MATCHER.match(uri)) {
-            case CODE_APP_COLLECTION_DIR:
-                return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_APP_COLLECTION;
+            case CODE_APP_GROUP_DIR:
+                return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_APP_GROUP;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }

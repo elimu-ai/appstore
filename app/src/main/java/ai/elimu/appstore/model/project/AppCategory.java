@@ -1,4 +1,4 @@
-package ai.elimu.appstore.model;
+package ai.elimu.appstore.model.project;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
@@ -16,11 +16,20 @@ public class AppCategory {
 
     private String backgroundColor;
 
-    @Generated(hash = 660658780)
-    public AppCategory(Long id, @NotNull String name, String backgroundColor) {
+    /**
+     * Keeps track of the AppCategory's position in the list, as received in the JSON response.
+     *
+     * TODO: add listOrder to backend
+     */
+//    @NotNull
+    private Integer listOrder;
+
+    @Generated(hash = 1558937943)
+    public AppCategory(Long id, @NotNull String name, String backgroundColor, Integer listOrder) {
         this.id = id;
         this.name = name;
         this.backgroundColor = backgroundColor;
+        this.listOrder = listOrder;
     }
 
     @Generated(hash = 469938490)
@@ -49,5 +58,13 @@ public class AppCategory {
 
     public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
+    }
+
+    public Integer getListOrder() {
+        return this.listOrder;
+    }
+
+    public void setListOrder(Integer listOrder) {
+        this.listOrder = listOrder;
     }
 }

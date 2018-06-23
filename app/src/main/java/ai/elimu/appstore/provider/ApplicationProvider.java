@@ -19,7 +19,7 @@ import timber.log.Timber;
 public class ApplicationProvider extends ContentProvider {
 
     // The authority of this content provider
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.application_provider";
 
     private static final String TABLE_APPLICATION = "application";
     private static final int CODE_APPLICATION_DIR = 2;
@@ -47,6 +47,10 @@ public class ApplicationProvider extends ContentProvider {
         Timber.i("query");
 
         Timber.i("uri: " + uri);
+        Timber.i("projection: " + projection);
+        Timber.i("selection: " + selection);
+        Timber.i("selectionArgs: " + selectionArgs);
+        Timber.i("sortOrder: " + sortOrder);
 
         final int code = MATCHER.match(uri);
         if (code == CODE_APPLICATION_DIR) {
@@ -55,17 +59,31 @@ public class ApplicationProvider extends ContentProvider {
                 return null;
             }
             BaseApplication baseApplication = (BaseApplication) context;
-            DaoSession daoSession = baseApplication.getDaoSession();
-            ApplicationDao applicationDao = daoSession.getApplicationDao();
-            Cursor cursor = applicationDao.queryBuilder()
-                    .where(
+            ApplicationDao applicationDao = baseApplication.getDaoSession().getApplicationDao();
+            if ("APP_GROUP_ID=?".equals(selection)) {
+                Long appGroupId = Long.valueOf(selectionArgs[0]);
+                Timber.i("appGroupId: " + appGroupId);
+                Cursor cursor = applicationDao.queryBuilder()
+                        .where(
 //                            ApplicationDao.Properties.Locale.eq(AppPrefs.getLocale()),
-                            ApplicationDao.Properties.ApplicationStatus.eq(ApplicationStatus.ACTIVE)
-                    )
-                    .orderAsc(ApplicationDao.Properties.ListOrder)
-                    .buildCursor().forCurrentThread().query();
-            cursor.setNotificationUri(context.getContentResolver(), uri);
-            return cursor;
+                                ApplicationDao.Properties.ApplicationStatus.eq(ApplicationStatus.ACTIVE),
+                                ApplicationDao.Properties.AppGroupId.eq(appGroupId)
+                        )
+                        .orderAsc(ApplicationDao.Properties.ListOrder)
+                        .buildCursor().forCurrentThread().query();
+                cursor.setNotificationUri(context.getContentResolver(), uri);
+                return cursor;
+            } else {
+                Cursor cursor = applicationDao.queryBuilder()
+                        .where(
+//                            ApplicationDao.Properties.Locale.eq(AppPrefs.getLocale()),
+                                ApplicationDao.Properties.ApplicationStatus.eq(ApplicationStatus.ACTIVE)
+                        )
+                        .orderAsc(ApplicationDao.Properties.ListOrder)
+                        .buildCursor().forCurrentThread().query();
+                cursor.setNotificationUri(context.getContentResolver(), uri);
+                return cursor;
+            }
         } else {
             throw new IllegalArgumentException("Unknown URI: " + uri);
         }

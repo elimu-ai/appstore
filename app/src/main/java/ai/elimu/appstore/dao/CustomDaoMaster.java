@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import org.greenrobot.greendao.database.Database;
 
 import ai.elimu.appstore.model.Application;
+import ai.elimu.appstore.model.project.AppCategory;
 import timber.log.Timber;
 
 public class CustomDaoMaster extends DaoMaster {
@@ -90,6 +91,21 @@ public class CustomDaoMaster extends DaoMaster {
                 // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
                 DbMigrationHelper.migrate(db,
                         ApplicationDao.class // Removed "appGroup". Added "name" and "backgroundColor"
+                );
+            }
+
+            if (oldVersion < 2002012) {
+                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+                DbMigrationHelper.migrate(db,
+                        AppGroupDao.class, // Added "listOrder"
+                        AppCategoryDao.class // Added "listOrder"
+                );
+            }
+
+            if (oldVersion < 2002013) {
+                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+                DbMigrationHelper.migrate(db,
+                        ApplicationDao.class // Added "appGroup"
                 );
             }
         }

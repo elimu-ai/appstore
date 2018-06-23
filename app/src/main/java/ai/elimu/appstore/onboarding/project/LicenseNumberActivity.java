@@ -1,4 +1,4 @@
-package ai.elimu.appstore.onboarding;
+package ai.elimu.appstore.onboarding.project;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
-import ai.elimu.appstore.service.LicenseService;
+import ai.elimu.appstore.rest.LicenseService;
 import ai.elimu.appstore.util.AppPrefs;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -88,6 +88,14 @@ public class LicenseNumberActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 Timber.i("editTextLicenseNumber onTextChanged");
+
+                if ((charSequence.length() == 4)
+                        || (charSequence.length() == (8+1))
+                        || (charSequence.length() == (12+2))) {
+                    // Prepend "-" automatically to make it easier for the user to type the license number
+                    editTextLicenseNumber.setText(charSequence + "-");
+                    editTextLicenseNumber.setSelection(editTextLicenseNumber.getText().length());
+                }
 
                 updateSubmitButton();
             }

@@ -1,10 +1,13 @@
 package ai.elimu.appstore.dao;
 
+import java.util.List;
+import java.util.ArrayList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
+import org.greenrobot.greendao.internal.SqlUtils;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
@@ -13,6 +16,7 @@ import ai.elimu.appstore.dao.converter.ApplicationStatusConverter;
 import ai.elimu.appstore.dao.converter.LiteracySkillSetConverter;
 import ai.elimu.appstore.dao.converter.LocaleConverter;
 import ai.elimu.appstore.dao.converter.NumeracySkillSetConverter;
+import ai.elimu.appstore.model.project.AppGroup;
 import ai.elimu.model.enums.Locale;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import java.util.Set;
@@ -39,10 +43,11 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         public final static Property LiteracySkills = new Property(4, String.class, "literacySkills", false, "LITERACY_SKILLS");
         public final static Property NumeracySkills = new Property(5, String.class, "numeracySkills", false, "NUMERACY_SKILLS");
         public final static Property ApplicationStatus = new Property(6, String.class, "applicationStatus", false, "APPLICATION_STATUS");
-        public final static Property Name = new Property(7, String.class, "name", false, "NAME");
-        public final static Property BackgroundColor = new Property(8, String.class, "backgroundColor", false, "BACKGROUND_COLOR");
-        public final static Property ListOrder = new Property(9, Integer.class, "listOrder", false, "LIST_ORDER");
+        public final static Property AppGroupId = new Property(7, Long.class, "appGroupId", false, "APP_GROUP_ID");
+        public final static Property ListOrder = new Property(8, Integer.class, "listOrder", false, "LIST_ORDER");
     }
+
+    private DaoSession daoSession;
 
     private final LocaleConverter localeConverter = new LocaleConverter();
     private final LiteracySkillSetConverter literacySkillsConverter = new LiteracySkillSetConverter();
@@ -55,6 +60,7 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
     
     public ApplicationDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
+        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -68,9 +74,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
                 "\"LITERACY_SKILLS\" TEXT," + // 4: literacySkills
                 "\"NUMERACY_SKILLS\" TEXT," + // 5: numeracySkills
                 "\"APPLICATION_STATUS\" TEXT NOT NULL ," + // 6: applicationStatus
-                "\"NAME\" TEXT," + // 7: name
-                "\"BACKGROUND_COLOR\" TEXT," + // 8: backgroundColor
-                "\"LIST_ORDER\" INTEGER);"); // 9: listOrder
+                "\"APP_GROUP_ID\" INTEGER," + // 7: appGroupId
+                "\"LIST_ORDER\" INTEGER);"); // 8: listOrder
     }
 
     /** Drops the underlying database table. */
@@ -106,19 +111,14 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         }
         stmt.bindString(7, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
  
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(8, name);
-        }
- 
-        String backgroundColor = entity.getBackgroundColor();
-        if (backgroundColor != null) {
-            stmt.bindString(9, backgroundColor);
+        Long appGroupId = entity.getAppGroupId();
+        if (appGroupId != null) {
+            stmt.bindLong(8, appGroupId);
         }
  
         Integer listOrder = entity.getListOrder();
         if (listOrder != null) {
-            stmt.bindLong(10, listOrder);
+            stmt.bindLong(9, listOrder);
         }
     }
 
@@ -149,20 +149,21 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         }
         stmt.bindString(7, applicationStatusConverter.convertToDatabaseValue(entity.getApplicationStatus()));
  
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(8, name);
-        }
- 
-        String backgroundColor = entity.getBackgroundColor();
-        if (backgroundColor != null) {
-            stmt.bindString(9, backgroundColor);
+        Long appGroupId = entity.getAppGroupId();
+        if (appGroupId != null) {
+            stmt.bindLong(8, appGroupId);
         }
  
         Integer listOrder = entity.getListOrder();
         if (listOrder != null) {
-            stmt.bindLong(10, listOrder);
+            stmt.bindLong(9, listOrder);
         }
+    }
+
+    @Override
+    protected final void attachEntity(Application entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
     }
 
     @Override
@@ -180,9 +181,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
             cursor.isNull(offset + 4) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)), // literacySkills
             cursor.isNull(offset + 5) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 5)), // numeracySkills
             applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 6)), // applicationStatus
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // name
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // backgroundColor
-            cursor.isNull(offset + 9) ? null : cursor.getInt(offset + 9) // listOrder
+            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // appGroupId
+            cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8) // listOrder
         );
         return entity;
     }
@@ -196,9 +196,8 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         entity.setLiteracySkills(cursor.isNull(offset + 4) ? null : literacySkillsConverter.convertToEntityProperty(cursor.getString(offset + 4)));
         entity.setNumeracySkills(cursor.isNull(offset + 5) ? null : numeracySkillsConverter.convertToEntityProperty(cursor.getString(offset + 5)));
         entity.setApplicationStatus(applicationStatusConverter.convertToEntityProperty(cursor.getString(offset + 6)));
-        entity.setName(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setBackgroundColor(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setListOrder(cursor.isNull(offset + 9) ? null : cursor.getInt(offset + 9));
+        entity.setAppGroupId(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
+        entity.setListOrder(cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8));
      }
     
     @Override
@@ -226,4 +225,95 @@ public class ApplicationDao extends AbstractDao<Application, Long> {
         return true;
     }
     
+    private String selectDeep;
+
+    protected String getSelectDeep() {
+        if (selectDeep == null) {
+            StringBuilder builder = new StringBuilder("SELECT ");
+            SqlUtils.appendColumns(builder, "T", getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T0", daoSession.getAppGroupDao().getAllColumns());
+            builder.append(" FROM APPLICATION T");
+            builder.append(" LEFT JOIN APP_GROUP T0 ON T.\"APP_GROUP_ID\"=T0.\"_id\"");
+            builder.append(' ');
+            selectDeep = builder.toString();
+        }
+        return selectDeep;
+    }
+    
+    protected Application loadCurrentDeep(Cursor cursor, boolean lock) {
+        Application entity = loadCurrent(cursor, 0, lock);
+        int offset = getAllColumns().length;
+
+        AppGroup appGroup = loadCurrentOther(daoSession.getAppGroupDao(), cursor, offset);
+        entity.setAppGroup(appGroup);
+
+        return entity;    
+    }
+
+    public Application loadDeep(Long key) {
+        assertSinglePk();
+        if (key == null) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder(getSelectDeep());
+        builder.append("WHERE ");
+        SqlUtils.appendColumnsEqValue(builder, "T", getPkColumns());
+        String sql = builder.toString();
+        
+        String[] keyArray = new String[] { key.toString() };
+        Cursor cursor = db.rawQuery(sql, keyArray);
+        
+        try {
+            boolean available = cursor.moveToFirst();
+            if (!available) {
+                return null;
+            } else if (!cursor.isLast()) {
+                throw new IllegalStateException("Expected unique result, but count was " + cursor.getCount());
+            }
+            return loadCurrentDeep(cursor, true);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+    /** Reads all available rows from the given cursor and returns a list of new ImageTO objects. */
+    public List<Application> loadAllDeepFromCursor(Cursor cursor) {
+        int count = cursor.getCount();
+        List<Application> list = new ArrayList<Application>(count);
+        
+        if (cursor.moveToFirst()) {
+            if (identityScope != null) {
+                identityScope.lock();
+                identityScope.reserveRoom(count);
+            }
+            try {
+                do {
+                    list.add(loadCurrentDeep(cursor, false));
+                } while (cursor.moveToNext());
+            } finally {
+                if (identityScope != null) {
+                    identityScope.unlock();
+                }
+            }
+        }
+        return list;
+    }
+    
+    protected List<Application> loadDeepAllAndCloseCursor(Cursor cursor) {
+        try {
+            return loadAllDeepFromCursor(cursor);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+
+    /** A raw-style query where you can pass any WHERE clause and arguments. */
+    public List<Application> queryDeep(String where, String... selectionArg) {
+        Cursor cursor = db.rawQuery(getSelectDeep() + where, selectionArg);
+        return loadDeepAllAndCloseCursor(cursor);
+    }
+ 
 }

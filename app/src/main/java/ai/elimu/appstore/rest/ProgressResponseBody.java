@@ -1,4 +1,4 @@
-package ai.elimu.appstore.service;
+package ai.elimu.appstore.rest;
 
 import java.io.IOException;
 
