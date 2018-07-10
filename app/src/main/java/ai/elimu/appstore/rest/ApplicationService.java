@@ -10,6 +10,9 @@ import retrofit2.http.Query;
  */
 public interface ApplicationService {
 
+    /**
+     * See https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#application
+     */
     @GET("application/list")
     Call<ResponseBody> getApplicationList(@Query("deviceId") String deviceId,
                                           @Query("checksum") String checkSum,

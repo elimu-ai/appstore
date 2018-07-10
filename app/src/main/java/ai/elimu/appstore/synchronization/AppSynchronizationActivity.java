@@ -51,7 +51,7 @@ import timber.log.Timber;
 
 public class AppSynchronizationActivity extends AppCompatActivity {
 
-    private ApplicationService mApplicationService;
+    private ApplicationService applicationService;
     private AppCollectionService appCollectionService;
     private View appSyncLoadingContainer;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -70,7 +70,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
         appSyncLoadingContainer = findViewById(R.id.appSyncLoadingContainer);
 
         BaseApplication baseApplication = (BaseApplication) getApplication();
-        mApplicationService = baseApplication.getRetrofit(null).create(ApplicationService.class);
+        applicationService = baseApplication.getRetrofit(null).create(ApplicationService.class);
         appCollectionService = baseApplication.getRetrofit(null).create(AppCollectionService.class);
     }
 
@@ -112,16 +112,15 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                     Timber.i("appCollectionId: " + appCollectionId);
                     Call<ResponseBody> call;
                     if (appCollectionId > 0) {
-                        // See https://github.com/elimu-ai/webapp/blob/master/REST_API_REFERENCE.md#read-applications
+                        // Custom Project
                         // Download apps using app collection id
-                        call = appCollectionService.getApplicationListByCollectionId(
+                        call = appCollectionService.getApplicationListByAppCollectionId(
                                 appCollectionId,
                                 AppPrefs.getLicenseEmail(),
                                 AppPrefs.getLicenseNumber()
                         );
                     } else {
-                        // Download apps using device info
-                        call = mApplicationService.getApplicationList(
+                        call = applicationService.getApplicationList(
                                 DeviceInfoHelper.getDeviceId(getApplicationContext()),
                                 ChecksumHelper.getChecksum(getApplicationContext()),
                                 UserPrefsHelper.getLocale(getApplicationContext()).toString(),
@@ -134,6 +133,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            Timber.i("onResponse");
+
                             appSyncLoadingContainer.setVisibility(View.GONE);
                             processAppListData(response);
                             displayAppList();
@@ -141,6 +142,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Timber.e(t, "onFailure");
+
                             appSyncLoadingContainer.setVisibility(View.GONE);
                             mainThreadHandler.post(new Runnable() {
                                 @Override
@@ -149,9 +152,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 }
                             });
-                            Timber.e(t, "onFailure getApplicationList");
 
-                            //Display app list when failing to get application list
+                            // Display app list when failing to get application list
                             displayAppList();
                         }
                     });
@@ -163,7 +165,7 @@ public class AppSynchronizationActivity extends AppCompatActivity {
     }
 
     /**
-     * Handle app list response data gotten from API by storing data to SQLite database
+     * Handle app list response from REST API by storing the data in the SQLite database
      * @param response The API response
      */
     private void processAppListData(@NonNull Response<ResponseBody> response) {
@@ -173,10 +175,6 @@ public class AppSynchronizationActivity extends AppCompatActivity {
         ApplicationVersionDao applicationVersionDao = ((BaseApplication) getApplicationContext()).getDaoSession().getApplicationVersionDao();
         AppGroupDao appGroupDao = ((BaseApplication) getApplicationContext()).getDaoSession().getAppGroupDao();
         AppCategoryDao appCategoryDao = ((BaseApplication) getApplicationContext()).getDaoSession().getAppCategoryDao();
-
-        // If AppCollection from custom Project, use a different URL (see LicenseNumberActivity)
-        Long appCollectionId = AppPrefs.getAppCollectionId();
-        Timber.i("appCollectionId: " + appCollectionId);
 
         try {
             String jsonResponse = response.body().string();
@@ -212,19 +210,19 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                 // Store new AppGroup in database
                                 appGroup = new AppGroup();
                                 appGroup.setId(applicationGson.getAppGroup().getId());
-                                if (applicationGson.getAppGroup().getAppCategory() != null) {
-                                    AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
-                                    if (appCategory == null) {
-                                        // Store new AppCategory in database
-                                        appCategory = new AppCategory();
-                                        appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
-                                        appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
-                                        appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
-                                        long appCategoryId = appCategoryDao.insert(appCategory);
-                                        Timber.i("Stored AppCategory in database with id " + appCategoryId);
-                                    }
-                                    appGroup.setAppCategory(appCategory);
+
+                                AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
+                                if (appCategory == null) {
+                                    // Store new AppCategory in database
+                                    appCategory = new AppCategory();
+                                    appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
+                                    appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
+                                    appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
+                                    long appCategoryId = appCategoryDao.insert(appCategory);
+                                    Timber.i("Stored AppCategory in database with id " + appCategoryId);
                                 }
+                                appGroup.setAppCategory(appCategory);
+
                                 long appGroupId = appGroupDao.insert(appGroup);
                                 Timber.i("Stored AppGroup in database with id " + appGroupId);
                             }
@@ -276,19 +274,19 @@ public class AppSynchronizationActivity extends AppCompatActivity {
                                 // Store new AppGroup in database
                                 appGroup = new AppGroup();
                                 appGroup.setId(applicationGson.getAppGroup().getId());
-                                if (applicationGson.getAppGroup().getAppCategory() != null) {
-                                    AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
-                                    if (appCategory == null) {
-                                        // Store new AppCategory in database
-                                        appCategory = new AppCategory();
-                                        appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
-                                        appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
-                                        appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
-                                        long appCategoryId = appCategoryDao.insert(appCategory);
-                                        Timber.i("Stored AppCategory in database with id " + appCategoryId);
-                                    }
-                                    appGroup.setAppCategory(appCategory);
+
+                                AppCategory appCategory = appCategoryDao.load(applicationGson.getAppGroup().getAppCategory().getId());
+                                if (appCategory == null) {
+                                    // Store new AppCategory in database
+                                    appCategory = new AppCategory();
+                                    appCategory.setId(applicationGson.getAppGroup().getAppCategory().getId());
+                                    appCategory.setName(applicationGson.getAppGroup().getAppCategory().getName());
+                                    appCategory.setBackgroundColor(applicationGson.getAppGroup().getAppCategory().getBackgroundColor());
+                                    long appCategoryId = appCategoryDao.insert(appCategory);
+                                    Timber.i("Stored AppCategory in database with id " + appCategoryId);
                                 }
+                                appGroup.setAppCategory(appCategory);
+
                                 long appGroupId = appGroupDao.insert(appGroup);
                                 Timber.i("Stored AppGroup in database with id " + appGroupId);
                             }
@@ -347,7 +345,8 @@ public class AppSynchronizationActivity extends AppCompatActivity {
      * Go to app list activity
      */
     private void displayAppList() {
-        // Display list of apps
+        Timber.i("displayAppList");
+
         Intent intent = new Intent(getApplicationContext(), AppListActivity.class);
         startActivity(intent);
         finish();
