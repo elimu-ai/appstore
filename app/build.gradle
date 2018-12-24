@@ -10,8 +10,8 @@ android {
         applicationId "ai.elimu.appstore"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2002013
-        versionName "2.2.13-SNAPSHOT"
+        versionCode 2003000
+        versionName "2.3.0-SNAPSHOT"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
