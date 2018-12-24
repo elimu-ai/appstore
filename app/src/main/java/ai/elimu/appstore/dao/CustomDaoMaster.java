@@ -5,8 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import org.greenrobot.greendao.database.Database;
 
-import ai.elimu.appstore.model.Application;
-import ai.elimu.appstore.model.project.AppCategory;
 import timber.log.Timber;
 
 public class CustomDaoMaster extends DaoMaster {
@@ -30,83 +28,9 @@ public class CustomDaoMaster extends DaoMaster {
         public void onUpgrade(Database db, int oldVersion, int newVersion) {
             Timber.i("Upgrading schema from version " + oldVersion + " to " + newVersion);
 
-            if (oldVersion < 1003004) {
+            if (oldVersion < 2003000) {
                 dropAllTables(db, true);
                 onCreate(db);
-            }
-
-            if (oldVersion < 2000003) {
-                DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
-            }
-
-            if (oldVersion < 2000011) {
-                // Add checksumMd5
-                DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
-            }
-
-            if (oldVersion < 2001000) {
-                // Add listOrder
-                DbMigrationHelper.migrate(db, ApplicationDao.class);
-            }
-
-            if (oldVersion < 2001002) {
-                // Remove NOT NULL restriction for listOrder
-                DbMigrationHelper.migrate(db, ApplicationDao.class);
-            }
-
-            if (oldVersion < 2002000) {
-                // Add ApplicationVersion#versionName and ApplicationVersion#label
-                // Drop and re-create entire database since property values of existing ApplicationVersions in the database are not overwritten
-                dropAllTables(db, true);
-                onCreate(db);
-            }
-
-            if (oldVersion < 2002002) {
-                // Add minSdkVersion
-                DbMigrationHelper.migrate(db, ApplicationVersionDao.class);
-            }
-
-            if (oldVersion < 2002004) {
-                // Add new property: infrastructural
-                DbMigrationHelper.migrate(db, ApplicationDao.class);
-            }
-
-            if (oldVersion < 2002008) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        ApplicationDao.class, // Added "appGroup"
-                        AppGroupDao.class
-                );
-            }
-
-            if (oldVersion < 2002009) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        AppCategoryDao.class,
-                        AppGroupDao.class // Added "appCategory"
-                );
-            }
-
-            if (oldVersion < 2002010) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        ApplicationDao.class // Removed "appGroup". Added "name" and "backgroundColor"
-                );
-            }
-
-            if (oldVersion < 2002012) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        AppGroupDao.class, // Added "listOrder"
-                        AppCategoryDao.class // Added "listOrder"
-                );
-            }
-
-            if (oldVersion < 2002013) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        ApplicationDao.class // Added "appGroup"
-                );
             }
         }
     }

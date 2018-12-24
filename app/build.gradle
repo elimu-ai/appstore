@@ -10,24 +10,11 @@ android {
         applicationId "ai.elimu.appstore"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2002013
-        versionName "2.2.13-SNAPSHOT"
+        versionCode 2003000
+        versionName "2.3.0-SNAPSHOT"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-
-    productFlavors {
-        elimu {
-            // Default app collection (elimu.ai)
-            dimension 'mode'
-        }
-        custom {
-            // Custom app collection (custom project)
-            applicationId "ai.elimu.appstore_custom"
-            dimension 'mode'
-        }
-    }
-    flavorDimensions 'mode'
 
     buildTypes {
         debug {
