@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -96,23 +95,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     public AppListAdapter(List<Application> applications, PackageUpdateReceiver packageUpdateReceiver, BaseApplication baseApplication) {
         this.applications = applications;
 
-        String sectionHeader = "";
         for (int i = 0; i < applications.size(); i++) {
             Application application = applications.get(i);
-
-            if (application.getAppGroup() != null) {
-                // Custom Project
-
-                // Add section header
-                String appCategoryName = application.getAppGroup().getAppCategory().getName();
-                Timber.i("appCategoryName: " + appCategoryName);
-                if (!sectionHeader.equals(appCategoryName)) {
-                    sectionHeader = appCategoryName;
-                    listItems.add(sectionHeader);
-                    sectionHeaderSet.add(listItems.size());
-                }
-            }
-
             listItems.add(application);
         }
         
@@ -142,17 +126,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         }
 
         final Application application = (Application) listItems.get(position);
-
-        if (application.getAppGroup() != null) {
-            String backgroundColor = application.getAppGroup().getAppCategory().getBackgroundColor();
-            Timber.d("backgroundColor: " + backgroundColor);
-            if (!TextUtils.isEmpty(backgroundColor)) {
-                String[] rgbStringArray = backgroundColor.split(",");
-                Timber.d("rgbStringArray: " + rgbStringArray);
-                int color = Color.argb(20, Integer.valueOf(rgbStringArray[0]), Integer.valueOf(rgbStringArray[1]), Integer.valueOf(rgbStringArray[2]));
-                viewHolder.itemView.setBackgroundColor(color);
-            }
-        }
 
         final AppDownloadStatus downloadStatus = appDownloadStatus.get(position);
         viewHolder.textViewTitle.setText(application.getPackageName());
@@ -204,11 +177,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
             // Check if the APK file has already been downloaded to the SD card
             Locale locale = UserPrefsHelper.getLocale(context);
-            if (locale == null) {
-                // The user typed a License for a custom Project, which does not use a specific Locale.
-                // Fall back to English
-                locale = Locale.EN;
-            }
             String language = locale.getLanguage();
             String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";
             File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/" + ".elimu-ai/appstore/apks/" + language);
@@ -671,11 +639,6 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
                 "&osVersion=" + Build.VERSION.SDK_INT +
                 "&applicationId=" + applicationVersion.getApplication().getId() +
                 "&appVersionCode=" + DeviceInfoHelper.getAppVersionCode(context);
-        if (!TextUtils.isEmpty(UserPrefsHelper.getLicenseEmail(context))) {
-            // Custom Project
-            fileUrl += "&licenseEmail=" + UserPrefsHelper.getLicenseEmail(context);
-            fileUrl += "&licenseNumber=" + UserPrefsHelper.getLicenseNumber(context);
-        }
         Timber.i("fileUrl: " + fileUrl);
 
         String fileName = applicationVersion.getApplication().getPackageName() + "-" + applicationVersion.getVersionCode() + ".apk";

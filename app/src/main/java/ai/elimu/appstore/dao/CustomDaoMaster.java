@@ -5,8 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import org.greenrobot.greendao.database.Database;
 
-import ai.elimu.appstore.model.Application;
-import ai.elimu.appstore.model.project.AppCategory;
 import timber.log.Timber;
 
 public class CustomDaoMaster extends DaoMaster {
@@ -71,43 +69,43 @@ public class CustomDaoMaster extends DaoMaster {
                 DbMigrationHelper.migrate(db, ApplicationDao.class);
             }
 
-            if (oldVersion < 2002008) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        ApplicationDao.class, // Added "appGroup"
-                        AppGroupDao.class
-                );
-            }
-
-            if (oldVersion < 2002009) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        AppCategoryDao.class,
-                        AppGroupDao.class // Added "appCategory"
-                );
-            }
-
-            if (oldVersion < 2002010) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        ApplicationDao.class // Removed "appGroup". Added "name" and "backgroundColor"
-                );
-            }
-
-            if (oldVersion < 2002012) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        AppGroupDao.class, // Added "listOrder"
-                        AppCategoryDao.class // Added "listOrder"
-                );
-            }
-
-            if (oldVersion < 2002013) {
-                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
-                DbMigrationHelper.migrate(db,
-                        ApplicationDao.class // Added "appGroup"
-                );
-            }
+//            if (oldVersion < 2002008) {
+//                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+//                DbMigrationHelper.migrate(db,
+//                        ApplicationDao.class, // Added "appGroup"
+//                        AppGroupDao.class
+//                );
+//            }
+//
+//            if (oldVersion < 2002009) {
+//                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+//                DbMigrationHelper.migrate(db,
+//                        AppCategoryDao.class,
+//                        AppGroupDao.class // Added "appCategory"
+//                );
+//            }
+//
+//            if (oldVersion < 2002010) {
+//                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+//                DbMigrationHelper.migrate(db,
+//                        ApplicationDao.class // Removed "appGroup". Added "name" and "backgroundColor"
+//                );
+//            }
+//
+//            if (oldVersion < 2002012) {
+//                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+//                DbMigrationHelper.migrate(db,
+//                        AppGroupDao.class, // Added "listOrder"
+//                        AppCategoryDao.class // Added "listOrder"
+//                );
+//            }
+//
+//            if (oldVersion < 2002013) {
+//                // Add new tables and/or columns automatically (include only the DAO classes that have been modified)
+//                DbMigrationHelper.migrate(db,
+//                        ApplicationDao.class // Added "appGroup"
+//                );
+//            }
         }
     }
 }

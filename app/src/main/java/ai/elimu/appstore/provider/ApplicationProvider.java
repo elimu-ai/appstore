@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.dao.ApplicationDao;
-import ai.elimu.appstore.dao.DaoSession;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
@@ -60,30 +59,16 @@ public class ApplicationProvider extends ContentProvider {
             }
             BaseApplication baseApplication = (BaseApplication) context;
             ApplicationDao applicationDao = baseApplication.getDaoSession().getApplicationDao();
-            if ("APP_GROUP_ID=?".equals(selection)) {
-                Long appGroupId = Long.valueOf(selectionArgs[0]);
-                Timber.i("appGroupId: " + appGroupId);
-                Cursor cursor = applicationDao.queryBuilder()
-                        .where(
+
+            Cursor cursor = applicationDao.queryBuilder()
+                    .where(
 //                            ApplicationDao.Properties.Locale.eq(AppPrefs.getLocale()),
-                                ApplicationDao.Properties.ApplicationStatus.eq(ApplicationStatus.ACTIVE),
-                                ApplicationDao.Properties.AppGroupId.eq(appGroupId)
-                        )
-                        .orderAsc(ApplicationDao.Properties.ListOrder)
-                        .buildCursor().forCurrentThread().query();
-                cursor.setNotificationUri(context.getContentResolver(), uri);
-                return cursor;
-            } else {
-                Cursor cursor = applicationDao.queryBuilder()
-                        .where(
-//                            ApplicationDao.Properties.Locale.eq(AppPrefs.getLocale()),
-                                ApplicationDao.Properties.ApplicationStatus.eq(ApplicationStatus.ACTIVE)
-                        )
-                        .orderAsc(ApplicationDao.Properties.ListOrder)
-                        .buildCursor().forCurrentThread().query();
-                cursor.setNotificationUri(context.getContentResolver(), uri);
-                return cursor;
-            }
+                            ApplicationDao.Properties.ApplicationStatus.eq(ApplicationStatus.ACTIVE)
+                    )
+                    .orderAsc(ApplicationDao.Properties.ListOrder)
+                    .buildCursor().forCurrentThread().query();
+            cursor.setNotificationUri(context.getContentResolver(), uri);
+            return cursor;
         } else {
             throw new IllegalArgumentException("Unknown URI: " + uri);
         }

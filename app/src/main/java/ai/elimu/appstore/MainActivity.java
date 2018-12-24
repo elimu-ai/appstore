@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import ai.elimu.appstore.onboarding.DeviceRegistrationActivity;
-import ai.elimu.appstore.onboarding.project.LicenseNumberActivity;
 import ai.elimu.appstore.onboarding.LocaleActivity;
 import ai.elimu.appstore.synchronization.AppSynchronizationActivity;
 import ai.elimu.appstore.util.AppPrefs;
@@ -56,55 +55,26 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-
-        if ("elimu".equals(BuildConfig.FLAVOR)) {
-            // Default app collection (elimu.ai)
-
-            // Ask for locale (only apps for the selected locale will be downloaded)
-            String localeAsString = AppPrefs.getLocale();
-            Timber.i("localeAsString: " + localeAsString);
-            if (TextUtils.isEmpty(localeAsString)) {
-                Intent intent = new Intent(this, LocaleActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                // Register device
-                boolean isRegistered = AppPrefs.isDeviceRegistered();
-                Timber.i("isRegistered: " + isRegistered);
-                if (!isRegistered) {
-                    Intent intent = new Intent(this, DeviceRegistrationActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    // Synchronize with list of apps stored on server
-                    Intent intent = new Intent(this, AppSynchronizationActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            }
+        // Ask for locale (only apps for the selected locale will be downloaded)
+        String localeAsString = AppPrefs.getLocale();
+        Timber.i("localeAsString: " + localeAsString);
+        if (TextUtils.isEmpty(localeAsString)) {
+            Intent intent = new Intent(this, LocaleActivity.class);
+            startActivity(intent);
+            finish();
         } else {
-            // Custom app collection (custom project)
-
-            Long appCollectionId = AppPrefs.getAppCollectionId();
-            Timber.i("appCollectionId: " + appCollectionId);
-            if (appCollectionId == 0) {
-                Intent intent = new Intent(this, LicenseNumberActivity.class);
+            // Register device
+            boolean isRegistered = AppPrefs.isDeviceRegistered();
+            Timber.i("isRegistered: " + isRegistered);
+            if (!isRegistered) {
+                Intent intent = new Intent(this, DeviceRegistrationActivity.class);
                 startActivity(intent);
                 finish();
             } else {
-                // Register device
-                boolean isRegistered = AppPrefs.isDeviceRegistered();
-                Timber.i("isRegistered: " + isRegistered);
-                if (!isRegistered) {
-                    Intent intent = new Intent(this, DeviceRegistrationActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    // Synchronize with list of apps stored on server
-                    Intent intent = new Intent(this, AppSynchronizationActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+                // Synchronize with list of apps stored on server
+                Intent intent = new Intent(this, AppSynchronizationActivity.class);
+                startActivity(intent);
+                finish();
             }
         }
     }
