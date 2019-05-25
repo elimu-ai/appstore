@@ -1,4 +1,4 @@
-# Appstore
+# elimu.ai Appstore
 
 Android application which downloads educational apps stored on the elimu.ai platform.
 
