@@ -1,6 +1,6 @@
 # elimu.ai Appstore
 
-Android application which downloads educational apps stored on the elimu.ai platform.
+Android application which downloads educational apps stored on the (http://elimu.ai)[elimu.ai] platform.
 
 Download APK at https://github.com/elimu-ai/appstore/releases
 
