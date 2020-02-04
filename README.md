@@ -14,7 +14,7 @@ See software architecture diagram at https://github.com/elimu-ai/model
 
 We are building our software for Android devices with 6"-10" displays installed with Android API **version 24 (7.0)** or higher.
 
-## Development 💻
+## Development 👩🏽‍💻
 
 Note that the `REST_URL` depends on the build type you choose when installing the app:
   * `debug`: http://`<language>`.**test**.elimu.ai/rest/
