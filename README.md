@@ -25,3 +25,5 @@ Note that the `REST_URL` depends on the build type you choose when installing th
 A list of the currently supported languages is available at https://github.com/elimu-ai/model/blob/master/src/main/java/ai/elimu/model/enums/Language.java
 
 The first time you launch the Appstore application, it will ask you to select the language that you want to use from a drop-down menu.
+
+For information on how to add support for a new language, see https://github.com/elimu-ai/webapp/blob/master/LOCALIZE.md.
