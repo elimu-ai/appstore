@@ -8,7 +8,7 @@ Download APK at https://github.com/elimu-ai/appstore/releases
 
 ## Software architecture
 
-See software architecture diagram at https://github.com/elimu-ai/model
+See https://github.com/elimu-ai/wiki/blob/master/SOFTWARE_ARCHITECTURE.md
 
 ## What devices are being used?
 
