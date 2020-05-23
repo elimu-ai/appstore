@@ -1,13 +1,13 @@
-# Contributing to elimu.ai
+# Contributing to the elimu.ai Community
 
-The purpose of elimu.ai is to provide _every child_ with access to quality basic education. We 
+The purpose of [elimu.ai](http://elimu.ai) is to provide _every child_ with access to quality basic education. We 
 believe that a free quality education is the right of every child no matter her social or 
 geographical background.
 
-For this reason, we build tablet-based software that teaches a child to read, write and calculate 
+For this reason, we build educational software that teaches a child to read, write and calculate 
 fully autonomously, without guidance from qualified teachers.
 
-Since elimu.ai is an open source project, anyone is welcome to contribute towards this goal. We 
+Since [elimu.ai](http://elimu.ai) is an open source project, anyone is welcome to contribute towards this goal. We 
 welcome different skills, cultures, perspectives, attitudes, and experiences.
 
 This document explains the step-by-step process and guidelines for contributing to any of the 
@@ -41,8 +41,7 @@ belong to one of the following:
    would like to contribute: https://github.com/elimu-ai
    
    2. Look at the code in the repository to see if your skills match those required. If in doubt, 
-   post your questions in the [Slack channel](http://slack.elimu.ai) or send an e-mail to 
-   info@elimu.ai.
+   post your questions in the [Slack channel](https://join.slack.com/t/elimu-ai/shared_invite/zt-eoc921ow-0cfjATlIF2X~zHhSgSyaAw) or send an e-mail to info@elimu.ai.
    
    3. When you have selected a repository, click the 
    ["Projects"](https://github.com/elimu-ai/appstore/projects) tab of the repository. Within each 
@@ -88,7 +87,7 @@ new GitHub branch to work on:
    7. Every pull request requires at least one approved peer review before being merged, so add at 
    least one person as a _code reviewer_ of your pull request. To find out who to add, click 
    "Insights" → "Contributors" too see an overview of the most active contributors for each 
-   repository. If you are unsure who to add, use these: `jo-elimuai` and `sladomic`.
+   repository. If you are unsure who to add, use these: [`nya-elimuai`](https://github.com/nya-elimuai), [`jo-elimuai`](https://github.com/jo-elimuai) and [`sladomic`](https://github.com/sladomic).
    
    8. Once your pull request has been reviewed and approved, it can be merged. The person who created 
    the branch (you) will be the person responsible for merging the branch. So the peers reviewing 
@@ -97,6 +96,4 @@ new GitHub branch to work on:
    9. If you consider the issue complete (code reviewed and tested), merge and delete the branch, and 
    move the GitHub issue to the "Done" column. Well done!
 
-If any of the above steps are unclear, or you have any other questions or comments, please reach out 
-to the other community members in the [Slack channel](http://slack.elimu.ai). Thank you for 
-contributing 😀
+If any of the above steps are unclear, or you have any other questions or comments, please reach out via info@elimu.ai or [Slack](https://join.slack.com/t/elimu-ai/shared_invite/zt-eoc921ow-0cfjATlIF2X~zHhSgSyaAw). Thank you for contributing 😀
