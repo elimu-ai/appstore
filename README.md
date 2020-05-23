@@ -26,7 +26,7 @@ A list of the currently supported languages is available at https://github.com/e
 
 The first time you launch the Appstore application, it will ask you to select the language that you want to use from a drop-down menu.
 
-For information on how to add support for a new language, see https://github.com/elimu-ai/webapp/blob/master/LOCALIZE.md.
+For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/master/LOCALIZATION.md.
 
 ---
 
