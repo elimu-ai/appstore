@@ -16,6 +16,8 @@ We are building our software for Android devices with 6"-10" displays installed 
 
 ## Development 👩🏽‍💻
 
+### REST API
+
 Note that the `REST_URL` depends on the build type you choose when installing the app:
   * `debug`: http://`<language>`.**test**.elimu.ai/rest/
   * `release`: http://`<language>`.elimu.ai/rest/
