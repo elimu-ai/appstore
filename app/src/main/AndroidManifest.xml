@@ -3,14 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ai.elimu.appstore">
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.BIND_JOB_SERVICE" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     
     <permission android:name="${applicationId}.provider.READ" />
 
@@ -24,29 +17,12 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
 
-        <!-- Please refer to below Android documentations
-        https://developer.android.com/reference/android/support/v4/content/FileProvider.html
-        https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en
-        -->
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.apk.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
-
-        <activity android:name=".MainActivity"
-            android:theme="@style/SplashTheme">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".onboarding.LocaleActivity" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
@@ -54,41 +30,10 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".service.ApplicationSynchronizationService"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".service.ApplicationInstallService"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <receiver
-            android:name=".receiver.StudentUpdatedReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="ai.elimu.intent.action.STUDENT_UPDATED" />
-            </intent-filter>
-        </receiver>
-
-        <activity android:name=".onboarding.DeviceRegistrationActivity" />
-        <activity android:name=".synchronization.AppSynchronizationActivity" />
-
-        <activity
-            android:name=".synchronization.AppListActivity"
-            android:configChanges="orientation|screenSize"></activity>
-
         <provider
             android:authorities="${applicationId}.provider.application_provider"
             android:name=".provider.ApplicationProvider"
             android:exported="true"
             android:readPermission="${applicationId}.provider.READ" />
-
-        <!--<meta-data-->
-            <!--android:name="io.fabric.ApiKey"-->
-            <!--android:value="api-key-value" />-->
     </application>
 </manifest>

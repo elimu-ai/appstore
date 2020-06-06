@@ -2,32 +2,25 @@
 
 buildscript {
     repositories {
-        jcenter()
         google()
-        maven { url 'https://maven.fabric.io/public' }
+        jcenter()
+
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
-        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
-        classpath 'com.github.gfx.ribbonizer:ribbonizer-plugin:2.1.0'
-        classpath 'io.fabric.tools:gradle:1.25.2' // https://maven.fabric.io/public/io/fabric/tools/gradle/maven-metadata.xml
+        classpath 'com.android.tools.build:gradle:4.0.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
-ext {
-    supportLibVersion = "26.0.1"
-}
-
 allprojects {
     repositories {
-        mavenLocal()
+        google()
         jcenter()
-        maven { url 'https://maven.google.com' }
-        maven { url 'https://dl.bintray.com/elimu-ai/maven/' }
-        maven { url 'https://maven.fabric.io/public' }
+        maven {
+            url "https://dl.bintray.com/elimu-ai/maven/"
+        }
     }
 }
 

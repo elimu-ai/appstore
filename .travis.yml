@@ -14,8 +14,8 @@ jdk:
 android:
   components:
     - tools
-    - build-tools-26.0.2
-    - android-26
+    - build-tools-29.0.3
+    - android-29
     - extra-android-m2repository
 
 #    # System image needed to run emulator
@@ -35,4 +35,3 @@ android:
 
 notifications:
   email: false
-  slack: elimu-ai:5hNcmHPFkAETjJZjrkBlNTxr

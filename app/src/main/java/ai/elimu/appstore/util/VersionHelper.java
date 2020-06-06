@@ -3,9 +3,6 @@ package ai.elimu.appstore.util;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Environment;
-
-import java.io.File;
 
 import timber.log.Timber;
 
@@ -33,10 +30,10 @@ public class VersionHelper {
         Timber.i("updateAppVersion");
 
         // Check if the application's versionCode was upgraded
-        int oldVersionCode = AppPrefs.getAppVersionCode();
+        int oldVersionCode = SharedPreferencesHelper.getAppVersionCode(context);
         int newVersionCode = VersionHelper.getAppVersionCode(context);
         if (oldVersionCode == 0) {
-            AppPrefs.saveAppVersionCode(newVersionCode);
+            SharedPreferencesHelper.storeAppVersionCode(context, newVersionCode);
             oldVersionCode = newVersionCode;
         }
         Timber.i("oldVersionCode: " + oldVersionCode);
@@ -46,29 +43,16 @@ public class VersionHelper {
         if (oldVersionCode < newVersionCode) {
             Timber.i("Upgrading application from version " + oldVersionCode + " to " + newVersionCode + "...");
 
-            if (oldVersionCode < 2000018) {
-                // Delete downloaded APK files from SD card to prevent testers from having to manually delete corrupt files
-                File apkDirectory = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/apks/en/");
-                for (File apkFile : apkDirectory.listFiles()) {
-                    Timber.i("Deleted " + apkFile + ": " + apkFile.delete());
-                }
-            }
-
-            if (oldVersionCode < 2002013) {
-                // Delete previously stored .json file from SD card (replaced by ContentProvider)
-                File jsonFile = new File(Environment.getExternalStorageDirectory() + "/.elimu-ai/appstore/", "app-collection.json");
-                Timber.i("jsonFile: " + jsonFile);
-                if (jsonFile.exists()) {
-                    boolean isDeletionSuccessful = jsonFile.delete();
-                    Timber.i("isDeletionSuccessful: " + isDeletionSuccessful);
-                }
+            if (oldVersionCode < 2003000) {
+                // Clear all stored preferences
+                SharedPreferencesHelper.clearAllPreferences(context);
             }
 
 //            if (oldVersionCode < ???) {
 //                ...
 //            }
 
-            AppPrefs.saveAppVersionCode(newVersionCode);
+            SharedPreferencesHelper.storeAppVersionCode(context, newVersionCode);
         }
     }
 }
