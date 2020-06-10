@@ -1,6 +1,6 @@
 # elimu.ai Appstore
 
-Android application which downloads educational apps stored on the [elimu.ai](http://elimu.ai) platform.
+Android application which downloads and installs educational apps stored on the [elimu.ai](http://elimu.ai) platform.
 
 ## Download Application ⬇️
 
@@ -12,7 +12,7 @@ See https://github.com/elimu-ai/wiki/blob/master/SOFTWARE_ARCHITECTURE.md
 
 ## What Devices are Being Used?
 
-We are building our software for Android devices with 6"-10" displays installed with Android API **version 24 (7.0)** or higher.
+We are building our software for Android devices with **6"-10" displays** installed with Android API **version 24 (7.0)** or higher.
 
 ## Development 👩🏽‍💻
 
@@ -26,7 +26,9 @@ Note that the `REST_URL` depends on the build type you choose when installing th
 
 A list of the currently supported languages is available at https://github.com/elimu-ai/model/blob/master/src/main/java/ai/elimu/model/enums/Language.java
 
-The first time you launch the Appstore application, it will ask you to select the language that you want to use from a drop-down menu.
+The first time you launch the Appstore application, it will ask you to select the language that you want to use:
+
+<img width="320" alt="device-2020-06-10-152910" src="https://user-images.githubusercontent.com/15718174/84239611-58367d00-ab2f-11ea-9fb0-f119de951cef.png">
 
 For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/master/LOCALIZATION.md.
 
