@@ -12,7 +12,7 @@ See https://github.com/elimu-ai/wiki/blob/master/SOFTWARE_ARCHITECTURE.md
 
 ## What Devices are Being Used?
 
-We are building our software for Android devices with **6"-10" displays** installed with Android **API version 24 (7.0)** or higher.
+We are building our software for Android devices with **6"-10" displays** installed with Android API **version 24 (7.0)** or higher.
 
 ## Development 👩🏽‍💻
 
