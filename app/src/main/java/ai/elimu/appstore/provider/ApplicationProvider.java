@@ -50,7 +50,7 @@ public class ApplicationProvider extends ContentProvider {
             BaseApplication baseApplication = (BaseApplication) context;
             Cursor cursor = null;
             // TODO
-            cursor.setNotificationUri(context.getContentResolver(), uri);
+//            cursor.setNotificationUri(context.getContentResolver(), uri);
             return cursor;
         } else {
             throw new IllegalArgumentException("Unknown URI: " + uri);
