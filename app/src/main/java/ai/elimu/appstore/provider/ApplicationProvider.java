@@ -7,8 +7,9 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
-import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.BuildConfig;
+import ai.elimu.appstore.room.RoomDb;
+import ai.elimu.appstore.room.dao.ApplicationDao;
 import timber.log.Timber;
 
 public class ApplicationProvider extends ContentProvider {
@@ -16,12 +17,12 @@ public class ApplicationProvider extends ContentProvider {
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.application_provider";
 
     private static final String TABLE_APPLICATION = "applications";
-    private static final int CODE_APPLICATION_DIR = 1;
+    private static final int CODE_APPLICATIONS = 1;
 
     private static final UriMatcher MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        MATCHER.addURI(AUTHORITY, TABLE_APPLICATION, CODE_APPLICATION_DIR);
+        MATCHER.addURI(AUTHORITY, TABLE_APPLICATION, CODE_APPLICATIONS);
     }
 
     @Override
@@ -42,15 +43,15 @@ public class ApplicationProvider extends ContentProvider {
         Timber.i("sortOrder: " + sortOrder);
 
         final int code = MATCHER.match(uri);
-        if (code == CODE_APPLICATION_DIR) {
+        if (code == CODE_APPLICATIONS) {
             Context context = getContext();
             if (context == null) {
                 return null;
             }
-            BaseApplication baseApplication = (BaseApplication) context;
-            Cursor cursor = null;
-            // TODO
-//            cursor.setNotificationUri(context.getContentResolver(), uri);
+            RoomDb roomDb = RoomDb.getDatabase(getContext());
+            ApplicationDao applicationDao = roomDb.applicationDao();
+            Cursor cursor = applicationDao.loadAllAsCursor();
+            cursor.setNotificationUri(context.getContentResolver(), uri);
             return cursor;
         } else {
             throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -62,7 +63,7 @@ public class ApplicationProvider extends ContentProvider {
         Timber.i("getType");
 
         switch (MATCHER.match(uri)) {
-            case CODE_APPLICATION_DIR:
+            case CODE_APPLICATIONS:
                 return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_APPLICATION;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
