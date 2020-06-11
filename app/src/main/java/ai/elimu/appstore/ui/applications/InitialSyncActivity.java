@@ -1,8 +1,9 @@
 package ai.elimu.appstore.ui.applications;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 
@@ -18,12 +19,16 @@ import timber.log.Timber;
 
 public class InitialSyncActivity extends AppCompatActivity {
 
+    private TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Timber.i("onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_initial_sync);
+
+        textView = findViewById(R.id.initial_sync_textview);
     }
 
     @Override
@@ -37,6 +42,7 @@ public class InitialSyncActivity extends AppCompatActivity {
         ApplicationsService applicationsService = retrofit.create(ApplicationsService.class);
         Call<List<ApplicationGson>> call = applicationsService.listApplications();
         Timber.i("call.request(): " + call.request());
+        textView.setText("Connecting to " + call.request().url());
         call.enqueue(new Callback<List<ApplicationGson>>() {
             @Override
             public void onResponse(Call<List<ApplicationGson>> call, Response<List<ApplicationGson>> response) {

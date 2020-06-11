@@ -6,22 +6,32 @@
     android:layout_height="match_parent"
     tools:context="ai.elimu.appstore.ui.applications.InitialSyncActivity">
 
-    <ImageView
-        android:id="@+id/initial_sync_logo"
+    <LinearLayout
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="320dp"
-        android:layout_height="280dp"
-        android:src="@drawable/ic_elimu" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-    <ProgressBar
-        app:layout_constraintTop_toBottomOf="@id/initial_sync_logo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:indeterminate="true"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/initial_sync_imageview"
+            android:layout_width="320dp"
+            android:layout_height="280dp"
+            android:src="@drawable/ic_elimu" />
 
+        <TextView
+            android:id="@+id/initial_sync_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connecting..." />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:indeterminate="true"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
