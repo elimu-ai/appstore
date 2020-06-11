@@ -16,13 +16,13 @@ public class ApplicationProvider extends ContentProvider {
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.application_provider";
 
-    private static final String TABLE_APPLICATION = "applications";
+    private static final String TABLE_APPLICATIONS = "applications";
     private static final int CODE_APPLICATIONS = 1;
 
     private static final UriMatcher MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        MATCHER.addURI(AUTHORITY, TABLE_APPLICATION, CODE_APPLICATIONS);
+        MATCHER.addURI(AUTHORITY, TABLE_APPLICATIONS, CODE_APPLICATIONS);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ApplicationProvider extends ContentProvider {
 
         switch (MATCHER.match(uri)) {
             case CODE_APPLICATIONS:
-                return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_APPLICATION;
+                return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_APPLICATIONS;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
