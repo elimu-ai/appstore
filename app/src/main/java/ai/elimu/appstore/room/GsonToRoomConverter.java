@@ -18,6 +18,8 @@ public class GsonToRoomConverter {
             application.setPackageName(applicationGson.getPackageName());
             application.setInfrastructural(applicationGson.isInfrastructural());
             application.setApplicationStatus(applicationGson.getApplicationStatus());
+            application.setLiteracySkills(applicationGson.getLiteracySkills());
+            application.setNumeracySkills(applicationGson.getNumeracySkills());
 
             return application;
         }
