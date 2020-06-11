@@ -1,5 +1,6 @@
 package ai.elimu.appstore.ui.applications;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -59,7 +60,7 @@ public class InitialSyncActivity extends AppCompatActivity {
                 Timber.i("response: " + response);
 
                 // Parse the JSON response
-                Snackbar.make(textView, "Synchronizing database...", Snackbar.LENGTH_LONG).show();
+//                Snackbar.make(textView, "Synchronizing database...", Snackbar.LENGTH_LONG).show();
                 List<ApplicationGson> applicationGsons = response.body();
                 Timber.i("applicationGsons.size(): " + applicationGsons.size());
                 if (applicationGsons.size() > 0) {
@@ -111,7 +112,9 @@ public class InitialSyncActivity extends AppCompatActivity {
                 }
 
                 // Redirect to the list of Applications
-                // TODO
+                Intent intent = new Intent(getApplicationContext(), ApplicationListActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }

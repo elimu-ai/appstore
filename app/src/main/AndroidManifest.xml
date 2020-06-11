@@ -27,6 +27,9 @@
 
         <activity android:name=".ui.applications.InitialSyncActivity" />
 
+        <activity android:name=".ui.applications.ApplicationListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
