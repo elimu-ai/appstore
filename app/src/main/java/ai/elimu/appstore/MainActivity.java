@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ai.elimu.appstore.ui.SelectLanguageActivity;
+import ai.elimu.appstore.ui.applications.InitialSyncActivity;
 import ai.elimu.appstore.util.SharedPreferencesHelper;
 import ai.elimu.model.enums.Language;
 import timber.log.Timber;
@@ -33,8 +34,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
-            // Download list of Applications from REST API
-            // TODO
+            // Redirect to Activity for downloading list of Applications from REST API
+            Intent intent = new Intent(getApplicationContext(), InitialSyncActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 }
