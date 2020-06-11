@@ -12,6 +12,12 @@ android {
         versionName "2.3.0-SNAPSHOT"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "${projectDir}/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -47,6 +53,11 @@ dependencies {
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.7.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.2'
+
+    // Room components
+    implementation "androidx.room:room-runtime:2.2.5"
+    annotationProcessor "androidx.room:room-compiler:2.2.5"
+    androidTestImplementation "androidx.room:room-testing:2.2.5"
 
     testImplementation 'junit:junit:4.12'
 
