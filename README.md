@@ -34,6 +34,9 @@ The first time you launch the Appstore application, it will ask you to select th
 
 For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/master/LOCALIZATION.md.
 
+### Continuous Integration
+Travis CI: [![Build Status](https://travis-ci.com/elimu-ai/appstore.svg?branch=master)](https://travis-ci.com/elimu-ai/appstore)
+
 ---
 
 ## About the elimu.ai Community
