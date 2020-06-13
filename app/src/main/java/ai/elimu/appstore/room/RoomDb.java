@@ -6,14 +6,17 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ai.elimu.appstore.room.dao.ApplicationDao;
 import ai.elimu.appstore.room.entity.Application;
+import timber.log.Timber;
 
-@Database(version = 1, entities = {Application.class})
+@Database(version = 2, entities = {Application.class})
 @TypeConverters({EnumConverter.class})
 public abstract class RoomDb extends RoomDatabase {
 
@@ -33,9 +36,9 @@ public abstract class RoomDb extends RoomDatabase {
                                     RoomDb.class,
                                     "appstore_db"
                             )
-//                            .addMigrations(
-//                                    MIGRATION_1_2
-//                            )
+                            .addMigrations(
+                                    MIGRATION_1_2
+                            )
                             .build();
                 }
             }
@@ -43,13 +46,18 @@ public abstract class RoomDb extends RoomDatabase {
         return INSTANCE;
     }
 
-//    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-//        @Override
-//        public void migrate(SupportSQLiteDatabase database) {
-//            Log.i(getClass().getName(), "migrate (1 --> 2)");
-//            String sql = "...";
-//            Log.i(getClass().getName(), "sql: " + sql);
-//            database.execSQL(sql);
-//        }
-//    };
+    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            Timber.i("migrate (1 --> 2)");
+
+            String sql = "ALTER TABLE Application ADD COLUMN `literacySkills` TEXT";
+            Timber.i("sql: " + sql);
+            database.execSQL(sql);
+
+            sql = "ALTER TABLE Application ADD COLUMN `numeracySkills` TEXT";
+            Timber.i("sql: " + sql);
+            database.execSQL(sql);
+        }
+    };
 }

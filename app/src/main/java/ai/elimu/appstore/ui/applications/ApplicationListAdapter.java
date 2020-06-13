@@ -48,7 +48,11 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
         if (applications != null) {
             Application application = applications.get(position);
             viewHolder.textViewFirstLine.setText(application.getPackageName());
-            viewHolder.textViewSecondLine.setText(application.getApplicationStatus().toString());
+            viewHolder.textViewSecondLine.setText(
+                    application.getApplicationStatus().toString() + ", " +
+                    application.getLiteracySkills() + ", " +
+                    application.getNumeracySkills()
+            );
         }
     }
 

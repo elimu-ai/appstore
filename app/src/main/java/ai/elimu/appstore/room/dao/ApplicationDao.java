@@ -1,5 +1,7 @@
 package ai.elimu.appstore.room.dao;
 
+import android.database.Cursor;
+
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -20,6 +22,9 @@ public interface ApplicationDao {
 
     @Query("SELECT * FROM Application a")
     List<Application> loadAll();
+
+    @Query("SELECT * FROM Application a")
+    Cursor loadAllAsCursor();
 
     @Update
     void update(Application application);
