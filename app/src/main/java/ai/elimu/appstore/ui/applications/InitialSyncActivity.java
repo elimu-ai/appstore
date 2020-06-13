@@ -18,8 +18,12 @@ import ai.elimu.appstore.rest.ApplicationsService;
 import ai.elimu.appstore.room.GsonToRoomConverter;
 import ai.elimu.appstore.room.RoomDb;
 import ai.elimu.appstore.room.dao.ApplicationDao;
+import ai.elimu.appstore.room.dao.ApplicationVersionDao;
 import ai.elimu.appstore.room.entity.Application;
+import ai.elimu.appstore.room.entity.ApplicationVersion;
+import ai.elimu.model.enums.admin.ApplicationStatus;
 import ai.elimu.model.v2.gson.application.ApplicationGson;
+import ai.elimu.model.v2.gson.application.ApplicationVersionGson;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -91,6 +95,7 @@ public class InitialSyncActivity extends AppCompatActivity {
 
                 RoomDb roomDb = RoomDb.getDatabase(getApplicationContext());
                 ApplicationDao applicationDao = roomDb.applicationDao();
+                ApplicationVersionDao applicationVersionDao = roomDb.applicationVersionDao();
 
                 for (ApplicationGson applicationGson : applicationGsons) {
                     Timber.i("applicationGson.getId(): " + applicationGson.getId());
@@ -102,12 +107,37 @@ public class InitialSyncActivity extends AppCompatActivity {
                         // Store the new Application in the database
                         application = GsonToRoomConverter.getApplication(applicationGson);
                         applicationDao.insert(application);
-                        Timber.i("Stored Application in database with ID " + application.getId());
+                        Timber.i("Stored Application \"" + application.getPackageName() + "\" in database with ID " + application.getId());
+
+                        if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                            // Store the Application's ApplicationVersions in the database
+                            List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
+                            Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size());
+                            for (ApplicationVersionGson applicationVersionGson : applicationVersionGsons) {
+                                ApplicationVersion applicationVersion = GsonToRoomConverter.getApplicationVersion(applicationGson, applicationVersionGson);
+                                applicationVersionDao.insert(applicationVersion);
+                                Timber.i("Stored ApplicationVersion " + applicationVersion.getVersionCode() + " in database with ID " + applicationVersion.getId());
+                            }
+                        }
                     } else {
                         // Update the existing Application in the database
                         application = GsonToRoomConverter.getApplication(applicationGson);
                         applicationDao.update(application);
-                        Timber.i("Updated Application in database with ID " + application.getId());
+                        Timber.i("Updated Application \"" + application.getPackageName() + "\" in database with ID " + application.getId());
+
+                        // Delete all the Application's ApplicationVersions (in case deletions have been made on the server-side)
+                        applicationVersionDao.delete(applicationGson.getId());
+
+                        if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
+                            // Store the Application's ApplicationVersions in the database
+                            List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
+                            Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size());
+                            for (ApplicationVersionGson applicationVersionGson : applicationVersionGsons) {
+                                ApplicationVersion applicationVersion = GsonToRoomConverter.getApplicationVersion(applicationGson, applicationVersionGson);
+                                applicationVersionDao.insert(applicationVersion);
+                                Timber.i("Stored ApplicationVersion " + applicationVersion.getVersionCode() + " in database with ID " + applicationVersion.getId());
+                            }
+                        }
                     }
                 }
 
