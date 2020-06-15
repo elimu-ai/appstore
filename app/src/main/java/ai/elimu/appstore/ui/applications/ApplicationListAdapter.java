@@ -12,12 +12,14 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.List;
 
 import ai.elimu.appstore.BaseApplication;
+import ai.elimu.appstore.BuildConfig;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.room.entity.Application;
 import ai.elimu.appstore.room.entity.ApplicationVersion;
@@ -70,65 +72,78 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
             // If the APK has been installed, display the "Launch" button
 //            if (InstallationHelper.isApplicationInstalled(application.getPackageName(), context)) {
 //                viewHolder.launchButton.setVisibility(View.VISIBLE);
-//                viewHolder.launchButton.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        Timber.i("onClick");
+//                viewHolder.launchButton.setOnClickListener((View.OnClickListener) v -> {
+//                    Timber.i("onClick");
 //
-//                        Timber.i("Launching \"" + application.getPackageName() + "\"");
-//                        PackageManager packageManager = context.getPackageManager();
-//                        Intent launchIntent = packageManager.getLaunchIntentForPackage(application.getPackageName());
-//                        Timber.i("launchIntent: " + launchIntent);
-//                        context.startActivity(launchIntent);
-//                    }
+//                    Timber.i("Launching \"" + application.getPackageName() + "\"");
+//                    PackageManager packageManager = context.getPackageManager();
+//                    Intent launchIntent = packageManager.getLaunchIntentForPackage(application.getPackageName());
+//                    Timber.i("launchIntent: " + launchIntent);
+//                    context.startActivity(launchIntent);
 //                });
 //            } else {
-                // If the APK has been downloaded, but not yet installed, display the "Install" button
-                // TODO
+                // Fetch information about the newest APK file
+                ApplicationVersion applicationVersion = getNewestApplicationVersion(application, applicationVersions);
+                if (applicationVersion == null) {
+                    return;
+                }
+                Timber.i("applicationVersion.getVersionCode(): " + applicationVersion.getVersionCode());
+
+                // If the APK has been downloaded (but not yet installed), display the "Install" button
+                File apkFile = FileHelper.getApkFile(application.getPackageName(), applicationVersion.getVersionCode(), context);
+                Timber.i("apkFile: " + apkFile);
+                Timber.i("apkFile.exists(): " + apkFile.exists());
+                if (apkFile.exists()) {
+                    viewHolder.installButton.setVisibility(View.VISIBLE);
+                    viewHolder.installButton.setOnClickListener(v -> {
+                        Timber.i("viewHolder.installButton onClick");
+
+                        // Initiate installation of the APK file
+                        Uri apkUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".apk.provider", apkFile);
+                        Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                        intent.setData(apkUri);
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        context.startActivity(intent);
+                    });
+                }
 
                 // If the APK has not been downloaded, display the "Download" button
-                ApplicationVersion applicationVersion = null;
-                for (ApplicationVersion appVersion : applicationVersions) {
-                    if (appVersion.getApplicationId() == application.getId()) {
-                        applicationVersion = appVersion;
-                        break;
-                    }
-                }
-                Timber.i("applicationVersion: " + applicationVersion);
-                if (applicationVersion != null) {
-                    Timber.i("applicationVersion.getVersionCode(): " + applicationVersion.getVersionCode());
-                    File apkFile = FileHelper.getApkFile(application.getPackageName(), applicationVersion.getVersionCode(), context);
-                    Timber.i("apkFile: " + apkFile);
-                    Timber.i("apkFile.exists(): " + apkFile.exists());
-                    if (!apkFile.exists()) {
-                        viewHolder.downloadButton.setVisibility(View.VISIBLE);
-                        ApplicationVersion finalApplicationVersion = applicationVersion;
-                        viewHolder.downloadButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Timber.i("viewHolder.downloadButton onClick");
+                if (!apkFile.exists()) {
+                    viewHolder.downloadButton.setVisibility(View.VISIBLE);
+                    ApplicationVersion finalApplicationVersion = applicationVersion;
+                    viewHolder.downloadButton.setOnClickListener(v -> {
+                        Timber.i("viewHolder.downloadButton onClick");
 
-                                // Initiate download of the APK file
-                                BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
-                                String fileUrl = baseApplication.getBaseUrl() + finalApplicationVersion.getFileUrl();
-                                Timber.i("fileUrl: " +  fileUrl);
-                                DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl));
-                                String destinationInExternalFilesDir = File.separator + "lang-" + SharedPreferencesHelper.getLanguage(context).getIsoCode() + File.separator + "apks" + File.separator + apkFile.getName();
-                                Timber.i("destinationInExternalFilesDir: " +  destinationInExternalFilesDir);
-                                request.setDestinationInExternalFilesDir(context, null, destinationInExternalFilesDir);
-                                long downloadId = downloadManager.enqueue(request);
-                                Timber.i("downloadId: " +  downloadId);
+                        // Initiate download of the APK file
+                        BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
+                        String fileUrl = baseApplication.getBaseUrl() + finalApplicationVersion.getFileUrl();
+                        Timber.i("fileUrl: " +  fileUrl);
+                        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl));
+                        String destinationInExternalFilesDir = File.separator + "lang-" + SharedPreferencesHelper.getLanguage(context).getIsoCode() + File.separator + "apks" + File.separator + apkFile.getName();
+                        Timber.i("destinationInExternalFilesDir: " +  destinationInExternalFilesDir);
+                        request.setDestinationInExternalFilesDir(context, null, destinationInExternalFilesDir);
+                        long downloadId = downloadManager.enqueue(request);
+                        Timber.i("downloadId: " +  downloadId);
 
-                                // Replace download button with progress bar
-                                viewHolder.downloadButton.setVisibility(View.INVISIBLE);
-                                viewHolder.downloadProgressBar.setVisibility(View.VISIBLE);
-                            }
-                        });
-                    }
+                        // Replace download button with progress bar
+                        viewHolder.downloadButton.setVisibility(View.INVISIBLE);
+                        viewHolder.downloadProgressBar.setVisibility(View.VISIBLE);
+                    });
                 }
 //            }
         }
+    }
+
+    private ApplicationVersion getNewestApplicationVersion(Application application, List<ApplicationVersion> applicationVersions) {
+        ApplicationVersion applicationVersion = null;
+        for (ApplicationVersion appVersion : applicationVersions) {
+            if (appVersion.getApplicationId() == application.getId()) {
+                applicationVersion = appVersion;
+                break;
+            }
+        }
+        return applicationVersion;
     }
 
     @Override
@@ -156,6 +171,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
         private final TextView textViewSecondLine;
 
         private Button launchButton;
+        private Button installButton;
         private Button downloadButton;
         private ProgressBar downloadProgressBar;
 
@@ -167,6 +183,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
             textViewSecondLine = itemView.findViewById(R.id.textViewSecondLine);
 
             launchButton = itemView.findViewById(R.id.list_item_launch_button);
+            installButton = itemView.findViewById(R.id.list_item_install_button);
             downloadButton = itemView.findViewById(R.id.list_item_download_button);
             downloadProgressBar = itemView.findViewById(R.id.list_item_download_progressbar);
         }

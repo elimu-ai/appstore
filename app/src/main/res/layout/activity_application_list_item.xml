@@ -44,6 +44,19 @@
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:text="Launch" />
     <Button
+        android:id="@+id/list_item_install_button"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="?attr/listPreferredItemPaddingStart"
+        android:drawableTop="@drawable/ic_baseline_android_24"
+        android:drawableTint="@color/colorAccent"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:text="Install" />
+    <Button
         android:id="@+id/list_item_download_button"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
