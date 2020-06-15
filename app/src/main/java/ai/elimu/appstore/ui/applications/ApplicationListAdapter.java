@@ -104,16 +104,20 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                 Timber.i("apkFile.exists(): " + apkFile.exists());
                 if (apkFile.exists()) {
                     viewHolder.installButton.setVisibility(View.VISIBLE);
-                    viewHolder.installButton.setOnClickListener(v -> {
+                    View.OnClickListener onClickListener = v -> {
                         Timber.i("viewHolder.installButton onClick");
 
                         // Initiate installation of the APK file
+                        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
+                        intentFilter.addDataScheme("package");
+                        context.registerReceiver(new PackageAddedReceiver(position), intentFilter);
                         Uri apkUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".apk.provider", apkFile);
                         Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                         intent.setData(apkUri);
                         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         context.startActivity(intent);
-                    });
+                    };
+                    viewHolder.installButton.setOnClickListener(onClickListener);
                 }
 
                 // If the APK has not been downloaded, display the "Download" button
@@ -124,6 +128,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                         Timber.i("viewHolder.downloadButton onClick");
 
                         // Initiate download of the APK file
+                        context.registerReceiver(new DownloadCompleteReceiver(position), new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
                         BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
                         String fileUrl = baseApplication.getBaseUrl() + finalApplicationVersion.getFileUrl();
                         Timber.i("fileUrl: " +  fileUrl);
@@ -132,7 +137,6 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                         String destinationInExternalFilesDir = File.separator + "lang-" + SharedPreferencesHelper.getLanguage(context).getIsoCode() + File.separator + "apks" + File.separator + apkFile.getName();
                         Timber.i("destinationInExternalFilesDir: " +  destinationInExternalFilesDir);
                         request.setDestinationInExternalFilesDir(context, null, destinationInExternalFilesDir);
-                        context.registerReceiver(new DownloadCompleteReceiver(position), new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
                         long downloadId = downloadManager.enqueue(request);
                         Timber.i("downloadId: " +  downloadId);
 
@@ -213,6 +217,25 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
             Timber.i("onReceive");
 
             Timber.i("intent: " + intent);
+            notifyItemChanged(itemPosition);
+        }
+    }
+
+
+    private class PackageAddedReceiver extends BroadcastReceiver {
+
+        private int itemPosition;
+
+        public PackageAddedReceiver(int itemPosition) {
+            this.itemPosition = itemPosition;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Timber.i("onReceive");
+
+            Timber.i("intent: " + intent);
+            Timber.i("intent.getData(): " + intent.getData());
             notifyItemChanged(itemPosition);
         }
     }
