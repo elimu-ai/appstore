@@ -20,8 +20,11 @@ public interface ApplicationVersionDao {
     @Query("SELECT * FROM ApplicationVersion av WHERE av.id = :id")
     ApplicationVersion load(Long id);
 
-    @Query("SELECT * FROM ApplicationVersion av")
+    @Query("SELECT * FROM ApplicationVersion av ORDER BY av.applicationId ASC, av.versionCode DESC")
     List<ApplicationVersion> loadAll();
+
+    @Query("SELECT * FROM ApplicationVersion av WHERE av.applicationId = :applicationId ORDER BY versionCode DESC")
+    List<ApplicationVersion> loadAll(Long applicationId);
 
     @Update
     void update(ApplicationVersion applicationVersion);

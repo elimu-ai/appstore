@@ -11,37 +11,28 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.List;
 
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.room.entity.Application;
+import ai.elimu.appstore.room.entity.ApplicationVersion;
+import ai.elimu.appstore.util.FileHelper;
 import ai.elimu.appstore.util.InstallationHelper;
+import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
 public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationListAdapter.ApplicationViewHolder> {
 
-    class ApplicationViewHolder extends RecyclerView.ViewHolder {
-
-        private final TextView textViewFirstLine;
-        private final TextView textViewSecondLine;
-
-        private Button launchButton;
-
-        private ApplicationViewHolder(View itemView) {
-            super(itemView);
-            Timber.i("ApplicationViewHolder");
-            textViewFirstLine = itemView.findViewById(R.id.textViewFirstLine);
-            textViewSecondLine = itemView.findViewById(R.id.textViewSecondLine);
-            launchButton = itemView.findViewById(R.id.list_item_launch_button);
-        }
-    }
-
     private final LayoutInflater layoutInflater;
+
     private final Context context;
 
     private List<Application> applications;
 
-    ApplicationListAdapter(Context context) {
+    private List<ApplicationVersion> applicationVersions;
+
+    public ApplicationListAdapter(Context context) {
         layoutInflater = LayoutInflater.from(context);
         this.context = context;
     }
@@ -60,31 +51,56 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
             Application application = applications.get(position);
             viewHolder.textViewFirstLine.setText(application.getPackageName());
             viewHolder.textViewSecondLine.setText(
-                    application.getApplicationStatus().toString() + ", " +
-                    application.getLiteracySkills() + ", " +
-                    application.getNumeracySkills()
+//                    application.getApplicationStatus().toString() + ", " +
+//                    application.getLiteracySkills() + ", " +
+//                    application.getNumeracySkills()
+                    application.getApplicationStatus().toString()
             );
 
-            // If the APK has been installed, display the launch button. If not, hide it.
-            if (InstallationHelper.isApplicationInstalled(application.getPackageName(), context)) {
-                viewHolder.launchButton.setVisibility(View.VISIBLE);
-                viewHolder.launchButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Timber.i("onClick");
-
-                        Timber.i("Launching \"" + application.getPackageName() + "\"");
-                        PackageManager packageManager = context.getPackageManager();
-                        Intent launchIntent = packageManager.getLaunchIntentForPackage(application.getPackageName());
-                        Timber.i("launchIntent: " + launchIntent);
-                        context.startActivity(launchIntent);
-                    }
-                });
-            } else {
-                viewHolder.launchButton.setVisibility(View.INVISIBLE);
+            if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
+                viewHolder.textViewFirstLine.setAlpha(0.5f);
+                viewHolder.textViewSecondLine.setAlpha(0.5f);
             }
 
+            // If the APK has been installed, display the "Launch" button
+//            if (InstallationHelper.isApplicationInstalled(application.getPackageName(), context)) {
+//                viewHolder.launchButton.setVisibility(View.VISIBLE);
+//                viewHolder.launchButton.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Timber.i("onClick");
+//
+//                        Timber.i("Launching \"" + application.getPackageName() + "\"");
+//                        PackageManager packageManager = context.getPackageManager();
+//                        Intent launchIntent = packageManager.getLaunchIntentForPackage(application.getPackageName());
+//                        Timber.i("launchIntent: " + launchIntent);
+//                        context.startActivity(launchIntent);
+//                    }
+//                });
+//            } else {
+                // If the APK has been downloaded, but not yet installed, display the "Install" button
+                // TODO
 
+                // If the APK has not been downloaded, display the "Download" button
+                ApplicationVersion applicationVersion = null;
+                for (ApplicationVersion appVersion : applicationVersions) {
+                    if (appVersion.getApplicationId() == application.getId()) {
+                        applicationVersion = appVersion;
+                        break;
+                    }
+                }
+                Timber.i("applicationVersion: " + applicationVersion);
+                if (applicationVersion != null) {
+                    Timber.i("applicationVersion.getVersionCode(): " + applicationVersion.getVersionCode());
+                    File apkFile = FileHelper.getApkFile(application.getPackageName(), applicationVersion.getVersionCode(), context);
+                    Timber.i("apkFile: " + apkFile);
+                    Timber.i("apkFile.exists(): " + apkFile.exists());
+                    if (!apkFile.exists()) {
+                        viewHolder.downloadButton.setVisibility(View.VISIBLE);
+                        // TODO: set on click listener
+                    }
+                }
+//            }
         }
     }
 
@@ -99,8 +115,31 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
     }
 
     public void setApplications(List<Application> applications) {
-        Timber.i("setApplications");
         this.applications = applications;
-        notifyDataSetChanged();
+    }
+
+    public void setApplicationVersions(List<ApplicationVersion> applicationVersions) {
+        this.applicationVersions = applicationVersions;
+    }
+
+
+    class ApplicationViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView textViewFirstLine;
+        private final TextView textViewSecondLine;
+
+        private Button launchButton;
+        private Button downloadButton;
+
+        private ApplicationViewHolder(View itemView) {
+            super(itemView);
+            Timber.i("ApplicationViewHolder");
+
+            textViewFirstLine = itemView.findViewById(R.id.textViewFirstLine);
+            textViewSecondLine = itemView.findViewById(R.id.textViewSecondLine);
+
+            launchButton = itemView.findViewById(R.id.list_item_launch_button);
+            downloadButton = itemView.findViewById(R.id.list_item_download_button);
+        }
     }
 }
