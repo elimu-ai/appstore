@@ -2,9 +2,17 @@
 
 Android application which downloads and installs educational apps stored on the [elimu.ai](http://elimu.ai) platform.
 
+<img width="320" alt="device-2020-06-15-155802" src="https://user-images.githubusercontent.com/15718174/84632262-39fec180-af21-11ea-8a8a-215120744f05.png">
+
 ## Download Application ⬇️
 
-Download APK at https://github.com/elimu-ai/appstore/releases
+Download APK (`ai.elimu.appstore-<versionCode>.apk`) at https://github.com/elimu-ai/appstore/releases
+
+### Install the APK
+
+When opening the APK, you might see a prompt saying "Install unknown apps". If so, select "Allow from this source", and return to the installation.
+
+<img width="320" alt="install-unknown-apps" src="https://user-images.githubusercontent.com/15718174/84587915-c93ea300-ae55-11ea-9116-448fc76ebede.png">
 
 ## What Devices are Being Used?
 
