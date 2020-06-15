@@ -16,7 +16,9 @@ import java.util.List;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.room.RoomDb;
 import ai.elimu.appstore.room.dao.ApplicationDao;
+import ai.elimu.appstore.room.dao.ApplicationVersionDao;
 import ai.elimu.appstore.room.entity.Application;
+import ai.elimu.appstore.room.entity.ApplicationVersion;
 import timber.log.Timber;
 
 public class ApplicationListActivity extends AppCompatActivity {
@@ -59,10 +61,17 @@ public class ApplicationListActivity extends AppCompatActivity {
         // Fetch all Applications from database, and update the list adapter
         RoomDb roomDb = RoomDb.getDatabase(getApplicationContext());
         ApplicationDao applicationDao = roomDb.applicationDao();
+        ApplicationVersionDao applicationVersionDao = roomDb.applicationVersionDao();
         RoomDb.databaseWriteExecutor.execute(() -> {
             List<Application> applications = applicationDao.loadAll();
             Log.d(getClass().getName(), "applications.size(): " + applications.size());
             applicationListAdapter.setApplications(applications);
+
+            List<ApplicationVersion> applicationVersions = applicationVersionDao.loadAll();
+            Log.d(getClass().getName(), "applicationVersions.size(): " + applicationVersions.size());
+            applicationListAdapter.setApplicationVersions(applicationVersions);
+
+            applicationListAdapter.notifyDataSetChanged();
         });
     }
 }
