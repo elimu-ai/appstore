@@ -37,6 +37,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="?attr/listPreferredItemPaddingStart"
         android:drawableTop="@drawable/ic_baseline_launch_24"
         android:drawableTint="@color/colorAccent"
@@ -49,9 +50,20 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="?attr/listPreferredItemPaddingStart"
         android:drawableTop="@drawable/ic_baseline_save_alt_24"
         android:drawableTint="@color/colorAccent"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:text="Download" />
+    <ProgressBar
+        android:id="@+id/list_item_download_progressbar"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="?attr/listPreferredItemPaddingStart"
+        android:layout_marginEnd="?attr/listPreferredItemPaddingStart" />
 </androidx.constraintlayout.widget.ConstraintLayout>

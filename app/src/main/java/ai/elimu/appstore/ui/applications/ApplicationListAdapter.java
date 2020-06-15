@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,7 @@ import ai.elimu.appstore.room.entity.Application;
 import ai.elimu.appstore.room.entity.ApplicationVersion;
 import ai.elimu.appstore.util.FileHelper;
 import ai.elimu.appstore.util.InstallationHelper;
+import ai.elimu.appstore.util.SharedPreferencesHelper;
 import ai.elimu.model.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
@@ -112,11 +114,15 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                                 Timber.i("fileUrl: " +  fileUrl);
                                 DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
                                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl));
+                                String destinationInExternalFilesDir = File.separator + "lang-" + SharedPreferencesHelper.getLanguage(context).getIsoCode() + File.separator + "apks" + File.separator + apkFile.getName();
+                                Timber.i("destinationInExternalFilesDir: " +  destinationInExternalFilesDir);
+                                request.setDestinationInExternalFilesDir(context, null, destinationInExternalFilesDir);
                                 long downloadId = downloadManager.enqueue(request);
                                 Timber.i("downloadId: " +  downloadId);
 
                                 // Replace download button with progress bar
-                                // TODO
+                                viewHolder.downloadButton.setVisibility(View.INVISIBLE);
+                                viewHolder.downloadProgressBar.setVisibility(View.VISIBLE);
                             }
                         });
                     }
@@ -151,6 +157,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
 
         private Button launchButton;
         private Button downloadButton;
+        private ProgressBar downloadProgressBar;
 
         private ApplicationViewHolder(View itemView) {
             super(itemView);
@@ -161,6 +168,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
 
             launchButton = itemView.findViewById(R.id.list_item_launch_button);
             downloadButton = itemView.findViewById(R.id.list_item_download_button);
+            downloadProgressBar = itemView.findViewById(R.id.list_item_download_progressbar);
         }
     }
 }
