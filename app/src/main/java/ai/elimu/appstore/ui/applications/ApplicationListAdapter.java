@@ -1,8 +1,10 @@
 package ai.elimu.appstore.ui.applications;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
 import java.util.List;
 
+import ai.elimu.appstore.BaseApplication;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.room.entity.Application;
 import ai.elimu.appstore.room.entity.ApplicationVersion;
@@ -97,7 +100,25 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                     Timber.i("apkFile.exists(): " + apkFile.exists());
                     if (!apkFile.exists()) {
                         viewHolder.downloadButton.setVisibility(View.VISIBLE);
-                        // TODO: set on click listener
+                        ApplicationVersion finalApplicationVersion = applicationVersion;
+                        viewHolder.downloadButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Timber.i("viewHolder.downloadButton onClick");
+
+                                // Initiate download of the APK file
+                                BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
+                                String fileUrl = baseApplication.getBaseUrl() + finalApplicationVersion.getFileUrl();
+                                Timber.i("fileUrl: " +  fileUrl);
+                                DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl));
+                                long downloadId = downloadManager.enqueue(request);
+                                Timber.i("downloadId: " +  downloadId);
+
+                                // Replace download button with progress bar
+                                // TODO
+                            }
+                        });
                     }
                 }
 //            }
