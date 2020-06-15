@@ -1,8 +1,10 @@
 package ai.elimu.appstore.ui.applications;
 
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -55,6 +57,12 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
     public void onBindViewHolder(ApplicationViewHolder viewHolder, int position) {
         Timber.i("onBindViewHolder");
         if (applications != null) {
+            // Reset button state
+            viewHolder.launchButton.setVisibility(View.INVISIBLE);
+            viewHolder.installButton.setVisibility(View.INVISIBLE);
+            viewHolder.downloadButton.setVisibility(View.INVISIBLE);
+
+            // Populate TextViews with Application details
             Application application = applications.get(position);
             viewHolder.textViewFirstLine.setText(application.getPackageName());
             viewHolder.textViewSecondLine.setText(
@@ -64,24 +72,25 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                     application.getApplicationStatus().toString()
             );
 
+            // Use 50% transparency if an Application has no corresponding APK files
             if (application.getApplicationStatus() != ApplicationStatus.ACTIVE) {
                 viewHolder.textViewFirstLine.setAlpha(0.5f);
                 viewHolder.textViewSecondLine.setAlpha(0.5f);
             }
 
             // If the APK has been installed, display the "Launch" button
-//            if (InstallationHelper.isApplicationInstalled(application.getPackageName(), context)) {
-//                viewHolder.launchButton.setVisibility(View.VISIBLE);
-//                viewHolder.launchButton.setOnClickListener((View.OnClickListener) v -> {
-//                    Timber.i("onClick");
-//
-//                    Timber.i("Launching \"" + application.getPackageName() + "\"");
-//                    PackageManager packageManager = context.getPackageManager();
-//                    Intent launchIntent = packageManager.getLaunchIntentForPackage(application.getPackageName());
-//                    Timber.i("launchIntent: " + launchIntent);
-//                    context.startActivity(launchIntent);
-//                });
-//            } else {
+            if (InstallationHelper.isApplicationInstalled(application.getPackageName(), context)) {
+                viewHolder.launchButton.setVisibility(View.VISIBLE);
+                viewHolder.launchButton.setOnClickListener((View.OnClickListener) v -> {
+                    Timber.i("onClick");
+
+                    Timber.i("Launching \"" + application.getPackageName() + "\"");
+                    PackageManager packageManager = context.getPackageManager();
+                    Intent launchIntent = packageManager.getLaunchIntentForPackage(application.getPackageName());
+                    Timber.i("launchIntent: " + launchIntent);
+                    context.startActivity(launchIntent);
+                });
+            } else {
                 // Fetch information about the newest APK file
                 ApplicationVersion applicationVersion = getNewestApplicationVersion(application, applicationVersions);
                 if (applicationVersion == null) {
@@ -123,6 +132,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                         String destinationInExternalFilesDir = File.separator + "lang-" + SharedPreferencesHelper.getLanguage(context).getIsoCode() + File.separator + "apks" + File.separator + apkFile.getName();
                         Timber.i("destinationInExternalFilesDir: " +  destinationInExternalFilesDir);
                         request.setDestinationInExternalFilesDir(context, null, destinationInExternalFilesDir);
+                        context.registerReceiver(new DownloadCompleteReceiver(position), new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
                         long downloadId = downloadManager.enqueue(request);
                         Timber.i("downloadId: " +  downloadId);
 
@@ -131,7 +141,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                         viewHolder.downloadProgressBar.setVisibility(View.VISIBLE);
                     });
                 }
-//            }
+            }
         }
     }
 
@@ -186,6 +196,24 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
             installButton = itemView.findViewById(R.id.list_item_install_button);
             downloadButton = itemView.findViewById(R.id.list_item_download_button);
             downloadProgressBar = itemView.findViewById(R.id.list_item_download_progressbar);
+        }
+    }
+
+
+    private class DownloadCompleteReceiver extends BroadcastReceiver {
+
+        private int itemPosition;
+
+        public DownloadCompleteReceiver(int itemPosition) {
+            this.itemPosition = itemPosition;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Timber.i("onReceive");
+
+            Timber.i("intent: " + intent);
+            notifyItemChanged(itemPosition);
         }
     }
 }
