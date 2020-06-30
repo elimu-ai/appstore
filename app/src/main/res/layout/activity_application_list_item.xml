@@ -69,6 +69,32 @@
         android:drawableTint="@color/colorAccent"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:text="Download" />
+    <Button
+        android:id="@+id/list_item_install_update_button"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="?attr/listPreferredItemPaddingStart"
+        android:drawableTop="@drawable/ic_baseline_android_24"
+        android:drawableTint="@color/colorAccent"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:text="Install\nupdate" />
+    <Button
+        android:id="@+id/list_item_download_update_button"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="?attr/listPreferredItemPaddingStart"
+        android:drawableTop="@drawable/ic_baseline_save_alt_24"
+        android:drawableTint="@color/colorAccent"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:text="Download\nupdate" />
     <ProgressBar
         android:id="@+id/list_item_download_progressbar"
         android:visibility="invisible"
