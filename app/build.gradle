@@ -27,6 +27,10 @@ android {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
         }
+        qa_test {
+            applicationIdSuffix ".test"
+            versionNameSuffix "-test"
+        }
         release {
             minifyEnabled false
         }
