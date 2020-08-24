@@ -9,7 +9,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 2003004
-        versionName "2.3.4-SNAPSHOT"
+        versionName "2.3.4"
 
         setProperty("archivesBaseName", "${applicationId}-${versionCode}")
 
