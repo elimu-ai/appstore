@@ -28,6 +28,7 @@ android {
             versionNameSuffix "-debug"
         }
         qa_test {
+            initWith debug
             applicationIdSuffix ".test"
             versionNameSuffix "-test"
         }
