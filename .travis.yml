@@ -6,7 +6,7 @@ script:
 language: android
 
 jdk:
-  - oraclejdk8
+  - openjdk11
 
 #env:
 # - EMULATOR_API=24
