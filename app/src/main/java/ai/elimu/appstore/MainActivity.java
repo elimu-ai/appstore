@@ -38,8 +38,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), InitialSyncActivity.class);
             startActivity(intent);
             finish();
-
-
         }
     }
 }
