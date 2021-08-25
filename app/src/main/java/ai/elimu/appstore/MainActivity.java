@@ -35,16 +35,9 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else {
             // Redirect to Activity for downloading list of Applications from REST API
-
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(getApplicationContext(), InitialSyncActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            });
+            Intent intent = new Intent(getApplicationContext(), InitialSyncActivity.class);
+            startActivity(intent);
+            finish();
 
 
         }

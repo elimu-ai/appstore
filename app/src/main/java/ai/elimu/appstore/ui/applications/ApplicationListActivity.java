@@ -65,7 +65,7 @@ public class ApplicationListActivity extends AppCompatActivity {
         RoomDb.databaseWriteExecutor.execute(() -> {
             List<Application> applications = applicationDao.loadAll();
             Log.d(getClass().getName(), "applications.size(): " + applications.size());
-            if(null!=applications) {
+            if(applications != null) {
                 applicationListAdapter.setApplications(applications);
             }
             List<ApplicationVersion> applicationVersions = applicationVersionDao.loadAll();
