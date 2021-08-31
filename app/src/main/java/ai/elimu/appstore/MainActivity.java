@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import ai.elimu.appstore.ui.SelectLanguageActivity;
 import ai.elimu.appstore.ui.applications.InitialSyncActivity;
 import ai.elimu.appstore.util.SharedPreferencesHelper;
-import ai.elimu.model.enums.Language;
+import ai.elimu.model.v2.enums.Language;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {

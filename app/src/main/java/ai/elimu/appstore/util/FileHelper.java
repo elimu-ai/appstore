@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.io.File;
 
-import ai.elimu.model.enums.Language;
+import ai.elimu.model.v2.enums.Language;
 
 /**
  * Helper class for determining folder paths of APK files.

@@ -28,7 +28,7 @@ import ai.elimu.appstore.room.entity.ApplicationVersion;
 import ai.elimu.appstore.util.FileHelper;
 import ai.elimu.appstore.util.InstallationHelper;
 import ai.elimu.appstore.util.SharedPreferencesHelper;
-import ai.elimu.model.enums.admin.ApplicationStatus;
+import ai.elimu.model.v2.enums.admin.ApplicationStatus;
 import timber.log.Timber;
 
 public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationListAdapter.ApplicationViewHolder> {
