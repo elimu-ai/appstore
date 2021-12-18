@@ -17,7 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import ai.elimu.appstore.MainActivity;
 import ai.elimu.appstore.R;
 import ai.elimu.appstore.util.SharedPreferencesHelper;
-import ai.elimu.model.enums.Language;
+import ai.elimu.model.v2.enums.Language;
 
 /**
  * <p>A fragment that shows a list of items as a modal bottom sheet.</p>

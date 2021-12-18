@@ -5,7 +5,7 @@ import android.util.Log;
 
 import ai.elimu.appstore.util.SharedPreferencesHelper;
 import ai.elimu.appstore.util.VersionHelper;
-import ai.elimu.model.enums.Language;
+import ai.elimu.model.v2.enums.Language;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;

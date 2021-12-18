@@ -21,7 +21,7 @@ import ai.elimu.appstore.room.dao.ApplicationDao;
 import ai.elimu.appstore.room.dao.ApplicationVersionDao;
 import ai.elimu.appstore.room.entity.Application;
 import ai.elimu.appstore.room.entity.ApplicationVersion;
-import ai.elimu.model.enums.admin.ApplicationStatus;
+import ai.elimu.model.v2.enums.admin.ApplicationStatus;
 import ai.elimu.model.v2.gson.application.ApplicationGson;
 import ai.elimu.model.v2.gson.application.ApplicationVersionGson;
 import retrofit2.Call;
