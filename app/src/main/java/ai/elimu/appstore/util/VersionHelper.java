@@ -26,7 +26,7 @@ public class VersionHelper {
     }
 
     /**
-     * Stores the versionCode of the application currently installed. And detects upgrades from previously installed
+     * Stores the version code of the application currently installed. And detects upgrades from previously installed
      * versions.
      */
     public static void updateAppVersion(Context context) {
