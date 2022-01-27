@@ -6,6 +6,9 @@ import android.content.pm.PackageManager;
 
 import timber.log.Timber;
 
+/**
+ * Helps detect upgrades from previously installed versions of the app.
+ */
 public class VersionHelper {
 
     /**
