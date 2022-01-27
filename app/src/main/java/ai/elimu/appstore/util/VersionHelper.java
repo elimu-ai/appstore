@@ -46,11 +46,6 @@ public class VersionHelper {
         if (oldVersionCode < newVersionCode) {
             Timber.i("Upgrading application from version " + oldVersionCode + " to " + newVersionCode + "...");
 
-            if (oldVersionCode < 2003000) {
-                // Clear all stored preferences
-                SharedPreferencesHelper.clearAllPreferences(context);
-            }
-
 //            if (oldVersionCode < ???) {
 //                ...
 //            }
