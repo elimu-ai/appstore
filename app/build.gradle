@@ -46,7 +46,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.github.elimu-ai:model:model-2.0.52' // See https://jitpack.io/#elimu-ai/model
+    implementation 'com.github.elimu-ai:model:model-2.0.53' // See https://jitpack.io/#elimu-ai/model
 
     implementation 'com.jakewharton.timber:timber:5.0.1'
     implementation 'com.google.android.material:material:1.5.0'
@@ -61,9 +61,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     // Room components
-    implementation "androidx.room:room-runtime:2.4.1"
-    annotationProcessor "androidx.room:room-compiler:2.4.1"
-    androidTestImplementation "androidx.room:room-testing:2.4.1"
+    implementation "androidx.room:room-runtime:2.4.2"
+    annotationProcessor "androidx.room:room-compiler:2.4.2"
+    androidTestImplementation "androidx.room:room-testing:2.4.2"
 
     testImplementation 'junit:junit:4.13.2'
 
