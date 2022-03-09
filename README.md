@@ -1,4 +1,4 @@
-# elimu.ai Appstore
+# elimu.ai Appstore 📲
 
 Android application which downloads and installs educational apps stored on the [elimu.ai](http://elimu.ai) platform.
 
