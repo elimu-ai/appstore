@@ -1,8 +1,11 @@
-name: CI on main
+name: Gradle CI
+
 on:
   push:
-    branches:
-      - "main"
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 jobs:
   build:
     strategy:
@@ -15,7 +18,5 @@ jobs:
       with:
         distribution: temurin
         java-version: 11
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-    - name: Execute Gradle build
-      run: ./gradlew clean build
+    - uses: gradle/gradle-build-action@v2
+    - run: ./gradlew clean build
