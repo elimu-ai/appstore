@@ -14,7 +14,8 @@ When opening the APK, you might see a prompt saying "Install unknown apps". If s
 
 <img width="320" alt="install-unknown-apps" src="https://user-images.githubusercontent.com/15718174/84587915-c93ea300-ae55-11ea-9116-448fc76ebede.png">
 
-For step-by-step instructions on how to download and install the software, see [Wiki: elimu.ai Software Installation](https://github.com/elimu-ai/wiki/blob/main/SOFTWARE_INSTALLATION.md).
+> [!NOTE]
+> For step-by-step instructions on how to download and install the software, see [Wiki: elimu.ai Software Installation](https://github.com/elimu-ai/wiki/blob/main/SOFTWARE_INSTALLATION.md).
 
 ## What Devices are Being Used?
 
@@ -30,7 +31,8 @@ We are building our software for Android devices with **6"-10" displays** instal
 
 ### REST API
 
-Note that the `REST_URL` depends on the build type you choose when installing the app:
+> [!NOTE]
+> Note that [`getRestUrl()`](https://github.com/elimu-ai/appstore/blob/main/app/src/main/java/ai/elimu/appstore/BaseApplication.java#L48) depends on the build type you choose when installing the app:
   * `debug`: http://`<language>`.**test**.elimu.ai/rest/
   * `qa_test`: http://`<language>`.**test**.elimu.ai/rest/
   * `release`: http://`<language>`.elimu.ai/rest/
