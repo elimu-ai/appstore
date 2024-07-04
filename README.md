@@ -39,7 +39,7 @@ We are building our software for Android devices with **6"-10" displays** instal
 
 ### Supported Languages
 
-A list of the currently supported languages is available at https://github.com/elimu-ai/model/blob/main/src/main/java/ai/elimu/model/enums/Language.java
+A list of the currently supported languages is available at https://github.com/elimu-ai/model/blob/main/src/main/java/ai/elimu/model/v2/enums/Language.java
 
 The first time you launch the Appstore application, it will ask you to select the language that you want to use:
 
