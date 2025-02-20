@@ -130,7 +130,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                                 Timber.i("viewHolder.downloadUpdateButton onClick");
 
                                 // Initiate download of the APK file
-                                context.registerReceiver(new DownloadCompleteReceiver(position), new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                                context.registerReceiver(new DownloadCompleteReceiver(position), new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED);
                                 BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
                                 String fileUrl = baseApplication.getBaseUrl() + finalApplicationVersion.getFileUrl();
                                 Timber.i("fileUrl: " +  fileUrl);
@@ -202,7 +202,7 @@ public class ApplicationListAdapter extends RecyclerView.Adapter<ApplicationList
                             Timber.i("viewHolder.downloadButton onClick");
 
                             // Initiate download of the APK file
-                            context.registerReceiver(new DownloadCompleteReceiver(position), new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                            context.registerReceiver(new DownloadCompleteReceiver(position), new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED);
                             BaseApplication baseApplication = (BaseApplication) context.getApplicationContext();
                             String fileUrl = baseApplication.getBaseUrl() + finalApplicationVersion.getFileUrl();
                             Timber.i("fileUrl: " +  fileUrl);
