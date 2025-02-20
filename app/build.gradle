@@ -6,8 +6,8 @@ android {
     defaultConfig {
         applicationId "ai.elimu.appstore"
         minSdkVersion 26
-        compileSdk 34
-        targetSdkVersion 34
+        compileSdk 35
+        targetSdkVersion 35
         versionCode 2003009
         versionName "2.3.9-SNAPSHOT"
 
