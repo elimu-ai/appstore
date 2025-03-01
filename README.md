@@ -47,6 +47,12 @@ The first time you launch the Appstore application, it will ask you to select th
 
 For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/main/LOCALIZATION.md.
 
+### Gradle Upgrade
+
+```
+./gradlew wrapper --gradle-version x.x.x
+```
+
 ---
 
 <p align="center">
