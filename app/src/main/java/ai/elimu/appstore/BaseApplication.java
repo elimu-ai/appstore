@@ -37,7 +37,7 @@ public class BaseApplication extends Application {
      */
     public String getBaseUrl() {
         Language language = SharedPreferencesHelper.getLanguage(getApplicationContext());
-        String url = "https://" + language.getIsoCode() + ".elimu.ai";
+        String url = "http://" + language.getIsoCode() + ".elimu.ai";
         return url;
     }
 
