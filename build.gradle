@@ -27,3 +27,16 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+tasks.register("exportDependencies", Exec) {
+    group = "build"
+    description = "Exports dependencies to deps.txt"
+
+    commandLine "sh", "-c", "./gradlew app:dependencies > ./gradle/deps.txt"
+}
+
+subprojects {
+    tasks.matching { it.name == "build" }.configureEach {
+        dependsOn rootProject.tasks.named("exportDependencies")
+    }
+}
