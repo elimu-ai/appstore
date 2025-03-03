@@ -9,6 +9,7 @@
     <permission android:name="${applicationId}.provider.READ" />
 
     <application
+        android:networkSecurityConfig="@xml/network_security_config"
         android:name=".BaseApplication"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
