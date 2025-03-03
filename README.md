@@ -32,9 +32,8 @@ We are building our software for Android devices with **6"-10" displays** instal
 ### REST API
 
 > [!NOTE]
-> Note that [`BaseApplication#getRestUrl()`](https://github.com/elimu-ai/appstore/blob/main/app/src/main/java/ai/elimu/appstore/BaseApplication.java#L48) depends on the build type you choose when installing the app:
-  * `debug`: http://`<language>`.**test**.elimu.ai/rest/
-  * `qa_test`: http://`<language>`.**test**.elimu.ai/rest/
+> Note that [`BaseApplication#getRestUrl()`](https://github.com/elimu-ai/appstore/blob/main/app/src/main/java/ai/elimu/appstore/BaseApplication.java#L48) depends on the content language you choose when first launching the app:
+  * `debug`: http://`<language>`.elimu.ai/rest/
   * `release`: http://`<language>`.elimu.ai/rest/
 
 ### Supported Languages
