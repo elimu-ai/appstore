@@ -19,7 +19,7 @@ When opening the APK, you might see a prompt saying "Install unknown apps". If s
 
 ## What Devices are Being Used?
 
-We are building our software for Android devices with **6"-10" displays** installed with Android **version (8.0)** (API 26) or higher.
+We are building our software for Android devices with **6"-10" displays** installed with Android **version 8.0** (API 26) or higher.
 
 ## Development 👩🏽‍💻
 
