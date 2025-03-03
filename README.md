@@ -19,7 +19,7 @@ When opening the APK, you might see a prompt saying "Install unknown apps". If s
 
 ## What Devices are Being Used?
 
-We are building our software for Android devices with **6"-10" displays** installed with Android API **version 24 (7.0)** or higher.
+We are building our software for Android devices with **6"-10" displays** installed with Android **version (8.0)** (API 26) or higher.
 
 ## Development 👩🏽‍💻
 
@@ -46,6 +46,12 @@ The first time you launch the Appstore application, it will ask you to select th
 <img width="320" alt="device-2020-06-10-152910" src="https://user-images.githubusercontent.com/15718174/84239611-58367d00-ab2f-11ea-9fb0-f119de951cef.png">
 
 For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/main/LOCALIZATION.md.
+
+### Gradle Upgrade
+
+```
+./gradlew wrapper --gradle-version x.x.x
+```
 
 ---
 
