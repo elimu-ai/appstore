@@ -17,6 +17,14 @@ When opening the APK, you might see a prompt saying "Install unknown apps". If s
 > [!NOTE]
 > For step-by-step instructions on how to download and install the software, see [Wiki: elimu.ai Software Installation](https://github.com/elimu-ai/wiki/blob/main/SOFTWARE_INSTALLATION.md).
 
+### Choose Content Language
+
+The first time you launch the Appstore application, it will ask you to select the language that you want to use:
+
+<img width="320" alt="device-2020-06-10-152910" src="https://user-images.githubusercontent.com/15718174/84239611-58367d00-ab2f-11ea-9fb0-f119de951cef.png">
+
+For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/main/LOCALIZATION.md.
+
 ## What Devices are Being Used?
 
 We are building our software for Android devices with **6"-10" displays** installed with Android **version 8.0** (API 26) or higher.
@@ -32,20 +40,11 @@ We are building our software for Android devices with **6"-10" displays** instal
 ### REST API
 
 > [!NOTE]
-> Note that [`BaseApplication#getRestUrl()`](https://github.com/elimu-ai/appstore/blob/main/app/src/main/java/ai/elimu/appstore/BaseApplication.java#L48) depends on the build type you choose when installing the app:
-  * `debug`: http://`<language>`.**test**.elimu.ai/rest/
-  * `qa_test`: http://`<language>`.**test**.elimu.ai/rest/
+> Note that [`BaseApplication#getRestUrl()`](https://github.com/elimu-ai/appstore/blob/main/app/src/main/java/ai/elimu/appstore/BaseApplication.java#L48) depends on the content language you choose when first launching the app:
+  * `debug`: http://`<language>`.elimu.ai/rest/
   * `release`: http://`<language>`.elimu.ai/rest/
 
-### Supported Languages
-
 A list of the currently supported languages is available at https://github.com/elimu-ai/model/blob/main/src/main/java/ai/elimu/model/v2/enums/Language.java
-
-The first time you launch the Appstore application, it will ask you to select the language that you want to use:
-
-<img width="320" alt="device-2020-06-10-152910" src="https://user-images.githubusercontent.com/15718174/84239611-58367d00-ab2f-11ea-9fb0-f119de951cef.png">
-
-For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/main/LOCALIZATION.md.
 
 ### Gradle Upgrade
 
