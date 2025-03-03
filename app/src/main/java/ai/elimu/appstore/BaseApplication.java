@@ -33,15 +33,11 @@ public class BaseApplication extends Application {
     }
 
     /**
-     * E.g. "https://hin.test.elimu.ai" or "https://hin.elimu.ai"
+     * E.g. "https://eng.elimu.ai" or "https://hin.elimu.ai"
      */
     public String getBaseUrl() {
         Language language = SharedPreferencesHelper.getLanguage(getApplicationContext());
-        String url = "https://" + language.getIsoCode();
-        if (!"release".equals(BuildConfig.BUILD_TYPE)) {
-            url += ".test";
-        }
-        url += ".elimu.ai";
+        String url = "http://" + language.getIsoCode() + ".elimu.ai";
         return url;
     }
 
