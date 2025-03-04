@@ -1,3 +1,6 @@
+plugins {
+    alias(libs.plugins.kotlin.android)
+}
 apply plugin: 'com.android.application'
 
 android {
@@ -36,6 +39,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 }
 
 dependencies {
@@ -57,6 +63,7 @@ dependencies {
 
     // Room components
     implementation libs.androidx.room.runtime
+    implementation libs.androidx.core.ktx
     annotationProcessor libs.androidx.room.compiler
     androidTestImplementation libs.androidx.room.testing
 
