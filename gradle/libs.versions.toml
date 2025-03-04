@@ -11,6 +11,8 @@ recyclerView = "1.2.1"
 room = "2.4.2"
 androidXJunit = "1.1.3"
 androidXEspresso = "3.4.0"
+coreKtx = "1.15.0"
+kotlin = "2.1.10"
 
 [libraries]
 elimu-model = { group = "com.github.elimu-ai", name = "model", version.ref = "elimuModel" }
@@ -28,5 +30,7 @@ androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", 
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 [plugins]
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
