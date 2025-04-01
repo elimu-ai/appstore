@@ -9,3 +9,6 @@ local.properties
 *.iml
 .idea
 /projectFilesBackup/
+
+# Kotlin
+.kotlin/
