@@ -1,151 +1,141 @@
-package ai.elimu.appstore.ui.applications;
+package ai.elimu.appstore.ui.applications
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.TextView;
+import ai.elimu.appstore.BaseApplication
+import ai.elimu.appstore.R
+import ai.elimu.appstore.rest.ApplicationsService
+import ai.elimu.appstore.room.GsonToRoomConverter
+import ai.elimu.appstore.room.RoomDb
+import ai.elimu.model.v2.enums.admin.ApplicationStatus
+import ai.elimu.model.v2.gson.application.ApplicationGson
+import android.content.Intent
+import android.os.Bundle
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import timber.log.Timber
+import java.util.concurrent.Executors
 
-import androidx.appcompat.app.AppCompatActivity;
+class InitialSyncActivity : AppCompatActivity() {
+    private var textView: TextView? = null
 
-import com.google.android.material.snackbar.Snackbar;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.i("onCreate")
+        super.onCreate(savedInstanceState)
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+        setContentView(R.layout.activity_initial_sync)
 
-import ai.elimu.appstore.BaseApplication;
-import ai.elimu.appstore.R;
-import ai.elimu.appstore.rest.ApplicationsService;
-import ai.elimu.appstore.room.GsonToRoomConverter;
-import ai.elimu.appstore.room.RoomDb;
-import ai.elimu.appstore.room.dao.ApplicationDao;
-import ai.elimu.appstore.room.dao.ApplicationVersionDao;
-import ai.elimu.appstore.room.entity.Application;
-import ai.elimu.appstore.room.entity.ApplicationVersion;
-import ai.elimu.model.v2.enums.admin.ApplicationStatus;
-import ai.elimu.model.v2.gson.application.ApplicationGson;
-import ai.elimu.model.v2.gson.application.ApplicationVersionGson;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import timber.log.Timber;
-
-public class InitialSyncActivity extends AppCompatActivity {
-
-    private TextView textView;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Timber.i("onCreate");
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_initial_sync);
-
-        textView = findViewById(R.id.initial_sync_textview);
+        textView = findViewById(R.id.initial_sync_textview)
     }
 
-    @Override
-    protected void onStart() {
-        Timber.i("onStart");
-        super.onStart();
+    override fun onStart() {
+        Timber.i("onStart")
+        super.onStart()
 
         // Download list of Applications from REST API
-        BaseApplication baseApplication = (BaseApplication) getApplication();
-        Retrofit retrofit = baseApplication.getRetrofit();
-        ApplicationsService applicationsService = retrofit.create(ApplicationsService.class);
-        Call<List<ApplicationGson>> call = applicationsService.listApplications();
-        Timber.i("call.request(): " + call.request());
-        textView.setText("Connecting to " + call.request().url());
-        call.enqueue(new Callback<List<ApplicationGson>>() {
-            @Override
-            public void onResponse(Call<List<ApplicationGson>> call, Response<List<ApplicationGson>> response) {
-                Timber.i("onResponse");
+        val baseApplication = application as BaseApplication
+        val retrofit = baseApplication.retrofit
+        val applicationsService = retrofit.create(
+            ApplicationsService::class.java
+        )
+        val call = applicationsService.listApplications()
+        Timber.i("call.request(): " + call.request())
+        textView!!.text = "Connecting to " + call.request().url()
+        call.enqueue(object : Callback<List<ApplicationGson>> {
+            override fun onResponse(
+                call: Call<List<ApplicationGson>>,
+                response: Response<List<ApplicationGson>>
+            ) {
+                Timber.i("onResponse")
 
-                Timber.i("response: " + response);
+                Timber.i("response: $response")
 
                 // Parse the JSON response
 //                Snackbar.make(textView, "Synchronizing database...", Snackbar.LENGTH_LONG).show();
-                List<ApplicationGson> applicationGsons = response.body();
-                Timber.i("applicationGsons.size(): " + applicationGsons.size());
-                if (applicationGsons.size() > 0) {
-                    processResponseBody(applicationGsons);
+                val applicationGsons = response.body()!!
+                Timber.i("applicationGsons.size(): " + applicationGsons.size)
+                if (applicationGsons.size > 0) {
+                    processResponseBody(applicationGsons)
                 }
             }
 
-            @Override
-            public void onFailure(Call<List<ApplicationGson>> call, Throwable t) {
-                Timber.e(t, "onFailure");
+            override fun onFailure(call: Call<List<ApplicationGson>>, t: Throwable) {
+                Timber.e(t, "onFailure")
 
-                Timber.e(t, "t.getCause(): " + t.getCause());
+                Timber.e(t, "t.getCause(): " + t.cause)
 
                 // Handle error
-                Snackbar.make(textView, t.getCause().toString(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(textView!!, t.cause.toString(), Snackbar.LENGTH_LONG).show()
             }
-        });
+        })
     }
 
-    private void processResponseBody(List<ApplicationGson> applicationGsons) {
-        Timber.i("processResponseBody");
+    private fun processResponseBody(applicationGsons: List<ApplicationGson>) {
+        Timber.i("processResponseBody")
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                Timber.i("run");
+        val executorService = Executors.newSingleThreadExecutor()
+        executorService.execute {
+            Timber.i("run")
+            val roomDb = RoomDb.getDatabase(applicationContext)
+            val applicationDao = roomDb.applicationDao()
+            val applicationVersionDao = roomDb.applicationVersionDao()
 
-                RoomDb roomDb = RoomDb.getDatabase(getApplicationContext());
-                ApplicationDao applicationDao = roomDb.applicationDao();
-                ApplicationVersionDao applicationVersionDao = roomDb.applicationVersionDao();
+            for (applicationGson in applicationGsons) {
+                Timber.i("applicationGson.getId(): " + applicationGson.id)
 
-                for (ApplicationGson applicationGson : applicationGsons) {
-                    Timber.i("applicationGson.getId(): " + applicationGson.getId());
+                // Check if the Application has already been stored in the database
+                var application = applicationDao.load(applicationGson.id)
+                Timber.i("application: $application")
+                if (application == null) {
+                    // Store the new Application in the database
+                    application = GsonToRoomConverter.getApplication(applicationGson)
+                    applicationDao.insert(application)
+                    Timber.i("Stored Application \"" + application.packageName + "\" in database with ID " + application.id)
 
-                    // Check if the Application has already been stored in the database
-                    Application application = applicationDao.load(applicationGson.getId());
-                    Timber.i("application: " + application);
-                    if (application == null) {
-                        // Store the new Application in the database
-                        application = GsonToRoomConverter.getApplication(applicationGson);
-                        applicationDao.insert(application);
-                        Timber.i("Stored Application \"" + application.getPackageName() + "\" in database with ID " + application.getId());
-
-                        if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                            // Store the Application's ApplicationVersions in the database
-                            List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
-                            Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size());
-                            for (ApplicationVersionGson applicationVersionGson : applicationVersionGsons) {
-                                ApplicationVersion applicationVersion = GsonToRoomConverter.getApplicationVersion(applicationGson, applicationVersionGson);
-                                applicationVersionDao.insert(applicationVersion);
-                                Timber.i("Stored ApplicationVersion " + applicationVersion.getVersionCode() + " in database with ID " + applicationVersion.getId());
-                            }
+                    if (applicationGson.applicationStatus == ApplicationStatus.ACTIVE) {
+                        // Store the Application's ApplicationVersions in the database
+                        val applicationVersionGsons = applicationGson.applicationVersions
+                        Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size)
+                        for (applicationVersionGson in applicationVersionGsons) {
+                            val applicationVersion = GsonToRoomConverter.getApplicationVersion(
+                                applicationGson,
+                                applicationVersionGson
+                            )
+                            applicationVersionDao.insert(applicationVersion)
+                            Timber.i("Stored ApplicationVersion " + applicationVersion.versionCode + " in database with ID " + applicationVersion.id)
                         }
-                    } else {
-                        // Update the existing Application in the database
-                        application = GsonToRoomConverter.getApplication(applicationGson);
-                        applicationDao.update(application);
-                        Timber.i("Updated Application \"" + application.getPackageName() + "\" in database with ID " + application.getId());
+                    }
+                } else {
+                    // Update the existing Application in the database
+                    application = GsonToRoomConverter.getApplication(applicationGson)
+                    applicationDao.update(application)
+                    Timber.i("Updated Application \"" + application.packageName + "\" in database with ID " + application.id)
 
-                        // Delete all the Application's ApplicationVersions (in case deletions have been made on the server-side)
-                        applicationVersionDao.delete(applicationGson.getId());
+                    // Delete all the Application's ApplicationVersions (in case deletions have been made on the server-side)
+                    applicationVersionDao.delete(applicationGson.id)
 
-                        if (applicationGson.getApplicationStatus() == ApplicationStatus.ACTIVE) {
-                            // Store the Application's ApplicationVersions in the database
-                            List<ApplicationVersionGson> applicationVersionGsons = applicationGson.getApplicationVersions();
-                            Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size());
-                            for (ApplicationVersionGson applicationVersionGson : applicationVersionGsons) {
-                                ApplicationVersion applicationVersion = GsonToRoomConverter.getApplicationVersion(applicationGson, applicationVersionGson);
-                                applicationVersionDao.insert(applicationVersion);
-                                Timber.i("Stored ApplicationVersion " + applicationVersion.getVersionCode() + " in database with ID " + applicationVersion.getId());
-                            }
+                    if (applicationGson.applicationStatus == ApplicationStatus.ACTIVE) {
+                        // Store the Application's ApplicationVersions in the database
+                        val applicationVersionGsons = applicationGson.applicationVersions
+                        Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size)
+                        for (applicationVersionGson in applicationVersionGsons) {
+                            val applicationVersion = GsonToRoomConverter.getApplicationVersion(
+                                applicationGson,
+                                applicationVersionGson
+                            )
+                            applicationVersionDao.insert(applicationVersion)
+                            Timber.i("Stored ApplicationVersion " + applicationVersion.versionCode + " in database with ID " + applicationVersion.id)
                         }
                     }
                 }
-
-                // Redirect to the list of Applications
-                Intent intent = new Intent(getApplicationContext(), ApplicationListActivity.class);
-                startActivity(intent);
-                finish();
             }
-        });
+
+            // Redirect to the list of Applications
+            val intent = Intent(applicationContext, ApplicationListActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }
