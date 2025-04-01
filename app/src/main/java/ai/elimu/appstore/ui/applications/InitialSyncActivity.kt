@@ -1,7 +1,7 @@
 package ai.elimu.appstore.ui.applications
 
 import ai.elimu.appstore.BaseApplication
-import ai.elimu.appstore.R
+import ai.elimu.appstore.databinding.ActivityInitialSyncBinding
 import ai.elimu.appstore.rest.ApplicationsService
 import ai.elimu.appstore.room.GsonToRoomConverter
 import ai.elimu.appstore.room.RoomDb
@@ -9,7 +9,6 @@ import ai.elimu.model.v2.enums.admin.ApplicationStatus
 import ai.elimu.model.v2.gson.application.ApplicationGson
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
@@ -19,15 +18,14 @@ import timber.log.Timber
 import java.util.concurrent.Executors
 
 class InitialSyncActivity : AppCompatActivity() {
-    private var textView: TextView? = null
+    private lateinit var binding: ActivityInitialSyncBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate")
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_initial_sync)
-
-        textView = findViewById(R.id.initial_sync_textview)
+        binding = ActivityInitialSyncBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 
     override fun onStart() {
@@ -42,7 +40,7 @@ class InitialSyncActivity : AppCompatActivity() {
         )
         val call = applicationsService.listApplications()
         Timber.i("call.request(): " + call.request())
-        textView!!.text = "Connecting to " + call.request().url()
+        binding.initialSyncTextview.text = "Connecting to " + call.request().url()
         call.enqueue(object : Callback<List<ApplicationGson>> {
             override fun onResponse(
                 call: Call<List<ApplicationGson>>,
@@ -56,7 +54,7 @@ class InitialSyncActivity : AppCompatActivity() {
 //                Snackbar.make(textView, "Synchronizing database...", Snackbar.LENGTH_LONG).show();
                 val applicationGsons = response.body()!!
                 Timber.i("applicationGsons.size(): " + applicationGsons.size)
-                if (applicationGsons.size > 0) {
+                if (applicationGsons.isNotEmpty()) {
                     processResponseBody(applicationGsons)
                 }
             }
@@ -67,7 +65,7 @@ class InitialSyncActivity : AppCompatActivity() {
                 Timber.e(t, "t.getCause(): " + t.cause)
 
                 // Handle error
-                Snackbar.make(textView!!, t.cause.toString(), Snackbar.LENGTH_LONG).show()
+                Snackbar.make(binding.initialSyncTextview, t.cause.toString(), Snackbar.LENGTH_LONG).show()
             }
         })
     }
