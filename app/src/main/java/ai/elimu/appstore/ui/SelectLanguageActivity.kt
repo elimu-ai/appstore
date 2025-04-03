@@ -1,27 +1,25 @@
-package ai.elimu.appstore.ui;
+package ai.elimu.appstore.ui
 
-import android.os.Bundle;
-import android.util.Log;
+import ai.elimu.appstore.R
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import timber.log.Timber
 
-import androidx.appcompat.app.AppCompatActivity;
+class SelectLanguageActivity : AppCompatActivity() {
+    
+    private val TAG = javaClass.name
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.tag(TAG).i("onCreate")
+        super.onCreate(savedInstanceState)
 
-import ai.elimu.appstore.R;
-
-public class SelectLanguageActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.i(getClass().getName(), "onCreate");
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_select_language);
+        setContentView(R.layout.activity_select_language)
     }
 
-    @Override
-    protected void onStart() {
-        Log.i(getClass().getName(), "onStart");
-        super.onStart();
+    override fun onStart() {
+        Timber.tag(TAG).i("onStart")
+        super.onStart()
 
-        LanguageListDialogFragment.newInstance().show(getSupportFragmentManager(), "dialog");
+        LanguageListDialogFragment.newInstance().show(supportFragmentManager, "dialog")
     }
 }
