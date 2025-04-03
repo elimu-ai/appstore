@@ -1,77 +1,62 @@
-package ai.elimu.appstore.ui.applications;
+package ai.elimu.appstore.ui.applications
 
-import android.os.Bundle;
-import android.util.Log;
+import ai.elimu.appstore.R
+import ai.elimu.appstore.room.RoomDb
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import timber.log.Timber
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+class ApplicationListActivity : AppCompatActivity() {
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
+    private val TAG = "ApplicationListActivity"
 
-import java.util.List;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.i("onCreate")
+        super.onCreate(savedInstanceState)
 
-import ai.elimu.appstore.R;
-import ai.elimu.appstore.room.RoomDb;
-import ai.elimu.appstore.room.dao.ApplicationDao;
-import ai.elimu.appstore.room.dao.ApplicationVersionDao;
-import ai.elimu.appstore.room.entity.Application;
-import ai.elimu.appstore.room.entity.ApplicationVersion;
-import timber.log.Timber;
+        setContentView(R.layout.activity_application_list)
 
-public class ApplicationListActivity extends AppCompatActivity {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Timber.i("onCreate");
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_application_list);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        CollapsingToolbarLayout toolBarLayout = findViewById(R.id.toolbar_layout);
-        toolBarLayout.setTitle(getTitle());
-
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(view -> {
-//            Timber.i("onClick");
-//            Snackbar.make(view, "Synchronizing...", Snackbar.LENGTH_LONG).show();
-//            // TODO: Download list of Applications from REST API
-//        });
+        val toolBarLayout = findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
+        toolBarLayout.title = title
     }
 
-    @Override
-    protected void onStart() {
-        Timber.i("onStart");
-        super.onStart();
+    override fun onStart() {
+        Timber.i("onStart")
+        super.onStart()
 
         // Configure list adapter
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        final ApplicationListAdapter applicationListAdapter = new ApplicationListAdapter(this);
-        recyclerView.setAdapter(applicationListAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
-        recyclerView.addItemDecoration(dividerItemDecoration);
+        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
+        val applicationListAdapter = ApplicationListAdapter(this)
+        recyclerView.adapter = applicationListAdapter
+        val linearLayoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = linearLayoutManager
+        val dividerItemDecoration =
+            DividerItemDecoration(recyclerView.context, linearLayoutManager.orientation)
+        recyclerView.addItemDecoration(dividerItemDecoration)
 
         // Fetch all Applications from database, and update the list adapter
-        RoomDb roomDb = RoomDb.getDatabase(getApplicationContext());
-        ApplicationDao applicationDao = roomDb.applicationDao();
-        ApplicationVersionDao applicationVersionDao = roomDb.applicationVersionDao();
-        RoomDb.databaseWriteExecutor.execute(() -> {
-            List<Application> applications = applicationDao.loadAll();
-            Log.d(getClass().getName(), "applications.size(): " + applications.size());
-            applicationListAdapter.setApplications(applications);
+        val roomDb = RoomDb.getDatabase(applicationContext)
+        val applicationDao = roomDb.applicationDao()
+        val applicationVersionDao = roomDb.applicationVersionDao()
+        RoomDb.databaseWriteExecutor.execute {
+            val applications =
+                applicationDao.loadAll()
+            Timber.tag(TAG).d("applications.size(): %s", applications.size)
+            applicationListAdapter.setApplications(applications)
 
-            List<ApplicationVersion> applicationVersions = applicationVersionDao.loadAll();
-            Log.d(getClass().getName(), "applicationVersions.size(): " + applicationVersions.size());
-            applicationListAdapter.setApplicationVersions(applicationVersions);
-
-            applicationListAdapter.notifyDataSetChanged();
-        });
+            val applicationVersions =
+                applicationVersionDao.loadAll()
+            Timber.tag(TAG).d("applicationVersions.size(): %s", applicationVersions.size)
+            applicationListAdapter.setApplicationVersions(applicationVersions)
+            applicationListAdapter.notifyDataSetChanged()
+        }
     }
 }
