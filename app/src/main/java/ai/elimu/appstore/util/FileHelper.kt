@@ -1,33 +1,30 @@
-package ai.elimu.appstore.util;
+package ai.elimu.appstore.util
 
-import android.content.Context;
-
-import java.io.File;
-
-import ai.elimu.model.v2.enums.Language;
+import android.content.Context
+import java.io.File
 
 /**
  * Helper class for determining folder paths of APK files.
  */
-public class FileHelper {
-
-    private static File getApksDirectory(Context context) {
-        File externalFilesDir = context.getExternalFilesDir(null);
-        Language language = SharedPreferencesHelper.getLanguage(context);
-        File languageDirectory = new File(externalFilesDir, "lang-" + language.getIsoCode());
-        File apksDirectory = new File(languageDirectory, "apks");
+object FileHelper {
+    private fun getApksDirectory(context: Context): File {
+        val externalFilesDir = context.getExternalFilesDir(null)
+        val language = SharedPreferencesHelper.getLanguage(context)
+        val languageDirectory = File(externalFilesDir, "lang-" + language!!.isoCode)
+        val apksDirectory = File(languageDirectory, "apks")
         if (!apksDirectory.exists()) {
-            apksDirectory.mkdirs();
+            apksDirectory.mkdirs()
         }
-        return apksDirectory;
+        return apksDirectory
     }
 
-    public static File getApkFile(String packageName, Integer versionCode, Context context) {
+    @JvmStatic
+    fun getApkFile(packageName: String?, versionCode: Int?, context: Context): File? {
         if ((packageName == null) || (versionCode == null)) {
-            return null;
+            return null
         }
-        File apksDirectory = getApksDirectory(context);
-        File file = new File(apksDirectory, packageName + "-" + versionCode + ".apk");
-        return file;
+        val apksDirectory = getApksDirectory(context)
+        val file = File(apksDirectory, "$packageName-$versionCode.apk")
+        return file
     }
 }
