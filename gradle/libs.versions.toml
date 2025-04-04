@@ -1,5 +1,5 @@
 [versions]
-elimuModel = "model-2.0.86"
+elimuModel = "model-2.0.87"
 material = "1.5.0"
 retrofit = "2.11.0"
 junit = "4.13.2"
