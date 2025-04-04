@@ -1,40 +1,40 @@
-package ai.elimu.appstore.util;
+package ai.elimu.appstore.util
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.pm.PackageInfoCompat
 
-import androidx.core.content.pm.PackageInfoCompat;
-
-public class InstallationHelper {
-
+object InstallationHelper {
     /**
      * Checks if an APK file has been installed on the device or not.
      */
-    public static boolean isApplicationInstalled(String packageName, Context context) {
-        PackageManager packageManager = context.getPackageManager();
+    @JvmStatic
+    fun isApplicationInstalled(packageName: String, context: Context): Boolean {
+        val packageManager = context.packageManager
         try {
-            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
+            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+        } catch (e: PackageManager.NameNotFoundException) {
+            return false
         }
-        return true;
+        return true
     }
 
     /**
-     * Gets the {@code versionCode} of an APK that has already been installed on the device.
-     * <p />
+     * Gets the `versionCode` of an APK that has already been installed on the device.
      *
-     * Returns {@code 0} if no APK with the {@code packageName} has been installed on the device.
+     *
+     *
+     * Returns `0` if no APK with the `packageName` has been installed on the device.
      */
-    public static int getVersionCodeOfInstalledApplication(String packageName, Context context) {
+    @JvmStatic
+    fun getVersionCodeOfInstalledApplication(packageName: String, context: Context): Int {
         try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(packageName, 0);
-            long longVersionCode = PackageInfoCompat.getLongVersionCode(packageInfo);
-            int versionCode = (int) longVersionCode;
-            return versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            return 0;
+            val packageInfo = context.packageManager.getPackageInfo(packageName, 0)
+            val longVersionCode = PackageInfoCompat.getLongVersionCode(packageInfo)
+            val versionCode = longVersionCode.toInt()
+            return versionCode
+        } catch (e: PackageManager.NameNotFoundException) {
+            return 0
         }
     }
 }
