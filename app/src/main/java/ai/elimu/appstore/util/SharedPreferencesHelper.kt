@@ -1,54 +1,51 @@
-package ai.elimu.appstore.util;
+package ai.elimu.appstore.util
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.text.TextUtils;
+import ai.elimu.model.v2.enums.Language
+import android.content.Context
+import android.text.TextUtils
+import timber.log.Timber
+import androidx.core.content.edit
 
-import ai.elimu.model.v2.enums.Language;
-import timber.log.Timber;
+object SharedPreferencesHelper {
+    private const val SHARED_PREFS = "shared_prefs"
 
-public class SharedPreferencesHelper {
+    private const val PREF_APP_VERSION_CODE: String = "pref_app_version_code"
+    private const val PREF_LANGUAGE: String = "pref_language"
 
-    private static final String SHARED_PREFS = "shared_prefs";
+    @JvmStatic
+    fun storeAppVersionCode(context: Context, appVersionCode: Int) {
+        Timber.i("storeAppVersionCode")
+        val sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        sharedPreferences.edit { putInt(PREF_APP_VERSION_CODE, appVersionCode) }
+    }
 
-    public static final String PREF_APP_VERSION_CODE = "pref_app_version_code";
-    public static final String PREF_LANGUAGE = "pref_language";
-
-    public static void clearAllPreferences(Context context) {
-        Timber.w("clearAllPreferences");
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        sharedPreferences.edit().clear().apply();
+    @JvmStatic
+    fun getAppVersionCode(context: Context): Int {
+        Timber.i("getAppVersionCode")
+        val sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        return sharedPreferences.getInt(PREF_APP_VERSION_CODE, 0)
     }
 
 
-    public static void storeAppVersionCode(Context context, int appVersionCode) {
-        Timber.i("storeAppVersionCode");
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        sharedPreferences.edit().putInt(PREF_APP_VERSION_CODE, appVersionCode).apply();
+    @JvmStatic
+    fun storeLanguage(context: Context, language: Language) {
+        Timber.i("storeLanguage")
+        val sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        sharedPreferences.edit { putString(PREF_LANGUAGE, language.toString()) }
     }
 
-    public static int getAppVersionCode(Context context) {
-        Timber.i("getAppVersionCode");
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(PREF_APP_VERSION_CODE, 0);
-    }
-
-
-    public static void storeLanguage(Context context, Language language) {
-        Timber.i("storeLanguage");
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        sharedPreferences.edit().putString(PREF_LANGUAGE, language.toString()).apply();
-    }
-
-    public static Language getLanguage(Context context) {
-        Timber.i("getLanguage");
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        String languageAsString = sharedPreferences.getString(PREF_LANGUAGE, null);
+    @JvmStatic
+    fun getLanguage(context: Context): Language? {
+        Timber.i("getLanguage")
+        val sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        val languageAsString = sharedPreferences.getString(PREF_LANGUAGE, null)
         if (TextUtils.isEmpty(languageAsString)) {
-            return null;
+            return null
         } else {
-            Language language = Language.valueOf(languageAsString);
-            return language;
+            val language = Language.valueOf(
+                languageAsString!!
+            )
+            return language
         }
     }
 }
