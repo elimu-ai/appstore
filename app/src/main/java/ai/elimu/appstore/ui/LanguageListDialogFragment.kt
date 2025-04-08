@@ -1,102 +1,109 @@
-package ai.elimu.appstore.ui;
+package ai.elimu.appstore.ui
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import ai.elimu.appstore.MainActivity;
-import ai.elimu.appstore.R;
-import ai.elimu.appstore.util.SharedPreferencesHelper;
-import ai.elimu.model.v2.enums.Language;
+import ai.elimu.appstore.MainActivity
+import ai.elimu.appstore.R
+import ai.elimu.appstore.util.SharedPreferencesHelper
+import ai.elimu.model.v2.enums.Language
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import timber.log.Timber
 
 /**
- * <p>A fragment that shows a list of items as a modal bottom sheet.</p>
- * <p>You can show this modal bottom sheet from your activity like this:</p>
+ *
+ * A fragment that shows a list of items as a modal bottom sheet.
+ *
+ * You can show this modal bottom sheet from your activity like this:
  * <pre>
- *     LanguageListDialogFragment.newInstance().show(getSupportFragmentManager(), "dialog");
- * </pre>
+ * LanguageListDialogFragment.newInstance().show(getSupportFragmentManager(), "dialog");
+</pre> *
  */
-public class LanguageListDialogFragment extends BottomSheetDialogFragment {
-
-    public static LanguageListDialogFragment newInstance() {
-        LanguageListDialogFragment fragment = new LanguageListDialogFragment();
-        return fragment;
+class LanguageListDialogFragment : BottomSheetDialogFragment() {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(
+            R.layout.fragment_language_list_dialog_list_dialog,
+            container,
+            false
+        )
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_language_list_dialog_list_dialog, container, false);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val recyclerView = view as RecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = LanguageAdapter()
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
+        isCancelable = false
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        final RecyclerView recyclerView = (RecyclerView) view;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new LanguageAdapter());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-
-        setCancelable(false);
-    }
-
-    @Override
-    public int getTheme() {
-        return R.style.BottomSheetDialogTheme;
+    override fun getTheme(): Int {
+        return R.style.BottomSheetDialogTheme
     }
 
 
-    private class ViewHolder extends RecyclerView.ViewHolder {
+    private inner class ViewHolder(inflater: LayoutInflater, parent: ViewGroup?) :
+        RecyclerView.ViewHolder(
+            inflater.inflate(
+                R.layout.fragment_language_list_dialog_list_dialog_item,
+                parent,
+                false
+            )
+        ) {
+        val text: TextView = itemView.findViewById(R.id.text)
+    }
 
-        final TextView text;
 
-        ViewHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.fragment_language_list_dialog_list_dialog_item, parent, false));
-            text = itemView.findViewById(R.id.text);
+    private inner class LanguageAdapter : RecyclerView.Adapter<ViewHolder>() {
+        private val languages = Language.entries.toTypedArray()
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return ViewHolder(LayoutInflater.from(parent.context), parent)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val language = languages[position]
+            holder.text.text = language.englishName + " (" + language.nativeName + ")"
+            holder.text.setOnClickListener {
+                Timber.tag(TAG).i("onClick")
+
+                Timber.tag(TAG).i("language: $language")
+                SharedPreferencesHelper.storeLanguage(context, language)
+
+                // Restart the MainActivity
+                val intent = Intent(context, MainActivity::class.java)
+                startActivity(intent)
+                activity!!.finish()
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return languages.size
         }
     }
 
-
-    private class LanguageAdapter extends RecyclerView.Adapter<ViewHolder> {
-
-        private Language[] languages = Language.values();
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()), parent);
+    companion object {
+        @JvmStatic
+        fun newInstance(): LanguageListDialogFragment {
+            val fragment = LanguageListDialogFragment()
+            return fragment
         }
 
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            final Language language = languages[position];
-            holder.text.setText(language.getEnglishName() + " (" + language.getNativeName() + ")");
-            holder.text.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(getClass().getName(), "onClick");
-
-                    Log.i(getClass().getName(), "language: " + language);
-                    SharedPreferencesHelper.storeLanguage(getContext(), language);
-
-                    // Restart the MainActivity
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    startActivity(intent);
-                    getActivity().finish();
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return languages.length;
-        }
+        private const val TAG = "LanguageListDialogFragment"
     }
 }
