@@ -88,7 +88,7 @@ class LanguageListDialogFragment : BottomSheetDialogFragment() {
                 // Restart the MainActivity
                 val intent = Intent(context, MainActivity::class.java)
                 startActivity(intent)
-                activity!!.finish()
+                activity?.finish()
             }
         }
 
