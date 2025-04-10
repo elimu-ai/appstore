@@ -83,11 +83,14 @@ class LanguageListDialogFragment : BottomSheetDialogFragment() {
                 Timber.tag(TAG).i("onClick")
 
                 Timber.tag(TAG).i("language: $language")
-                SharedPreferencesHelper.storeLanguage(context, language)
+                context?.let { ctx ->
+                    SharedPreferencesHelper.storeLanguage(ctx, language)
 
-                // Restart the MainActivity
-                val intent = Intent(context, MainActivity::class.java)
-                startActivity(intent)
+                    // Restart the MainActivity
+                    val intent = Intent(context, MainActivity::class.java)
+                    startActivity(intent)
+                }
+
                 activity?.finish()
             }
         }
