@@ -1,6 +1,6 @@
 [versions]
 elimuModel = "model-2.0.88"
-material = "1.5.0"
+material = "1.12.0"
 retrofit = "2.11.0"
 junit = "4.13.2"
 timber = "5.0.1"
