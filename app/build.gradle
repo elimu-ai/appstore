@@ -16,7 +16,7 @@ android {
 
         setProperty("archivesBaseName", "${applicationId}-${versionCode}")
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
             annotationProcessorOptions {
