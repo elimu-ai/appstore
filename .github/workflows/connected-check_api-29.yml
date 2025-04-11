@@ -1,4 +1,4 @@
-name: connectedCheck (API 29)
+name: connectedCheck
 
 on:
   push:
@@ -8,6 +8,9 @@ on:
 
 jobs:
   test:
+    strategy:
+      matrix:
+        api-level: [28, 29]
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -22,5 +25,5 @@ jobs:
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ matrix.api-level }}
           script: ./gradlew connectedCheck
