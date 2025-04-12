@@ -27,6 +27,7 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import timber.log.Timber
 import java.io.File
+import androidx.core.net.toUri
 
 class ApplicationListAdapter(private val context: Context) :
     RecyclerView.Adapter<ApplicationViewHolder>() {
@@ -144,7 +145,7 @@ class ApplicationListAdapter(private val context: Context) :
                                 val downloadManager =
                                     context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                                 val request =
-                                    DownloadManager.Request(Uri.parse(fileUrl))
+                                    DownloadManager.Request(fileUrl.toUri())
                                 val destinationInExternalFilesDir =
                                     File.separator + "lang-" + getLanguage(
                                         context
@@ -172,7 +173,7 @@ class ApplicationListAdapter(private val context: Context) :
                         // Display the "Launch" button
 
                         viewHolder.launchButton.visibility = View.VISIBLE
-                        viewHolder.launchButton.setOnClickListener(View.OnClickListener { v: View? ->
+                        viewHolder.launchButton.setOnClickListener { v: View? ->
                             Timber.i("onClick")
                             Timber.i("Launching \"" + application.packageName + "\"")
                             val packageManager = context.packageManager
@@ -180,7 +181,7 @@ class ApplicationListAdapter(private val context: Context) :
                                 packageManager.getLaunchIntentForPackage(application.packageName)
                             Timber.i("launchIntent: $launchIntent")
                             context.startActivity(launchIntent)
-                        })
+                        }
                     }
                 } else {
                     // The APK has not been installed
@@ -268,7 +269,7 @@ class ApplicationListAdapter(private val context: Context) :
 
     private fun getNewestApplicationVersion(
         application: Application,
-        applicationVersions: List<ApplicationVersion>
+        applicationVersions: List<ApplicationVersion>,
     ): ApplicationVersion? {
         var applicationVersion: ApplicationVersion? = null
         for (appVersion in applicationVersions) {
