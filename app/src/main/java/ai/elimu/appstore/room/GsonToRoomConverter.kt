@@ -1,49 +1,51 @@
-package ai.elimu.appstore.room;
+package ai.elimu.appstore.room
 
-import ai.elimu.appstore.room.entity.Application;
-import ai.elimu.appstore.room.entity.ApplicationVersion;
-import ai.elimu.model.v2.gson.application.ApplicationGson;
-import ai.elimu.model.v2.gson.application.ApplicationVersionGson;
+import ai.elimu.appstore.room.entity.Application
+import ai.elimu.appstore.room.entity.ApplicationVersion
+import ai.elimu.model.v2.gson.application.ApplicationGson
+import ai.elimu.model.v2.gson.application.ApplicationVersionGson
 
-public class GsonToRoomConverter {
-
-    public static Application getApplication(ApplicationGson applicationGson) {
+object GsonToRoomConverter {
+    fun getApplication(applicationGson: ApplicationGson?): Application? {
         if (applicationGson == null) {
-            return null;
+            return null
         } else {
-            Application application = new Application();
+            val application = Application()
 
             // BaseEntity
-            application.setId(applicationGson.getId());
+            application.id = applicationGson.id
 
             // Application
-            application.setPackageName(applicationGson.getPackageName());
-            application.setInfrastructural(applicationGson.getInfrastructural());
-            application.setApplicationStatus(applicationGson.getApplicationStatus());
-            application.setLiteracySkills(applicationGson.getLiteracySkills());
-            application.setNumeracySkills(applicationGson.getNumeracySkills());
+            application.packageName = applicationGson.packageName
+            application.infrastructural = applicationGson.infrastructural
+            application.applicationStatus = applicationGson.applicationStatus
+            application.literacySkills = applicationGson.literacySkills
+            application.numeracySkills = applicationGson.numeracySkills
 
-            return application;
+            return application
         }
     }
 
-    public static ApplicationVersion getApplicationVersion(ApplicationGson applicationGson, ApplicationVersionGson applicationVersionGson) {
+    fun getApplicationVersion(
+        applicationGson: ApplicationGson,
+        applicationVersionGson: ApplicationVersionGson?
+    ): ApplicationVersion? {
         if (applicationVersionGson == null) {
-            return null;
+            return null
         } else {
-            ApplicationVersion applicationVersion = new ApplicationVersion();
+            val applicationVersion = ApplicationVersion()
 
             // BaseEntity
-            applicationVersion.setId(applicationVersionGson.getId());
+            applicationVersion.id = applicationVersionGson.id
 
             // ApplicationVersion
-            applicationVersion.setApplicationId(applicationGson.getId());
-            applicationVersion.setFileUrl(applicationVersionGson.getFileUrl());
-            applicationVersion.setFileSizeInKb(applicationVersionGson.getFileSizeInKb());
-            applicationVersion.setChecksumMd5(applicationVersionGson.getChecksumMd5());
-            applicationVersion.setVersionCode(applicationVersionGson.getVersionCode());
+            applicationVersion.applicationId = applicationGson.id
+            applicationVersion.fileUrl = applicationVersionGson.fileUrl
+            applicationVersion.fileSizeInKb = applicationVersionGson.fileSizeInKb
+            applicationVersion.checksumMd5 = applicationVersionGson.checksumMd5
+            applicationVersion.versionCode = applicationVersionGson.versionCode
 
-            return applicationVersion;
+            return applicationVersion
         }
     }
 }
