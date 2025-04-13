@@ -54,6 +54,7 @@ object EnumConverter {
         return literacySkills
     }
 
+    @JvmStatic
     @TypeConverter
     fun toLiteracySkills(literacySkills: Set<LiteracySkill?>?): String? {
         var value: String? = null
@@ -85,6 +86,7 @@ object EnumConverter {
         return numeracySkills
     }
 
+    @JvmStatic
     @TypeConverter
     fun toNumeracySkills(numeracySkills: Set<NumeracySkill?>?): String? {
         var value: String? = null
