@@ -85,3 +85,6 @@ publishing {
         }
     }
 }
+tasks.named("publishApkPublicationToMavenLocal") {
+    mustRunAfter(":app:assembleRelease")
+}
