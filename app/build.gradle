@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.android)
+    id 'maven-publish'
 }
 apply plugin: 'com.android.application'
 
@@ -75,4 +76,12 @@ dependencies {
 
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso
+}
+
+publishing {
+    publications {
+        apk(MavenPublication) {
+            artifact("${buildDir}/outputs/apk/release/${android.defaultConfig.applicationId}-${android.defaultConfig.versionCode}-release-unsigned.apk")
+        }
+    }
 }
