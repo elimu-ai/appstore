@@ -6,7 +6,7 @@ junit = "4.13.2"
 timber = "5.0.1"
 
 constraintLayout = "2.2.1"
-appCompat = "1.4.1"
+appCompat = "1.7.0"
 recyclerView = "1.2.1"
 room = "2.7.0"
 androidXJunit = "1.2.1"
