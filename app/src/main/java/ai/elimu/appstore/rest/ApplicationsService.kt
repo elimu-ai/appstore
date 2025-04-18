@@ -1,13 +1,11 @@
-package ai.elimu.appstore.rest;
+package ai.elimu.appstore.rest
 
-import java.util.List;
+import ai.elimu.model.v2.gson.application.ApplicationGson
+import retrofit2.Call
+import retrofit2.http.GET
 
-import ai.elimu.model.v2.gson.application.ApplicationGson;
-import retrofit2.Call;
-import retrofit2.http.GET;
-
-public interface ApplicationsService {
+interface ApplicationsService {
 
     @GET("applications")
-    Call<List<ApplicationGson>> listApplications();
+    fun listApplications(): Call<List<ApplicationGson>>
 }
