@@ -20,6 +20,7 @@
 
 ### Regression Tests
 <!-- Did you verify that your changes didn't break existing functionality? -->
+- [ ] I tested my changes on Android 16 (API 36)
 - [ ] I tested my changes on Android 15 (API 35)
 - [ ] I tested my changes on Android 14 (API 34)
 - [ ] I tested my changes on Android 13 (API 33)

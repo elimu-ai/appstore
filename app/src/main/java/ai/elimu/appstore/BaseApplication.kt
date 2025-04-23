@@ -24,7 +24,7 @@ class BaseApplication : Application() {
     val retrofit: Retrofit
         get() {
             val retrofit = Retrofit.Builder()
-                .baseUrl(restUrl + "/")
+                .baseUrl("$restUrl/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             return retrofit
@@ -42,5 +42,5 @@ class BaseApplication : Application() {
         }
 
     private val restUrl: String
-        get() = baseUrl + "/rest/v2"
+        get() = "$baseUrl/rest/v2"
 }
