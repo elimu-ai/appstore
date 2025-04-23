@@ -1,5 +1,5 @@
 [versions]
-elimuModel = "model-2.0.97"
+elimuModel = "model-2.0.100"
 elimuCommonUtils = "1.0.10"
 material = "1.5.0"
 retrofit = "2.11.0"
