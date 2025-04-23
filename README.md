@@ -23,7 +23,7 @@ When opening the APK, you might see a prompt saying "Install unknown apps". If s
 
 The first time you launch the Appstore application, it will ask you to select the language that you want to use:
 
-<img width="320" alt="device-2020-06-10-152910" src="https://user-images.githubusercontent.com/15718174/84239611-58367d00-ab2f-11ea-9fb0-f119de951cef.png">
+![API_36_Screenshot_20250423_185617](https://github.com/user-attachments/assets/4c336178-b5d6-42a4-85c1-0c3ca559fc17)
 
 For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/main/LOCALIZATION.md.
 
