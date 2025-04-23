@@ -1,6 +1,6 @@
 # elimu.ai Appstore 📲
 
-[![Release](https://jitpack.io/v/elimu-ai/appstore.svg)](https://jitpack.io/#elimu-ai/appstore)
+[![Release](https://jitpack.io/v/ai.elimu/appstore.svg)](https://jitpack.io/#ai.elimu/appstore)
 
 Android application which downloads and installs educational apps stored on the [elimu.ai](http://elimu.ai) platform.
 
