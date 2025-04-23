@@ -1,6 +1,6 @@
 [versions]
 elimuModel = "model-2.0.97"
-elimuCommonUtils = "1.0.10"
+elimuCommonUtils = "1.0.11"
 material = "1.5.0"
 retrofit = "2.11.0"
 junit = "4.13.2"
@@ -16,8 +16,8 @@ coreKtx = "1.16.0"
 kotlin = "2.1.20"
 
 [libraries]
-elimu-model = { group = "com.github.elimu-ai", name = "model", version.ref = "elimuModel" }
-elimu-common-utils = { group = "com.github.elimu-ai", name = "common-utils", version.ref = "elimuCommonUtils" }
+elimu-model = { group = "ai.elimu", name = "model", version.ref = "elimuModel" }
+elimu-common-utils = { group = "ai.elimu", name = "common-utils", version.ref = "elimuCommonUtils" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appCompat" }
