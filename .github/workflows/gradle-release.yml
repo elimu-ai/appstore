@@ -49,6 +49,11 @@ jobs:
     - name: Add -SNAPSHOT to versionName
       run: ./gradlew addSnapshot
 
+    - name: Git Commit
+      run: |
+        git add app/build.gradle
+        git commit -m "chore: chore: prepare for next development iteration"
+
     - name: Git Push
       run: |
         git push
