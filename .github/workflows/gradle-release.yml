@@ -43,7 +43,8 @@ jobs:
 
     - name: Git Push
       run: |
-        git push
+        echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
+        git push origin ${{ steps.get_version_name.outputs.version_name }}
 
     - name: Bump version
       run: ./gradlew bumpVersion
