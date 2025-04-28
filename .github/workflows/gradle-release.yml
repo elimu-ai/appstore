@@ -41,7 +41,7 @@ jobs:
         echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
         git tag ${{ steps.get_version_name.outputs.version_name }}
 
-    - name: Git Push
+    - name: Git Push Tag
       run: |
         echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
         git push origin ${{ steps.get_version_name.outputs.version_name }}
