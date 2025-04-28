@@ -27,4 +27,4 @@ jobs:
     - name: Git Commit
       run: |
         git add app/build.gradle
-        git commit -m "chore: prepare release ${./gradlew getVersionName}"
+        git commit -m "chore: prepare release $(./gradlew getVersionName)"
