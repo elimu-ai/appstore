@@ -113,6 +113,16 @@ task removeSnapshot {
     }
 }
 
+task getVersionName {
+    doLast {
+        println("getVersionName")
+
+        def currentVersionName = android.defaultConfig.versionName
+        println("currentVersionName: ${currentVersionName}")
+        return currentVersionName
+    }
+}
+
 task bumpVersion {
     doLast {
         println("bumpVersion")
