@@ -56,4 +56,4 @@ jobs:
 
     - name: Git Push
       run: |
-        git push
+        git push origin HEAD:310-create-git-tag-on-push-to-main
