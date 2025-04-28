@@ -3,8 +3,6 @@ name: Gradle Release
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   create_git_tag:
@@ -56,4 +54,4 @@ jobs:
 
     - name: Git Push
       run: |
-        git push origin HEAD:310-create-git-tag-on-push-to-main
+        git push
