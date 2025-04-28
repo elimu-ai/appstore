@@ -16,7 +16,7 @@ android {
         compileSdk 35
         targetSdkVersion 35
         versionCode 2004007
-        versionName "2.4.7-SNAPSHOT"
+        versionName "2.4.7"
 
         setProperty("archivesBaseName", "${applicationId}-${versionCode}")
 
