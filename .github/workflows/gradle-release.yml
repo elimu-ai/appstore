@@ -26,13 +26,13 @@ jobs:
       run: ./gradlew removeSnapshot
 
     - name: Set the new versionName as an environment variable
-      id: version_name
+      id: get_version_name
       run: |
-        VERSION_NAME="v$(./gradlew getVersionName)"
-        echo "VERSION_NAME: ${{ VERSION_NAME }}"
+        VERSION_NAME="vTEST"
+        echo "::set-output name=version_name::$VERSION_NAME"
 
-#    - name: Git Commit
-#      run: |
-#        git add app/build.gradle
-#        echo "VERSION_NAME: ${{ VERSION_NAME }}"
-#        git commit -m "chore: prepare release ${{ VERSION_NAME }}"
+    - name: Git Commit
+      run: |
+        git add app/build.gradle
+        echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
+        git commit -m "chore: prepare release ${{ steps.get_version_name.outputs.version_name }}"
