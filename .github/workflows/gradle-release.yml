@@ -22,9 +22,17 @@ jobs:
         git config user.name 'Nya Ξlimu'
         git config user.email 'info@elimu.ai'
 
-    - run: ./gradlew removeSnapshot
+    - name: Remove -SNAPSHOT from versionName
+      run: ./gradlew removeSnapshot
 
-    - name: Git Commit
+    - name: Set the new versionName as an environment variable
+      id: version_name
       run: |
-        git add app/build.gradle
-        git commit -m "chore: prepare release $(./gradlew getVersionName)"
+        VERSION_NAME="v$(./gradlew getVersionName)"
+        echo "VERSION_NAME: ${{ VERSION_NAME }}"
+
+#    - name: Git Commit
+#      run: |
+#        git add app/build.gradle
+#        echo "VERSION_NAME: ${{ VERSION_NAME }}"
+#        git commit -m "chore: prepare release ${{ VERSION_NAME }}"
