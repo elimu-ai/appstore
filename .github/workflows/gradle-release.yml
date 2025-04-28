@@ -41,6 +41,10 @@ jobs:
         echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
         git tag ${{ steps.get_version_name.outputs.version_name }}
 
+    - name: Git Push
+      run: |
+        git push
+
     - name: Bump version
       run: ./gradlew bumpVersion
 
