@@ -28,7 +28,7 @@ jobs:
     - name: Set the new versionName as an environment variable
       id: get_version_name
       run: |
-        VERSION_NAME="v$(./gradlew getVersionName)"
+        VERSION_NAME="v$(gradlew getVersionName)"
         echo "::set-output name=version_name::$VERSION_NAME"
 
     - name: Git Commit
