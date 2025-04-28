@@ -100,7 +100,7 @@ task removeSnapshot {
         def file = file("build.gradle")
         def originalFileContent = file.getText()
 
-        Pattern pattern = Pattern.compile("versionName \"\\d.\\d.\\d-SNAPSHOT\"")
+        Pattern pattern = Pattern.compile("versionName \"\\d+\\.\\d+\\.\\d+-SNAPSHOT\"")
         Matcher matcher = pattern.matcher(originalFileContent)
         matcher.find()
         println("match: ${matcher.group()}")
@@ -108,17 +108,15 @@ task removeSnapshot {
         def newVersionName = matcher.group().replace("-SNAPSHOT", "")
         println("newVersionName: ${newVersionName}")
 
-        def newFileContent = originalFileContent.replaceFirst("versionName \"\\d.\\d.\\d-SNAPSHOT\"", newVersionName)
+        def newFileContent = originalFileContent.replaceFirst("versionName \"\\d+\\.\\d+\\.\\d+-SNAPSHOT\"", newVersionName)
         file.write(newFileContent)
     }
 }
-
 task getVersionName {
     doLast {
         println android.defaultConfig.versionName
     }
 }
-
 task bumpVersion {
     doLast {
         println("bumpVersion")
@@ -135,11 +133,10 @@ task bumpVersion {
         def file = file("build.gradle")
         def originalFileContent = file.getText()
         def newFileContent = originalFileContent.replaceFirst("versionCode \\d+", "versionCode ${newVersionCode}")
-        newFileContent = newFileContent.replaceFirst("versionName \"([^\"]*)\"", "versionName \"${newVersionName}\"")
+        newFileContent = newFileContent.replaceFirst("versionName \"\\d+\\.\\d+\\.\\d+\"", "versionName \"${newVersionName}\"")
         file.write(newFileContent)
     }
 }
-
 task addSnapshot {
     doLast {
         println("addSnapshot")
@@ -147,7 +144,7 @@ task addSnapshot {
         def file = file("build.gradle")
         def originalFileContent = file.getText()
 
-        Pattern pattern = Pattern.compile("versionName \"\\d.\\d.\\d\"")
+        Pattern pattern = Pattern.compile("versionName \"\\d+\\.\\d+\\.\\d+\"")
         Matcher matcher = pattern.matcher(originalFileContent)
         matcher.find()
         println("match: ${matcher.group()}")
@@ -155,7 +152,8 @@ task addSnapshot {
         def newVersionName = "${matcher.group().substring(12, matcher.group().length() - 1)}-SNAPSHOT\""
         println("newVersionName: ${newVersionName}")
 
-        def newFileContent = originalFileContent.replaceFirst("versionName \"\\d.\\d.\\d\"", "versionName ${newVersionName}")
+        def newFileContent = originalFileContent.replaceFirst("versionName \"\\d+\\.\\d+\\.\\d+\"", "versionName ${newVersionName}")
         file.write(newFileContent)
     }
 }
+
