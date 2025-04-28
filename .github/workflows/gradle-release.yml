@@ -29,8 +29,7 @@ jobs:
       id: get_version_name
       run: |
         ./gradlew getVersionName --quiet --console=plain
-        echo "v$(./gradlew getVersionName --quiet --console=plain)"
-        VERSION_NAME="v$(./gradlew getVersionName --quiet --console=plain)"
+        VERSION_NAME="$(./gradlew getVersionName --quiet --console=plain)"
         echo "::set-output name=version_name::$VERSION_NAME"
 
     - name: Git Commit
