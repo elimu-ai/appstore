@@ -103,7 +103,7 @@ To perform a release, follow these steps:
 
 > [!IMPORTANT]
 > After you publish a new release, remember to also bump the version in the Android app repo that depend on the `utils` library:
-> * https://github.com/elimu-ai/content-provider/blob/main/gradle/libs.versions.toml
+> * https://github.com/elimu-ai/appstore/blob/main/gradle/libs.versions.toml
 
 ---
 
