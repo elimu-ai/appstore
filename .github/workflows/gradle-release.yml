@@ -33,6 +33,7 @@ jobs:
     - name: Git Commit
       run: |
         git add app/build.gradle
+        git add utils/build.gradle
         echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
         git commit -m "chore: prepare release ${{ steps.get_version_name.outputs.version_name }}"
 
