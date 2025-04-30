@@ -18,8 +18,6 @@ android {
         versionCode 2005000
         versionName "2.5.0-SNAPSHOT"
 
-        setProperty("archivesBaseName", "${applicationId}-${versionCode}")
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
@@ -84,7 +82,7 @@ dependencies {
 publishing {
     publications {
         apk(MavenPublication) {
-            artifact("${buildDir}/outputs/apk/release/${android.defaultConfig.applicationId}-${android.defaultConfig.versionCode}-release-unsigned.apk")
+            artifact("${buildDir}/outputs/apk/release/app-release-unsigned.apk")
         }
     }
 }
