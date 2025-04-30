@@ -55,7 +55,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation libs.elimu.model // https://jitpack.io/#ai.elimu/model
+    implementation libs.elimu.analytics // https://jitpack.io/#ai.elimu/analytics
     implementation libs.elimu.common.utils // https://jitpack.io/#ai.elimu/common-utils
 
     implementation libs.timber
@@ -72,7 +72,6 @@ dependencies {
 
     // Room components
     implementation libs.androidx.room.runtime
-    implementation libs.androidx.core.ktx
     annotationProcessor libs.androidx.room.compiler
     androidTestImplementation libs.androidx.room.testing
 
