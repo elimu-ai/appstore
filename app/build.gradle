@@ -2,7 +2,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 plugins {
-    alias(libs.plugins.kotlin.android)
+    id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
 }
 apply plugin: 'com.android.application'

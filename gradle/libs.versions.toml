@@ -12,8 +12,8 @@ recyclerView = "1.4.0"
 room = "2.7.1"
 androidXJunit = "1.2.1"
 androidXEspresso = "3.6.1"
-coreKtx = "1.16.0"
 kotlin = "2.1.20"
+kotlinGradlePlugin = "2.1.20"
 
 [libraries]
 elimu-analytics = { group = "ai.elimu", name = "analytics", version.ref = "elimuAnalytics" }
@@ -32,6 +32,7 @@ androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", 
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
 
 [plugins]
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
