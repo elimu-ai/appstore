@@ -1,6 +1,6 @@
-# elimu.ai Appstore 📲
-
 [![Release](https://jitpack.io/v/ai.elimu/appstore.svg)](https://jitpack.io/#ai.elimu/appstore)
+
+# elimu.ai Appstore 📲
 
 Android application which downloads and installs educational apps stored on the [elimu.ai](http://elimu.ai) platform.
 
@@ -54,13 +54,25 @@ A list of the currently supported languages is available at https://github.com/e
 ./gradlew wrapper --gradle-version x.x.x
 ```
 
+### Release 📦
+
+To perform a release, follow these steps:
+
+1. Merge your PR into the `main` branch
+1. Wait for the ["Gradle Release"](https://github.com/elimu-ai/appstore/actions/workflows/gradle-release.yml) workflow to complete
+1. Ensure that the new release version appears at https://jitpack.io/#ai.elimu/appstore with "Status: ok"
+
+> [!IMPORTANT]
+> After you publish a new release, remember to also bump the version in the Android app repo that depend on the `utils` library:
+> * https://github.com/elimu-ai/content-provider/blob/main/gradle/libs.versions.toml
+
 ---
 
 <p align="center">
   <img src="https://github.com/elimu-ai/webapp/blob/main/src/main/webapp/static/img/logo-text-256x78.png" />
 </p>
 <p align="center">
-  elimu.ai - Free open-source learning software for out-of-school children ✨🚀
+  elimu.ai - Free open-source learning software for out-of-school children 🚀✨
 </p>
 <p align="center">
   <a href="https://elimu.ai">Website 🌐</a>
