@@ -48,6 +48,45 @@ We are building our software for Android devices with **6"-10" displays** instal
 
 A list of the currently supported languages is available at https://github.com/elimu-ai/model/blob/main/src/main/java/ai/elimu/model/v2/enums/Language.java
 
+### Utils Library 📦
+
+See https://jitpack.io/#ai.elimu/appstore/ for the latest version.
+
+<a name="utils-snapshot"></a>
+### How to Test `-SNAPSHOT` Versions of the Utils Library
+
+1. Publish the library to your local Maven repository:
+    ```sh
+    ./gradlew clean assemble utils:publishToMavenLocal
+    ```
+2. In the app that will be testing the `-SNAPSHOT` version of the library, add `mavenLocal()`:
+    ```diff
+    allprojects {
+        repositories {
+            mavenCentral()
+            maven {
+                url "https://jitpack.io"
+            }
+    +       mavenLocal()
+        }
+    }
+    ```
+3. Then change to your `-SNAPSHOT` version of the library:
+    ```diff
+    [versions]
+    -elimuAppstore = "2.5.0"
+    +elimuAppstore = "2.5.1-SNAPSHOT"
+    ```
+
+#### Utils Usage Sample
+
+> [!NOTE]
+> To use the `utils` library in another Android app, add the dependency in `app/build.gradle`:
+
+```java
+implementation 'ai.elimu:appstore:<version>@aar'
+```
+
 ### Gradle Upgrade
 
 ```

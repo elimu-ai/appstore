@@ -1,5 +1,9 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
     id 'org.jetbrains.kotlin.android'
 }
 
@@ -54,4 +58,68 @@ publishing {
 }
 tasks.named("publishAarPublicationToMavenLocal") {
     mustRunAfter(":utils:bundleReleaseAar")
+}
+
+task removeSnapshot {
+    doLast {
+        println("removeSnapshot")
+
+        def file = file("build.gradle")
+        def originalFileContent = file.getText()
+
+        Pattern pattern = Pattern.compile("versionName \"\\d+\\.\\d+\\.\\d+-SNAPSHOT\"")
+        Matcher matcher = pattern.matcher(originalFileContent)
+        matcher.find()
+        println("match: ${matcher.group()}")
+
+        def newVersionName = matcher.group().replace("-SNAPSHOT", "")
+        println("newVersionName: ${newVersionName}")
+
+        def newFileContent = originalFileContent.replaceFirst("versionName \"\\d+\\.\\d+\\.\\d+-SNAPSHOT\"", newVersionName)
+        file.write(newFileContent)
+    }
+}
+task getVersionName {
+    doLast {
+        println android.defaultConfig.versionName
+    }
+}
+task bumpVersion {
+    doLast {
+        println("bumpVersion")
+
+        def currentVersionCode = android.defaultConfig.versionCode
+        println("currentVersionCode: ${currentVersionCode}")
+
+        def newVersionCode = currentVersionCode + 1
+        println("newVersionCode: ${newVersionCode}")
+
+        def newVersionName = newVersionCode.toString().substring(0, 1).toInteger() + "." + newVersionCode.toString().substring(1, 4).toInteger() + "." + newVersionCode.toString().substring(4, 7).toInteger()
+        println("newVersionName: ${newVersionName}")
+
+        def file = file("build.gradle")
+        def originalFileContent = file.getText()
+        def newFileContent = originalFileContent.replaceFirst("versionCode \\d+", "versionCode ${newVersionCode}")
+        newFileContent = newFileContent.replaceFirst("versionName \"\\d+\\.\\d+\\.\\d+\"", "versionName \"${newVersionName}\"")
+        file.write(newFileContent)
+    }
+}
+task addSnapshot {
+    doLast {
+        println("addSnapshot")
+
+        def file = file("build.gradle")
+        def originalFileContent = file.getText()
+
+        Pattern pattern = Pattern.compile("versionName \"\\d+\\.\\d+\\.\\d+\"")
+        Matcher matcher = pattern.matcher(originalFileContent)
+        matcher.find()
+        println("match: ${matcher.group()}")
+
+        def newVersionName = "${matcher.group().substring(12, matcher.group().length() - 1)}-SNAPSHOT\""
+        println("newVersionName: ${newVersionName}")
+
+        def newFileContent = originalFileContent.replaceFirst("versionName \"\\d+\\.\\d+\\.\\d+\"", "versionName ${newVersionName}")
+        file.write(newFileContent)
+    }
 }
