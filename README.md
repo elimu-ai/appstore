@@ -52,8 +52,17 @@ A list of the currently supported languages is available at https://github.com/e
 
 See https://jitpack.io/#ai.elimu/appstore/ for the latest version.
 
+#### Utils Usage Sample
+
+> [!NOTE]
+> To use the `utils` library in another Android app, add the dependency in `app/build.gradle`:
+
+```java
+implementation 'ai.elimu:appstore:<version>@aar'
+```
+
 <a name="utils-snapshot"></a>
-### How to Test `-SNAPSHOT` Versions of the Utils Library
+#### How to Test `-SNAPSHOT` Versions of the Utils Library
 
 1. Publish the library to your local Maven repository:
     ```sh
@@ -78,15 +87,6 @@ See https://jitpack.io/#ai.elimu/appstore/ for the latest version.
     +elimuAppstore = "2.5.1-SNAPSHOT"
     ```
 
-#### Utils Usage Sample
-
-> [!NOTE]
-> To use the `utils` library in another Android app, add the dependency in `app/build.gradle`:
-
-```java
-implementation 'ai.elimu:appstore:<version>@aar'
-```
-
 ### Gradle Upgrade
 
 ```
@@ -102,8 +102,9 @@ To perform a release, follow these steps:
 1. Ensure that the new release version appears at https://jitpack.io/#ai.elimu/appstore with "Status: ok"
 
 > [!IMPORTANT]
-> After you publish a new release, remember to also bump the version in the Android app repo that depend on the `utils` library:
-> * https://github.com/elimu-ai/appstore/blob/main/gradle/libs.versions.toml
+> After you publish a new release, remember to also bump the version in all Android app repos that depend on the `utils` library:
+> * https://github.com/elimu-ai/launcher/blob/main/gradle/libs.versions.toml
+> * https://github.com/elimu-ai/content-provider/blob/main/gradle/libs.versions.toml
 
 ---
 
