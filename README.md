@@ -1,6 +1,6 @@
-# elimu.ai Appstore 📲
-
 [![Release](https://jitpack.io/v/ai.elimu/appstore.svg)](https://jitpack.io/#ai.elimu/appstore)
+
+# elimu.ai Appstore 📲
 
 Android application which downloads and installs educational apps stored on the [elimu.ai](http://elimu.ai) platform.
 
@@ -48,11 +48,62 @@ We are building our software for Android devices with **6"-10" displays** instal
 
 A list of the currently supported languages is available at https://github.com/elimu-ai/model/blob/main/src/main/java/ai/elimu/model/v2/enums/Language.java
 
+### Utils Library 📦
+
+See https://jitpack.io/#ai.elimu/appstore/ for the latest version.
+
+<a name="utils-snapshot"></a>
+### How to Test `-SNAPSHOT` Versions of the Utils Library
+
+1. Publish the library to your local Maven repository:
+    ```sh
+    ./gradlew clean assemble utils:publishToMavenLocal
+    ```
+2. In the app that will be testing the `-SNAPSHOT` version of the library, add `mavenLocal()`:
+    ```diff
+    allprojects {
+        repositories {
+            mavenCentral()
+            maven {
+                url "https://jitpack.io"
+            }
+    +       mavenLocal()
+        }
+    }
+    ```
+3. Then change to your `-SNAPSHOT` version of the library:
+    ```diff
+    [versions]
+    -elimuAppstore = "2.5.0"
+    +elimuAppstore = "2.5.1-SNAPSHOT"
+    ```
+
+#### Utils Usage Sample
+
+> [!NOTE]
+> To use the `utils` library in another Android app, add the dependency in `app/build.gradle`:
+
+```java
+implementation 'ai.elimu:appstore:<version>@aar'
+```
+
 ### Gradle Upgrade
 
 ```
 ./gradlew wrapper --gradle-version x.x.x
 ```
+
+### Release 📦
+
+To perform a release, follow these steps:
+
+1. Merge your PR into the `main` branch
+1. Wait for the ["Gradle Release"](https://github.com/elimu-ai/appstore/actions/workflows/gradle-release.yml) workflow to complete
+1. Ensure that the new release version appears at https://jitpack.io/#ai.elimu/appstore with "Status: ok"
+
+> [!IMPORTANT]
+> After you publish a new release, remember to also bump the version in the Android app repo that depend on the `utils` library:
+> * https://github.com/elimu-ai/appstore/blob/main/gradle/libs.versions.toml
 
 ---
 
@@ -60,7 +111,7 @@ A list of the currently supported languages is available at https://github.com/e
   <img src="https://github.com/elimu-ai/webapp/blob/main/src/main/webapp/static/img/logo-text-256x78.png" />
 </p>
 <p align="center">
-  elimu.ai - Free open-source learning software for out-of-school children ✨🚀
+  elimu.ai - Free open-source learning software for out-of-school children 🚀✨
 </p>
 <p align="center">
   <a href="https://elimu.ai">Website 🌐</a>

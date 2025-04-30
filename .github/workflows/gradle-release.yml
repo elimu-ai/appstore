@@ -57,6 +57,11 @@ jobs:
         git add app/build.gradle
         git commit -m "chore: prepare for next development iteration"
 
+    - name: Git Pull
+      run: |
+        git fetch
+        git pull
+
     - name: Git Push
       run: |
         git push

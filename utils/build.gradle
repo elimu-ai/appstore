@@ -2,41 +2,27 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 plugins {
-    id 'org.jetbrains.kotlin.android'
+    id 'com.android.library'
     id 'maven-publish'
+    id 'org.jetbrains.kotlin.android'
 }
-apply plugin: 'com.android.application'
 
 android {
-    namespace 'ai.elimu.appstore'
+    namespace 'ai.elimu.appstore.utils'
+    compileSdk 35
 
     defaultConfig {
-        applicationId "ai.elimu.appstore"
-        minSdkVersion 26
-        compileSdk 35
-        targetSdkVersion 35
+        minSdk 26
+        targetSdk 35
         versionCode 2005000
         versionName "2.5.0-SNAPSHOT"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "${projectDir}/schemas".toString()]
-            }
-        }
     }
 
     buildTypes {
-        debug {
-            applicationIdSuffix ".debug"
-            versionNameSuffix "-debug"
-        }
         release {
             minifyEnabled false
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -44,50 +30,34 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
-
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation libs.elimu.analytics // https://jitpack.io/#ai.elimu/analytics
     implementation libs.elimu.common.utils // https://jitpack.io/#ai.elimu/common-utils
-
-    implementation libs.timber
-    implementation libs.material
-
-    // AndroidX
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.recycler.view
-    implementation libs.androidx.constraint.layout
-
-    // Retrofit
-    implementation libs.retrofit
-    implementation libs.retrofit.gson
-
-    // Room components
-    implementation libs.androidx.room.runtime
-    annotationProcessor libs.androidx.room.compiler
-    androidTestImplementation libs.androidx.room.testing
-
-    testImplementation libs.junit
-
-    androidTestImplementation libs.androidx.junit
-    androidTestImplementation libs.androidx.espresso
 }
 
 publishing {
     publications {
-        apk(MavenPublication) {
-            artifact("${buildDir}/outputs/apk/release/app-release-unsigned.apk")
+        aar(MavenPublication) {
+            groupId = "ai.elimu"
+            artifactId = "appstore"
+            version = android.defaultConfig.versionName
+            artifact("${buildDir}/outputs/aar/utils-release.aar")
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each {
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', it.group)
+                    dependencyNode.appendNode('artifactId', it.name)
+                    dependencyNode.appendNode('version', it.version)
+                }
+            }
         }
     }
 }
-tasks.named("publishApkPublicationToMavenLocal") {
-    mustRunAfter(":app:assembleRelease")
+tasks.named("publishAarPublicationToMavenLocal") {
+    mustRunAfter(":utils:bundleReleaseAar")
 }
 
 task removeSnapshot {
@@ -153,4 +123,3 @@ task addSnapshot {
         file.write(newFileContent)
     }
 }
-
