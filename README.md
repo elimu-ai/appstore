@@ -1,3 +1,5 @@
+[![Release](https://jitpack.io/v/ai.elimu/appstore.svg)](https://jitpack.io/#ai.elimu/appstore)
+
 # elimu.ai Appstore 📲
 
 Android application which downloads and installs educational apps stored on the [elimu.ai](http://elimu.ai) platform.
@@ -21,7 +23,7 @@ When opening the APK, you might see a prompt saying "Install unknown apps". If s
 
 The first time you launch the Appstore application, it will ask you to select the language that you want to use:
 
-<img width="320" alt="device-2020-06-10-152910" src="https://user-images.githubusercontent.com/15718174/84239611-58367d00-ab2f-11ea-9fb0-f119de951cef.png">
+![API_36_Screenshot_20250423_185617](https://github.com/user-attachments/assets/4c336178-b5d6-42a4-85c1-0c3ca559fc17)
 
 For information on how to add support for a new language, see https://github.com/elimu-ai/wiki/blob/main/LOCALIZATION.md.
 
@@ -46,11 +48,63 @@ We are building our software for Android devices with **6"-10" displays** instal
 
 A list of the currently supported languages is available at https://github.com/elimu-ai/model/blob/main/src/main/java/ai/elimu/model/v2/enums/Language.java
 
+### Utils Library 📦
+
+See https://jitpack.io/#ai.elimu/appstore/ for the latest version.
+
+#### Utils Usage Sample
+
+> [!NOTE]
+> To use the `utils` library in another Android app, add the dependency in `app/build.gradle`:
+
+```java
+implementation 'ai.elimu:appstore:<version>@aar'
+```
+
+<a name="utils-snapshot"></a>
+#### How to Test `-SNAPSHOT` Versions of the Utils Library
+
+1. Publish the library to your local Maven repository:
+    ```sh
+    ./gradlew clean assemble utils:publishToMavenLocal
+    ```
+2. In the app that will be testing the `-SNAPSHOT` version of the library, add `mavenLocal()`:
+    ```diff
+    allprojects {
+        repositories {
+            mavenCentral()
+            maven {
+                url "https://jitpack.io"
+            }
+    +       mavenLocal()
+        }
+    }
+    ```
+3. Then change to your `-SNAPSHOT` version of the library:
+    ```diff
+    [versions]
+    -elimuAppstore = "2.5.0"
+    +elimuAppstore = "2.5.1-SNAPSHOT"
+    ```
+
 ### Gradle Upgrade
 
 ```
 ./gradlew wrapper --gradle-version x.x.x
 ```
+
+### Release 📦
+
+To perform a release, follow these steps:
+
+1. Merge your PR into the `main` branch
+1. Wait for the ["Gradle Release"](https://github.com/elimu-ai/appstore/actions/workflows/gradle-release.yml) workflow to complete
+1. Ensure that the new release version appears at https://jitpack.io/#ai.elimu/appstore with "Status: ok"
+
+> [!IMPORTANT]
+> After you publish a new release, remember to also bump the version in all Android app repos that depend on the `utils` library:
+> * https://github.com/elimu-ai/launcher/blob/main/gradle/libs.versions.toml
+> * https://github.com/elimu-ai/content-provider/blob/main/gradle/libs.versions.toml
 
 ---
 
@@ -58,7 +112,7 @@ A list of the currently supported languages is available at https://github.com/e
   <img src="https://github.com/elimu-ai/webapp/blob/main/src/main/webapp/static/img/logo-text-256x78.png" />
 </p>
 <p align="center">
-  elimu.ai - Free open-source learning software for out-of-school children ✨🚀
+  elimu.ai - Free open-source learning software for out-of-school children 🚀✨
 </p>
 <p align="center">
   <a href="https://elimu.ai">Website 🌐</a>
