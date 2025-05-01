@@ -102,7 +102,7 @@ class InitialSyncActivity : AppCompatActivity() {
                                 applicationVersionGson
                             )
                             applicationVersionDao.insert(applicationVersion)
-                            Timber.i("Stored ApplicationVersion " + applicationVersion.versionCode + " in database with ID " + applicationVersion.id)
+                            Timber.i("Stored ApplicationVersion " + applicationVersion?.versionCode + " in database with ID " + applicationVersion?.id)
                         }
                     }
                 } else {
@@ -124,7 +124,7 @@ class InitialSyncActivity : AppCompatActivity() {
                                 applicationVersionGson
                             )
                             applicationVersionDao.insert(applicationVersion)
-                            Timber.i("Stored ApplicationVersion " + applicationVersion.versionCode + " in database with ID " + applicationVersion.id)
+                            Timber.i("Stored ApplicationVersion " + applicationVersion?.versionCode + " in database with ID " + applicationVersion?.id)
                         }
                     }
                 }

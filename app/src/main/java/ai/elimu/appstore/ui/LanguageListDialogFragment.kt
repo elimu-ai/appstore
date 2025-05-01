@@ -3,6 +3,7 @@ package ai.elimu.appstore.ui
 import ai.elimu.appstore.MainActivity
 import ai.elimu.appstore.R
 import ai.elimu.appstore.util.SharedPreferencesHelper
+import ai.elimu.common.utils.ui.BaseBottomSheetDialogFragment
 import ai.elimu.model.v2.enums.Language
 import android.content.Intent
 import android.os.Bundle
@@ -13,7 +14,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import timber.log.Timber
 
 /**
@@ -25,7 +25,7 @@ import timber.log.Timber
  * LanguageListDialogFragment.newInstance().show(getSupportFragmentManager(), "dialog");
 </pre> *
  */
-class LanguageListDialogFragment : BottomSheetDialogFragment() {
+class LanguageListDialogFragment : BaseBottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
