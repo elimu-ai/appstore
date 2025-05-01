@@ -1,6 +1,6 @@
 [versions]
 elimuAnalytics = "3.2.0"
-elimuCommonUtils = "1.0.12"
+elimuCommonUtils = "1.0.13"
 material = "1.12.0"
 retrofit = "2.11.0"
 junit = "4.13.2"
