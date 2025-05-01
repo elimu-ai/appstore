@@ -8,7 +8,7 @@ Android application which downloads and installs educational apps stored on the 
 
 ## Download Application ⬇️
 
-Download APK (`ai.elimu.appstore-<versionCode>.apk`) at https://github.com/elimu-ai/appstore/releases
+Download APK (`ai.elimu.appstore-<version>.apk`) at https://github.com/elimu-ai/appstore/releases
 
 ### Install the APK
 
