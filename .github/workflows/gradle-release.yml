@@ -15,10 +15,20 @@ jobs:
         java-version: 17
     - uses: gradle/gradle-build-action@v3
 
-    - name: Git Config
-      run: |
-        git config user.name 'Nya Ξlimu'
-        git config user.email 'info@elimu.ai'
+    - name: GitHub Actor
+        env: 
+          GITHUB_ACTOR: ${{ github.actor }}   
+        run: echo "$GITHUB_ACTOR"
+
+      - name: GitHub Triggering Actor
+        env: 
+          GITHUB_TRIGGERING_ACTOR: ${{ github.triggering_actor }}   
+        run: echo "$GITHUB_TRIGGERING_ACTOR"
+
+      - name: Git Config
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
     - name: Remove -SNAPSHOT from versionName
       run: ./gradlew removeSnapshot
