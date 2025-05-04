@@ -8,72 +8,137 @@ jobs:
   create_git_tag:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: 17
-    - uses: gradle/gradle-build-action@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/gradle-build-action@v3
 
-    - name: GitHub Actor
-      env: 
-        GITHUB_ACTOR: ${{ github.actor }}   
-      run: echo "$GITHUB_ACTOR"
+      - name: GitHub Actor
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: echo "$GITHUB_ACTOR"
 
-    - name: GitHub Triggering Actor
-      env: 
-        GITHUB_TRIGGERING_ACTOR: ${{ github.triggering_actor }}   
-      run: echo "$GITHUB_TRIGGERING_ACTOR"
+      - name: GitHub Triggering Actor
+        env:
+          GITHUB_TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        run: echo "$GITHUB_TRIGGERING_ACTOR"
 
-    - name: Git Config
-      run: |
-        git config user.name github-actions[bot]
-        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - name: Git Config
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-    - name: Remove -SNAPSHOT from versionName
-      run: ./gradlew removeSnapshot
+      - name: Remove -SNAPSHOT from versionName
+        run: ./gradlew removeSnapshot
 
-    - name: Set the new versionName as an environment variable
-      id: get_version_name
-      run: |
-        ./gradlew getVersionName --quiet --console=plain
-        VERSION_NAME="$(./gradlew getVersionName --quiet --console=plain)"
-        echo "::set-output name=version_name::$VERSION_NAME"
+      - name: Set the new versionName as an environment variable
+        id: get_version_name
+        run: |
+          ./gradlew getVersionName --quiet --console=plain
+          VERSION_NAME="$(./gradlew getVersionName --quiet --console=plain)"
+          echo "::set-output name=version_name::$VERSION_NAME"
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
 
-    - name: Git Commit
-      run: |
-        git add app/build.gradle
-        git add utils/build.gradle
-        echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
-        git commit -m "chore: prepare release ${{ steps.get_version_name.outputs.version_name }}"
+      - name: Git Commit
+        run: |
+          git add app/build.gradle
+          echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
+          git commit -m "chore: prepare release ${{ steps.get_version_name.outputs.version_name }}"
 
-    - name: Git Tag
-      run: |
-        echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
-        git tag ${{ steps.get_version_name.outputs.version_name }}
+      - name: Git Tag
+        run: |
+          echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
+          git tag ${{ steps.get_version_name.outputs.version_name }}
 
-    - name: Git Push Tag
-      run: |
-        echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
-        git push origin ${{ steps.get_version_name.outputs.version_name }}
+      - name: Git Push Tag
+        run: |
+          echo "version_name: ${{ steps.get_version_name.outputs.version_name }}"
+          git push origin ${{ steps.get_version_name.outputs.version_name }}
 
-    - name: Bump version
-      run: ./gradlew bumpVersion
+      - name: Bump version
+        run: ./gradlew bumpVersion
 
-    - name: Add -SNAPSHOT to versionName
-      run: ./gradlew addSnapshot
+      - name: Add -SNAPSHOT to versionName
+        run: ./gradlew addSnapshot
 
-    - name: Git Commit
-      run: |
-        git add app/build.gradle
-        git add utils/build.gradle
-        git commit -m "chore: prepare for next development iteration"
+      - name: Git Commit
+        run: |
+          git add app/build.gradle
+          git commit -m "chore: prepare for next development iteration"
 
-    - name: Git Pull
-      run: |
-        git fetch
-        git pull
+      - name: Git Pull
+        run: |
+          git fetch
+          git pull
 
-    - name: Git Push
-      run: |
-        git push
+      - name: Git Push
+        run: |
+          git push
+    outputs:
+      tagName: ${{ steps.get_version_name.outputs.version_name }}
+
+  release_apk:
+    needs: create_git_tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the Git Tag name from the previous job
+        run: echo "tagName ${{ needs.create_git_tag.outputs.tagName }}"
+
+      - name: Checkout refs/tags/${{ needs.create_git_tag.outputs.tagName }}
+        uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ needs.create_git_tag.outputs.tagName }}
+
+      - name: Assemble APK file
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/gradle-build-action@v3
+
+      - name: Assemble `release` build
+        run: ./gradlew assembleRelease
+
+      - name: Sign the APK file
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGN_ANDROID_KEY }}
+          alias: ${{ secrets.SIGN_ANDROID_ALIAS }}
+          keyStorePassword: ${{ secrets.SIGN_ANDROID_KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.SIGN_ANDROID_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - run: echo "signedReleaseFile ${{steps.sign_app.outputs.signedReleaseFile}}"
+
+      - name: Rename signed release file to `ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk`
+        run: mv ${{steps.sign_app.outputs.signedReleaseFile}} app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk
+
+      - name: Upload the signed APK file to GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: '${{ needs.create_git_tag.outputs.tagName }}'
+          files: app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Prepare the APK file URL
+        id: prepare_apk_file_url
+        run: |
+          echo "tagName ${{ needs.create_git_tag.outputs.tagName }}"
+          APK_FILE_URL="https://github.com/elimu-ai/appstore/releases/download/${{ needs.create_git_tag.outputs.tagName }}/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk"
+          echo "APK_FILE_URL $APK_FILE_URL"
+          echo "::set-output name=apk_file_url::$APK_FILE_URL"
+
+      - name: Send HTTP request to `tha.elimu.ai`
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: http://tha.elimu.ai/rest/v2/applications/ai.elimu.appstore/application-versions/${{ needs.create_git_tag.outputs.tagName }}
+          method: PUT
+          data: '{"fileUrl": "${{ steps.prepare_apk_file_url.outputs.apk_file_url }}"}'
+          customHeaders: '{"Content-Type": "application/json"}'
