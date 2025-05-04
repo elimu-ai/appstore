@@ -156,7 +156,7 @@ class ApplicationListAdapter(private val context: Context) :
                                     DownloadCompleteReceiver(position, destinationInExternalFilesDir,
                                         checkSum = finalApplicationVersion.checksumMd5),
                                     IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
-                                    Context.RECEIVER_NOT_EXPORTED
+                                    Context.RECEIVER_EXPORTED
                                 )
                                 Timber.i("destinationInExternalFilesDir: $destinationInExternalFilesDir")
                                 request.setDestinationInExternalFilesDir(
