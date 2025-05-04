@@ -6,6 +6,7 @@ import ai.elimu.appstore.R
 import ai.elimu.appstore.room.entity.Application
 import ai.elimu.appstore.room.entity.ApplicationVersion
 import ai.elimu.appstore.ui.applications.ApplicationListAdapter.ApplicationViewHolder
+import ai.elimu.appstore.util.FileHelper
 import ai.elimu.appstore.util.FileHelper.getApkFile
 import ai.elimu.appstore.util.InstallationHelper.getVersionCodeOfInstalledApplication
 import ai.elimu.appstore.util.InstallationHelper.isApplicationInstalled
@@ -23,11 +24,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import timber.log.Timber
 import java.io.File
 import androidx.core.net.toUri
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ApplicationListAdapter(private val context: Context) :
     RecyclerView.Adapter<ApplicationViewHolder>() {
@@ -132,19 +138,26 @@ class ApplicationListAdapter(private val context: Context) :
                             viewHolder.downloadUpdateButton.setOnClickListener { v: View? ->
                                 Timber.i("viewHolder.downloadUpdateButton onClick")
                                 // Initiate download of the APK file
-                                context.registerReceiver(
-                                    DownloadCompleteReceiver(position),
-                                    IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
-                                    Context.RECEIVER_NOT_EXPORTED
-                                )
+                                val baseApplication =
+                                    context.applicationContext as BaseApplication
+                                val fileUrl =
+                                    baseApplication.baseUrl + finalApplicationVersion.fileUrl
                                 Timber.i("finalApplicationVersion.fileUrl: ${finalApplicationVersion.fileUrl}")
-                                val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                                val request = DownloadManager.Request(finalApplicationVersion.fileUrl.toUri())
+                                val downloadManager =
+                                    context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                                val request =
+                                    DownloadManager.Request(finalApplicationVersion.fileUrl.toUri())
                                 val destinationInExternalFilesDir =
                                     File.separator + "lang-" + getLanguage(
                                         context
                                     )!!
                                         .isoCode + File.separator + "apks" + File.separator + apkFile.name
+                                context.registerReceiver(
+                                    DownloadCompleteReceiver(position, destinationInExternalFilesDir,
+                                        checkSum = finalApplicationVersion.checksumMd5),
+                                    IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                                    Context.RECEIVER_NOT_EXPORTED
+                                )
                                 Timber.i("destinationInExternalFilesDir: $destinationInExternalFilesDir")
                                 request.setDestinationInExternalFilesDir(
                                     context,
@@ -223,20 +236,28 @@ class ApplicationListAdapter(private val context: Context) :
                         viewHolder.downloadButton.setOnClickListener { v: View? ->
                             Timber.i("viewHolder.downloadButton onClick")
                             // Initiate download of the APK file
-                            context.registerReceiver(
-                                DownloadCompleteReceiver(position),
-                                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
-                                Context.RECEIVER_NOT_EXPORTED
-                            )
+                            val baseApplication =
+                                context.applicationContext as BaseApplication
+                            val fileUrl =
+                                baseApplication.baseUrl + finalApplicationVersion.fileUrl
                             Timber.i("finalApplicationVersion.fileUrl: ${finalApplicationVersion.fileUrl}")
-                            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                            val request = DownloadManager.Request(finalApplicationVersion.fileUrl.toUri())
+                            val downloadManager =
+                                context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                            val request =
+                                DownloadManager.Request(finalApplicationVersion.fileUrl.toUri())
                             val destinationInExternalFilesDir =
                                 File.separator + "lang-" + getLanguage(
                                     context
                                 )!!
                                     .isoCode + File.separator + "apks" + File.separator + apkFile.name
                             Timber.i("destinationInExternalFilesDir: $destinationInExternalFilesDir")
+
+                            context.registerReceiver(
+                                DownloadCompleteReceiver(position, destinationInExternalFilesDir, finalApplicationVersion.checksumMd5),
+                                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                                Context.RECEIVER_EXPORTED
+                            )
+
                             request.setDestinationInExternalFilesDir(
                                 context,
                                 null,
@@ -315,13 +336,27 @@ class ApplicationListAdapter(private val context: Context) :
     }
 
 
-    private inner class DownloadCompleteReceiver(private val itemPosition: Int) :
+    private inner class DownloadCompleteReceiver(private val itemPosition: Int,
+                                                 private val relativeFilePath: String,
+                                                 private val checkSum: String) :
         BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Timber.i("onReceive")
-
+            val downloadedFile = context.getExternalFilesDir(relativeFilePath)
+            Timber.i("onReceive itemPos: $itemPosition\nrelativeFilePath: $relativeFilePath\nabsolute filePath: $downloadedFile")
             Timber.i("intent: $intent")
-            notifyItemChanged(itemPosition)
+
+            CoroutineScope(Dispatchers.Main).launch {
+                val downloadedFileCheckSum = FileHelper.calculateMD5Checksum(downloadedFile?.absolutePath ?: "")
+                if (downloadedFileCheckSum != checkSum) {
+                    downloadedFile?.delete()
+                    val activity = context as? ApplicationListActivity ?: return@launch
+                    Snackbar.make(activity.window.decorView,
+                        context.getString(R.string.download_error),
+                        Snackbar.LENGTH_LONG
+                    ).setBackgroundTint(ContextCompat.getColor(context, R.color.red)).show()
+                }
+                notifyItemChanged(itemPosition)
+            }
         }
     }
 
