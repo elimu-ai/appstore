@@ -137,15 +137,9 @@ class ApplicationListAdapter(private val context: Context) :
                                     IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                                     Context.RECEIVER_NOT_EXPORTED
                                 )
-                                val baseApplication =
-                                    context.applicationContext as BaseApplication
-                                val fileUrl =
-                                    baseApplication.baseUrl + finalApplicationVersion.fileUrl
-                                Timber.i("fileUrl: $fileUrl")
-                                val downloadManager =
-                                    context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                                val request =
-                                    DownloadManager.Request(fileUrl.toUri())
+                                Timber.i("finalApplicationVersion.fileUrl: ${finalApplicationVersion.fileUrl}")
+                                val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                                val request = DownloadManager.Request(finalApplicationVersion.fileUrl.toUri())
                                 val destinationInExternalFilesDir =
                                     File.separator + "lang-" + getLanguage(
                                         context
@@ -234,15 +228,9 @@ class ApplicationListAdapter(private val context: Context) :
                                 IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                                 Context.RECEIVER_NOT_EXPORTED
                             )
-                            val baseApplication =
-                                context.applicationContext as BaseApplication
-                            val fileUrl =
-                                baseApplication.baseUrl + finalApplicationVersion.fileUrl
-                            Timber.i("fileUrl: $fileUrl")
-                            val downloadManager =
-                                context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                            val request =
-                                DownloadManager.Request(Uri.parse(fileUrl))
+                            Timber.i("finalApplicationVersion.fileUrl: ${finalApplicationVersion.fileUrl}")
+                            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                            val request = DownloadManager.Request(finalApplicationVersion.fileUrl.toUri())
                             val destinationInExternalFilesDir =
                                 File.separator + "lang-" + getLanguage(
                                     context
