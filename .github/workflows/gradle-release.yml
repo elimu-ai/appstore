@@ -140,16 +140,16 @@ jobs:
       apkFileUrl: ${{ steps.prepare_apk_file_url.outputs.apk_file_url }}
 
   notify_webapp_api:
-    needs: release_apk
+    needs: [ create_git_tag, release_apk ]
     strategy:
       matrix:
         language_code: [ eng, hin, tgl, tha, vie ]
     runs-on: ubuntu-latest
     steps:
-      - name: Get the Git Tag name from a previous job
+      - name: Get the Git Tag name from previous job
         run: echo "tagName ${{ needs.create_git_tag.outputs.tagName }}"
 
-      - name: Get the APK file URL from the previous job
+      - name: Get the APK file URL from previous job
         run: echo "apkFileUrl ${{ needs.release_apk.outputs.apkFileUrl }}"
 
       - name: Send HTTP request to `${{ matrix.language_code }}.elimu.ai`
