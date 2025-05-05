@@ -36,13 +36,9 @@ jobs:
       - name: Set the new versionName as an environment variable
         id: get_version_name
         run: |
-          # Run the command only once and capture its output
+          ./gradlew getVersionName --quiet --console=plain
           VERSION_NAME="$(./gradlew getVersionName --quiet --console=plain)"
-          # Trim any whitespace just to be safe
-          VERSION_NAME=$(echo "$VERSION_NAME" | xargs)
           echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
-          # For debugging
-          echo "Captured version: $VERSION_NAME"
 
       - name: Git Commit
         run: |
