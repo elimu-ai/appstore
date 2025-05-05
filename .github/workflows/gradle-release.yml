@@ -38,6 +38,7 @@ jobs:
         run: |
           ./gradlew app:getVersionName --quiet --console=plain
           VERSION_NAME="$(./gradlew app:getVersionName --quiet --console=plain)"
+          echo "VERSION_NAME $VERSION_NAME"
           echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
 
       - name: Git Commit
@@ -134,11 +135,24 @@ jobs:
           echo "tagName ${{ needs.create_git_tag.outputs.tagName }}"
           APK_FILE_URL="https://github.com/elimu-ai/analytics/releases/download/${{ needs.create_git_tag.outputs.tagName }}/ai.elimu.analytics-${{ needs.create_git_tag.outputs.tagName }}.apk"
           echo "APK_FILE_URL $APK_FILE_URL"
+          echo "apk_file_url=$APK_FILE_URL" >> $GITHUB_OUTPUT
+    outputs:
+      apkFileUrl: ${{ steps.prepare_apk_file_url.outputs.apk_file_url }}
 
-      - name: Send HTTP request to `tha.elimu.ai`
+  notify_webapp:
+    needs: release_apk
+    strategy:
+      matrix:
+        language_code: [ eng, hin, tgl, tha, vie ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the APK file URL from the previous job
+        run: echo "apkFileUrl ${{ needs.release_apk.outputs.apkFileUrl }}"
+
+      - name: Send HTTP request to `${{ matrix.language_code }}.elimu.ai`
         uses: fjogeleit/http-request-action@v1
         with:
-          url: http://tha.elimu.ai/rest/v2/applications/ai.elimu.analytics/application-versions/${{ needs.create_git_tag.outputs.tagName }}
+          url: http://${{ matrix.language_code }}.elimu.ai/rest/v2/applications/ai.elimu.analytics/application-versions/${{ needs.create_git_tag.outputs.tagName }}
           method: PUT
           data: '{"fileUrl": "${{ steps.prepare_apk_file_url.outputs.apk_file_url }}"}'
           customHeaders: '{"Content-Type": "application/json"}'
