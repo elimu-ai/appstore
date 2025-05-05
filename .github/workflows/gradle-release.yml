@@ -118,14 +118,14 @@ jobs:
 
       - run: echo "signedReleaseFile ${{steps.sign_app.outputs.signedReleaseFile}}"
 
-      - name: Rename signed release file to `ai.elimu.analytics-${{ needs.create_git_tag.outputs.tagName }}.apk`
-        run: mv ${{steps.sign_app.outputs.signedReleaseFile}} app/build/outputs/apk/release/ai.elimu.analytics-${{ needs.create_git_tag.outputs.tagName }}.apk
+      - name: Rename signed release file to `ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk`
+        run: mv ${{steps.sign_app.outputs.signedReleaseFile}} app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk
 
       - name: Upload the signed APK file to GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: '${{ needs.create_git_tag.outputs.tagName }}'
-          files: app/build/outputs/apk/release/ai.elimu.analytics-${{ needs.create_git_tag.outputs.tagName }}.apk
+          files: app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -133,7 +133,7 @@ jobs:
         id: prepare_apk_file_url
         run: |
           echo "tagName ${{ needs.create_git_tag.outputs.tagName }}"
-          APK_FILE_URL="https://github.com/elimu-ai/analytics/releases/download/${{ needs.create_git_tag.outputs.tagName }}/ai.elimu.analytics-${{ needs.create_git_tag.outputs.tagName }}.apk"
+          APK_FILE_URL="https://github.com/elimu-ai/appstore/releases/download/${{ needs.create_git_tag.outputs.tagName }}/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk"
           echo "APK_FILE_URL $APK_FILE_URL"
           echo "apk_file_url=$APK_FILE_URL" >> $GITHUB_OUTPUT
     outputs:
@@ -155,7 +155,7 @@ jobs:
       - name: Send HTTP request to `${{ matrix.language_code }}.elimu.ai`
         uses: fjogeleit/http-request-action@v1
         with:
-          url: http://${{ matrix.language_code }}.elimu.ai/rest/v2/applications/ai.elimu.analytics/application-versions/${{ needs.create_git_tag.outputs.tagName }}
+          url: http://${{ matrix.language_code }}.elimu.ai/rest/v2/applications/ai.elimu.appstore/application-versions/${{ needs.create_git_tag.outputs.tagName }}
           method: PUT
           data: '{"fileUrl": "${{ needs.release_apk.outputs.apkFileUrl }}"}'
           customHeaders: '{"Content-Type": "application/json"}'
