@@ -38,7 +38,6 @@ jobs:
         run: |
           ./gradlew getVersionName --quiet --console=plain
           VERSION_NAME="$(./gradlew getVersionName --quiet --console=plain)"
-          echo "::set-output name=version_name::$VERSION_NAME"
           echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
 
       - name: Git Commit
