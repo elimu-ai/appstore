@@ -12,7 +12,6 @@ recyclerView = "1.4.0"
 room = "2.7.1"
 androidXJunit = "1.2.1"
 androidXEspresso = "3.6.1"
-kotlin = "2.1.20"
 kotlinGradlePlugin = "2.1.20"
 agp = "8.8.2"
 
