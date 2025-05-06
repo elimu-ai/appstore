@@ -1,7 +1,5 @@
 package ai.elimu.appstore.room.dao;
 
-import android.database.Cursor;
-
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
