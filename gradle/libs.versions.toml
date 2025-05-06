@@ -37,4 +37,3 @@ kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-p
 agp = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 
 [plugins]
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
