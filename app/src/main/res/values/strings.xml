@@ -9,4 +9,6 @@
     <string name="download_update">Download\nupdate</string>
     <string name="connecting">Connecting...</string>
     <string name="select_your_language">Select your language</string>
+    <string name="connecting_to_url">"Connecting to %s"</string>
+    <string name="language_value">%1$s (%2$s)</string>
 </resources>
