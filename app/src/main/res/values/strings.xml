@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">elimu.ai Appstore</string>
     <string name="download_error">Download error. Please try again.</string>
+    <string name="content_desc_syncing">Syncing</string>
 </resources>
