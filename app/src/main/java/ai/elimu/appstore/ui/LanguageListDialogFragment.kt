@@ -78,7 +78,8 @@ class LanguageListDialogFragment : BaseBottomSheetDialogFragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val language = languages[position]
-            holder.text.text = language.englishName + " (" + language.nativeName + ")"
+            holder.text.text =
+                getString(R.string.language_value, language.englishName, language.nativeName)
             holder.text.setOnClickListener {
                 Timber.tag(TAG).i("onClick")
 

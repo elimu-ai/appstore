@@ -1,6 +1,7 @@
 package ai.elimu.appstore.ui.applications
 
 import ai.elimu.appstore.BaseApplication
+import ai.elimu.appstore.R
 import ai.elimu.appstore.databinding.ActivityInitialSyncBinding
 import ai.elimu.appstore.rest.ApplicationsService
 import ai.elimu.appstore.room.GsonToRoomConverter
@@ -40,7 +41,7 @@ class InitialSyncActivity : AppCompatActivity() {
         )
         val call = applicationsService.listApplications()
         Timber.i("call.request(): %s", call.request())
-        binding.initialSyncTextview.text = "Connecting to " + call.request().url()
+        binding.initialSyncTextview.text = getString(R.string.connecting_to_url, call.request().url())
         call.enqueue(object : Callback<List<ApplicationGson>> {
             override fun onResponse(
                 call: Call<List<ApplicationGson>>,
