@@ -3,7 +3,7 @@ package ai.elimu.appstore.room.entity;
 import androidx.room.PrimaryKey;
 
 /**
- * For documentation, see https://github.com/elimu-ai/webapp/tree/master/src/main/java/ai/elimu/model
+ * For documentation, see <a href="https://github.com/elimu-ai/webapp/tree/master/src/main/java/ai/elimu/model">model</a>
  */
 public class BaseEntity {
 
