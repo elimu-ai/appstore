@@ -2,4 +2,11 @@
     <string name="app_name">elimu.ai Appstore</string>
     <string name="download_error">Download error. Please try again.</string>
     <string name="content_desc_syncing">Syncing</string>
+    <string name="launch">Launch</string>
+    <string name="install">Install</string>
+    <string name="download">Download</string>
+    <string name="install_update">Install\nupdate</string>
+    <string name="download_update">Download\nupdate</string>
+    <string name="connecting">Connecting...</string>
+    <string name="select_your_language">Select your language</string>
 </resources>

@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:text="Connecting..." />
+            android:text="@string/connecting" />
 
         <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
