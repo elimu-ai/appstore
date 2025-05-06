@@ -95,7 +95,7 @@ class ApplicationListAdapter(private val context: Context) :
                         application,
                         applicationVersions!!
                     )
-                    Timber.i("applicationVersion.getVersionCode(): " + applicationVersion!!.versionCode)
+                    Timber.i("applicationVersion.getVersionCode(): %s", applicationVersion!!.versionCode)
                     if (versionCodeInstalled < applicationVersion.versionCode) {
                         // An update is available for download
 
@@ -107,7 +107,7 @@ class ApplicationListAdapter(private val context: Context) :
                             context
                         )
                         Timber.i("apkFile: $apkFile")
-                        Timber.i("apkFile.exists(): " + apkFile!!.exists())
+                        Timber.i("apkFile.exists(): %s", apkFile!!.exists())
                         if (apkFile.exists()) {
                             viewHolder.installUpdateButton.visibility = View.VISIBLE
                             val onClickListener = View.OnClickListener { v: View? ->
@@ -202,13 +202,13 @@ class ApplicationListAdapter(private val context: Context) :
                     if (applicationVersion == null) {
                         return
                     }
-                    Timber.i("applicationVersion.getVersionCode(): " + applicationVersion.versionCode)
+                    Timber.i("applicationVersion.getVersionCode(): %s", applicationVersion.versionCode)
 
                     // If the APK has been downloaded (but not yet installed), display the "Install" button
                     val apkFile =
                         getApkFile(application.packageName, applicationVersion.versionCode, context)
                     Timber.i("apkFile: $apkFile")
-                    Timber.i("apkFile.exists(): " + apkFile!!.exists())
+                    Timber.i("apkFile.exists(): %s", apkFile!!.exists())
                     if (apkFile.exists()) {
                         viewHolder.installButton.visibility = View.VISIBLE
                         val onClickListener = View.OnClickListener { v: View? ->
@@ -366,7 +366,7 @@ class ApplicationListAdapter(private val context: Context) :
             Timber.i("onReceive")
 
             Timber.i("intent: $intent")
-            Timber.i("intent.getData(): " + intent.data)
+            Timber.i("intent.getData(): %s", intent.data)
             notifyItemChanged(itemPosition)
         }
     }
