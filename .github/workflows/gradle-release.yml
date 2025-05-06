@@ -159,3 +159,4 @@ jobs:
           method: PUT
           data: '{"fileUrl": "${{ needs.release_apk.outputs.apkFileUrl }}"}'
           customHeaders: '{"Content-Type": "application/json"}'
+          timeout: 60000
