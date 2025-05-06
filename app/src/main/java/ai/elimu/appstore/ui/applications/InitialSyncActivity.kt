@@ -89,9 +89,10 @@ class InitialSyncActivity : AppCompatActivity() {
                 Timber.i("application: $application")
                 if (application == null) {
                     // Store the new Application in the database
-                    application = GsonToRoomConverter.getApplication(applicationGson)
-                    applicationDao.insert(application)
-                    Timber.i("%s%s", "Stored Application \"" + application.packageName + "\" in database with ID ", application.id)
+                    GsonToRoomConverter.getApplication(applicationGson)?.let { app ->
+                        applicationDao.insert(app)
+                        Timber.i("%s%s", "Stored Application \"" + app.packageName + "\" in database with ID ", app.id)
+                    }
 
                     if (applicationGson.applicationStatus == ApplicationStatus.ACTIVE) {
                         // Store the Application's ApplicationVersions in the database
@@ -108,9 +109,10 @@ class InitialSyncActivity : AppCompatActivity() {
                     }
                 } else {
                     // Update the existing Application in the database
-                    application = GsonToRoomConverter.getApplication(applicationGson)
-                    applicationDao.update(application)
-                    Timber.i("%s%s", "Updated Application \"" + application.packageName + "\" in database with ID ", application.id)
+                    GsonToRoomConverter.getApplication(applicationGson)?.let { app ->
+                        applicationDao.update(app)
+                        Timber.i("%s%s", "Updated Application \"" + app.packageName + "\" in database with ID ", app.id)
+                    }
 
                     // Delete all the Application's ApplicationVersions (in case deletions have been made on the server-side)
                     applicationVersionDao.delete(applicationGson.id)
