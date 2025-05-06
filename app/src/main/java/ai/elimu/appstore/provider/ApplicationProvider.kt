@@ -48,7 +48,7 @@ class ApplicationProvider : ContentProvider() {
         Timber.i("getType")
 
         when (MATCHER.match(uri)) {
-            CODE_APPLICATIONS -> return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_APPLICATIONS
+            CODE_APPLICATIONS -> return "vnd.android.cursor.dir/$AUTHORITY.$TABLE_APPLICATIONS"
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
     }
