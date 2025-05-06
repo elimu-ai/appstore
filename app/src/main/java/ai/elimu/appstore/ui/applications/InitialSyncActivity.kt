@@ -99,12 +99,16 @@ class InitialSyncActivity : AppCompatActivity() {
                         val applicationVersionGsons = applicationGson.applicationVersions
                         Timber.i("applicationVersionGsons.size(): %s", applicationVersionGsons.size)
                         for (applicationVersionGson in applicationVersionGsons) {
-                            val applicationVersion = GsonToRoomConverter.getApplicationVersion(
+                            GsonToRoomConverter.getApplicationVersion(
                                 applicationGson,
                                 applicationVersionGson
-                            )
-                            applicationVersionDao.insert(applicationVersion)
-                            Timber.i("%s%s", "Stored ApplicationVersion " + applicationVersion?.versionCode + " in database with ID ", applicationVersion?.id)
+                            )?.let { applicationVersion ->
+                                applicationVersionDao.insert(applicationVersion)
+                                Timber.i("%s%s", "Stored ApplicationVersion " +
+                                        applicationVersion.versionCode + " in database with ID ",
+                                    applicationVersion.id
+                                )
+                            }
                         }
                     }
                 } else {
@@ -122,12 +126,16 @@ class InitialSyncActivity : AppCompatActivity() {
                         val applicationVersionGsons = applicationGson.applicationVersions
                         Timber.i("applicationVersionGsons.size(): %s", applicationVersionGsons.size)
                         for (applicationVersionGson in applicationVersionGsons) {
-                            val applicationVersion = GsonToRoomConverter.getApplicationVersion(
+                            GsonToRoomConverter.getApplicationVersion(
                                 applicationGson,
                                 applicationVersionGson
-                            )
-                            applicationVersionDao.insert(applicationVersion)
-                            Timber.i("%s%s", "Stored ApplicationVersion " + applicationVersion?.versionCode + " in database with ID ", applicationVersion?.id)
+                            )?.let { applicationVersion ->
+                                applicationVersionDao.insert(applicationVersion)
+                                Timber.i("%s%s", "Stored ApplicationVersion " +
+                                        applicationVersion.versionCode + " in database with ID ",
+                                    applicationVersion.id
+                                )
+                            }
                         }
                     }
                 }

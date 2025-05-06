@@ -1,32 +1,28 @@
-package ai.elimu.appstore.room.dao;
+package ai.elimu.appstore.room.dao
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-import androidx.room.Update;
-
-import java.util.List;
-
-import ai.elimu.appstore.room.entity.ApplicationVersion;
+import ai.elimu.appstore.room.entity.ApplicationVersion
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 
 @Dao
-public interface ApplicationVersionDao {
-
+interface ApplicationVersionDao {
     @Insert
-    void insert(ApplicationVersion applicationVersion);
+    fun insert(applicationVersion: ApplicationVersion)
 
     @Query("SELECT * FROM ApplicationVersion av WHERE av.id = :id")
-    ApplicationVersion load(Long id);
+    fun load(id: Long?): ApplicationVersion?
 
     @Query("SELECT * FROM ApplicationVersion av ORDER BY av.applicationId ASC, av.versionCode DESC")
-    List<ApplicationVersion> loadAll();
+    fun loadAll(): List<ApplicationVersion>
 
     @Query("SELECT * FROM ApplicationVersion av WHERE av.applicationId = :applicationId ORDER BY versionCode DESC")
-    List<ApplicationVersion> loadAll(Long applicationId);
+    fun loadAll(applicationId: Long?): List<ApplicationVersion>
 
     @Update
-    void update(ApplicationVersion applicationVersion);
+    fun update(applicationVersion: ApplicationVersion)
 
     @Query("DELETE FROM ApplicationVersion WHERE applicationId = :applicationId")
-    void delete(Long applicationId);
+    fun delete(applicationId: Long)
 }
