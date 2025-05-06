@@ -57,11 +57,11 @@ public abstract class RoomDb extends RoomDatabase {
             Timber.i("migrate (1 --> 2)");
 
             String sql = "ALTER TABLE Application ADD COLUMN `literacySkills` TEXT";
-            Timber.i("sql: " + sql);
+            Timber.i("sql: %s", sql);
             database.execSQL(sql);
 
             sql = "ALTER TABLE Application ADD COLUMN `numeracySkills` TEXT";
-            Timber.i("sql: " + sql);
+            Timber.i("sql: %s", sql);
             database.execSQL(sql);
         }
     };
@@ -71,7 +71,7 @@ public abstract class RoomDb extends RoomDatabase {
         public void migrate(SupportSQLiteDatabase database) {
             Timber.i("migrate (2 --> 3)");
             String sql = "CREATE TABLE IF NOT EXISTS `ApplicationVersion` (`applicationId` INTEGER NOT NULL, `fileUrl` TEXT NOT NULL, `fileSizeInKb` INTEGER NOT NULL, `checksumMd5` TEXT NOT NULL, `versionCode` INTEGER NOT NULL, `id` INTEGER, PRIMARY KEY(`id`))";
-            Timber.i("sql: " + sql);
+            Timber.i("sql: %s", sql);
             database.execSQL(sql);
         }
     };

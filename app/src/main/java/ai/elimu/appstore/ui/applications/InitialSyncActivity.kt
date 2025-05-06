@@ -39,7 +39,7 @@ class InitialSyncActivity : AppCompatActivity() {
             ApplicationsService::class.java
         )
         val call = applicationsService.listApplications()
-        Timber.i("call.request(): " + call.request())
+        Timber.i("call.request(): %s", call.request())
         binding.initialSyncTextview.text = "Connecting to " + call.request().url()
         call.enqueue(object : Callback<List<ApplicationGson>> {
             override fun onResponse(
@@ -53,7 +53,7 @@ class InitialSyncActivity : AppCompatActivity() {
                 // Parse the JSON response
 //                Snackbar.make(textView, "Synchronizing database...", Snackbar.LENGTH_LONG).show();
                 val applicationGsons = response.body()!!
-                Timber.i("applicationGsons.size(): " + applicationGsons.size)
+                Timber.i("applicationGsons.size(): %s", applicationGsons.size)
                 if (applicationGsons.isNotEmpty()) {
                     processResponseBody(applicationGsons)
                 }
@@ -81,7 +81,7 @@ class InitialSyncActivity : AppCompatActivity() {
             val applicationVersionDao = roomDb.applicationVersionDao()
 
             for (applicationGson in applicationGsons) {
-                Timber.i("applicationGson.getId(): " + applicationGson.id)
+                Timber.i("applicationGson.getId(): %s", applicationGson.id)
 
                 // Check if the Application has already been stored in the database
                 var application = applicationDao.load(applicationGson.id)
@@ -90,26 +90,26 @@ class InitialSyncActivity : AppCompatActivity() {
                     // Store the new Application in the database
                     application = GsonToRoomConverter.getApplication(applicationGson)
                     applicationDao.insert(application)
-                    Timber.i("Stored Application \"" + application.packageName + "\" in database with ID " + application.id)
+                    Timber.i("%s%s", "Stored Application \"" + application.packageName + "\" in database with ID ", application.id)
 
                     if (applicationGson.applicationStatus == ApplicationStatus.ACTIVE) {
                         // Store the Application's ApplicationVersions in the database
                         val applicationVersionGsons = applicationGson.applicationVersions
-                        Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size)
+                        Timber.i("applicationVersionGsons.size(): %s", applicationVersionGsons.size)
                         for (applicationVersionGson in applicationVersionGsons) {
                             val applicationVersion = GsonToRoomConverter.getApplicationVersion(
                                 applicationGson,
                                 applicationVersionGson
                             )
                             applicationVersionDao.insert(applicationVersion)
-                            Timber.i("Stored ApplicationVersion " + applicationVersion?.versionCode + " in database with ID " + applicationVersion?.id)
+                            Timber.i("%s%s", "Stored ApplicationVersion " + applicationVersion?.versionCode + " in database with ID ", applicationVersion?.id)
                         }
                     }
                 } else {
                     // Update the existing Application in the database
                     application = GsonToRoomConverter.getApplication(applicationGson)
                     applicationDao.update(application)
-                    Timber.i("Updated Application \"" + application.packageName + "\" in database with ID " + application.id)
+                    Timber.i("%s%s", "Updated Application \"" + application.packageName + "\" in database with ID ", application.id)
 
                     // Delete all the Application's ApplicationVersions (in case deletions have been made on the server-side)
                     applicationVersionDao.delete(applicationGson.id)
@@ -117,14 +117,14 @@ class InitialSyncActivity : AppCompatActivity() {
                     if (applicationGson.applicationStatus == ApplicationStatus.ACTIVE) {
                         // Store the Application's ApplicationVersions in the database
                         val applicationVersionGsons = applicationGson.applicationVersions
-                        Timber.i("applicationVersionGsons.size(): " + applicationVersionGsons.size)
+                        Timber.i("applicationVersionGsons.size(): %s", applicationVersionGsons.size)
                         for (applicationVersionGson in applicationVersionGsons) {
                             val applicationVersion = GsonToRoomConverter.getApplicationVersion(
                                 applicationGson,
                                 applicationVersionGson
                             )
                             applicationVersionDao.insert(applicationVersion)
-                            Timber.i("Stored ApplicationVersion " + applicationVersion?.versionCode + " in database with ID " + applicationVersion?.id)
+                            Timber.i("%s%s", "Stored ApplicationVersion " + applicationVersion?.versionCode + " in database with ID ", applicationVersion?.id)
                         }
                     }
                 }
