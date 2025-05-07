@@ -1,24 +1,16 @@
-package ai.elimu.appstore.room.entity;
+package ai.elimu.appstore.room.entity
 
-import androidx.room.PrimaryKey;
+import androidx.room.PrimaryKey
 
 /**
- * For documentation, see <a href="https://github.com/elimu-ai/webapp/tree/master/src/main/java/ai/elimu/model">model</a>
+ * For documentation, see [model](https://github.com/elimu-ai/webapp/tree/master/src/main/java/ai/elimu/model)
  */
-public class BaseEntity {
-
+open class BaseEntity {
     /**
-     * Reflects the ID stored in the backend webapp's database. Therefore, {@code @PrimaryKey(autoGenerate = true)} is
+     * Reflects the ID stored in the backend webapp's database. Therefore, `@PrimaryKey(autoGenerate = true)` is
      * not used.
      */
+    @JvmField
     @PrimaryKey
-    private Long id;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    var id: Long? = null
 }
