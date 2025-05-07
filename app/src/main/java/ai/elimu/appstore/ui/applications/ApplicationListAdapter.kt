@@ -1,6 +1,5 @@
 package ai.elimu.appstore.ui.applications
 
-import ai.elimu.appstore.BaseApplication
 import ai.elimu.appstore.BuildConfig
 import ai.elimu.appstore.R
 import ai.elimu.appstore.room.entity.Application
@@ -109,7 +108,7 @@ class ApplicationListAdapter(private val context: Context) :
                         Timber.i("apkFile.exists(): %s", apkFile!!.exists())
                         if (apkFile.exists()) {
                             viewHolder.installUpdateButton.visibility = View.VISIBLE
-                            val onClickListener = View.OnClickListener { v: View? ->
+                            val onClickListener = View.OnClickListener { _: View? ->
                                 Timber.i("viewHolder.installUpdateButton onClick")
                                 // Initiate installation of the APK file
                                 val intentFilter = IntentFilter(Intent.ACTION_PACKAGE_ADDED)
@@ -133,27 +132,24 @@ class ApplicationListAdapter(private val context: Context) :
                         // If the APK has not been downloaded, display the "Download update" button
                         if (!apkFile.exists()) {
                             viewHolder.downloadUpdateButton.visibility = View.VISIBLE
-                            val finalApplicationVersion = applicationVersion
-                            viewHolder.downloadUpdateButton.setOnClickListener { v: View? ->
+                            viewHolder.downloadUpdateButton.setOnClickListener {
                                 Timber.i("viewHolder.downloadUpdateButton onClick")
                                 // Initiate download of the APK file
-                                val baseApplication =
-                                    context.applicationContext as BaseApplication
-                                val fileUrl =
-                                    baseApplication.baseUrl + finalApplicationVersion.fileUrl
-                                Timber.i("finalApplicationVersion.fileUrl: ${finalApplicationVersion.fileUrl}")
+                                Timber.i("finalApplicationVersion.fileUrl: ${applicationVersion.fileUrl}")
                                 val downloadManager =
                                     context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                                 val request =
-                                    DownloadManager.Request(finalApplicationVersion.fileUrl.toUri())
+                                    DownloadManager.Request(applicationVersion.fileUrl.toUri())
                                 val destinationInExternalFilesDir =
                                     File.separator + "lang-" + getLanguage(
                                         context
                                     )!!
                                         .isoCode + File.separator + "apks" + File.separator + apkFile.name
                                 context.registerReceiver(
-                                    DownloadCompleteReceiver(position, destinationInExternalFilesDir,
-                                        checkSum = finalApplicationVersion.checksumMd5),
+                                    DownloadCompleteReceiver(
+                                        position, destinationInExternalFilesDir,
+                                        checkSum = applicationVersion.checksumMd5
+                                    ),
                                     IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                                     Context.RECEIVER_EXPORTED
                                 )
@@ -179,7 +175,7 @@ class ApplicationListAdapter(private val context: Context) :
                         // Display the "Launch" button
 
                         viewHolder.launchButton.visibility = View.VISIBLE
-                        viewHolder.launchButton.setOnClickListener { v: View? ->
+                        viewHolder.launchButton.setOnClickListener {
                             Timber.i("onClick")
                             Timber.i("Launching \"" + application.packageName + "\"")
                             val packageManager = context.packageManager
@@ -210,7 +206,7 @@ class ApplicationListAdapter(private val context: Context) :
                     Timber.i("apkFile.exists(): %s", apkFile!!.exists())
                     if (apkFile.exists()) {
                         viewHolder.installButton.visibility = View.VISIBLE
-                        val onClickListener = View.OnClickListener { v: View? ->
+                        val onClickListener = View.OnClickListener { _: View? ->
                             Timber.i("viewHolder.installButton onClick")
                             // Initiate installation of the APK file
                             val intentFilter = IntentFilter(Intent.ACTION_PACKAGE_ADDED)
@@ -232,13 +228,9 @@ class ApplicationListAdapter(private val context: Context) :
                     if (!apkFile.exists()) {
                         viewHolder.downloadButton.visibility = View.VISIBLE
                         val finalApplicationVersion: ApplicationVersion = applicationVersion
-                        viewHolder.downloadButton.setOnClickListener { v: View? ->
+                        viewHolder.downloadButton.setOnClickListener {
                             Timber.i("viewHolder.downloadButton onClick")
                             // Initiate download of the APK file
-                            val baseApplication =
-                                context.applicationContext as BaseApplication
-                            val fileUrl =
-                                baseApplication.baseUrl + finalApplicationVersion.fileUrl
                             Timber.i("finalApplicationVersion.fileUrl: ${finalApplicationVersion.fileUrl}")
                             val downloadManager =
                                 context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
