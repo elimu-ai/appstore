@@ -56,7 +56,7 @@ class ApplicationListActivity : AppCompatActivity() {
                 applicationVersionDao.loadAll()
             Timber.tag(TAG).d("applicationVersions.size(): %s", applicationVersions.size)
             applicationListAdapter.setApplicationVersions(applicationVersions)
-            applicationListAdapter.notifyDataSetChanged()
+            recyclerView.post(applicationListAdapter::notifyDataSetChanged)
         }
     }
 }
