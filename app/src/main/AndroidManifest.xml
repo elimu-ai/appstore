@@ -8,6 +8,21 @@
 
     <permission android:name="${applicationId}.provider.READ" />
 
+    <queries>
+        <package android:name="ai.elimu.vitabu"/>
+        <package android:name="ai.elimu.launcher"/>
+        <package android:name="ai.elimu.content_provider"/>
+        <package android:name="ai.elimu.analytics"/>
+        <package android:name="ai.elimu.kukariri"/>
+        <package android:name="org.dsandler.apps.markers"/>
+        <package android:name="com.eduapp4syria.feedthemonsterENGLISH"/>
+        <package android:name="ai.elimu.herufi"/>
+        <package android:name="com.google.fpl.liquidfunpaint"/>
+        <package android:name="ai.elimu.soundcards"/>
+        <package android:name="ai.elimu.imagepicker"/>
+        <package android:name="ai.elimu.filamu"/>
+    </queries>
+
     <application
         android:networkSecurityConfig="@xml/network_security_config"
         android:name=".BaseApplication"
