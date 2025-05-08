@@ -170,6 +170,9 @@ class ApplicationListAdapter(
                                         )
                                     }
                                     Timber.i("downloadId: $downloadId")
+                                } else {
+                                    Timber.e("Failed to enqueue download")
+                                    notifyItemChanged(position)
                                 }
 
                                 // Replace download button with progress bar
@@ -262,11 +265,16 @@ class ApplicationListAdapter(
                                 destinationInExternalFilesDir
                             )
                             val downloadId = downloadManager.enqueue(request)
-                            downloadReceiver.addDownloadListener(downloadId) {
-                                handleDownloadComplete(itemPosition = position,
-                                    relativeFilePath = destinationInExternalFilesDir,
-                                    checkSum = applicationVersion.checksumMd5
-                                )
+                            if (downloadId != -1L) {
+                                downloadReceiver.addDownloadListener(downloadId) {
+                                    handleDownloadComplete(itemPosition = position,
+                                        relativeFilePath = destinationInExternalFilesDir,
+                                        checkSum = applicationVersion.checksumMd5
+                                    )
+                                }
+                            } else {
+                                Timber.e("Failed to enqueue download")
+                                notifyItemChanged(position)
                             }
 
                             Timber.i("downloadId: $downloadId")
