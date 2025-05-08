@@ -86,5 +86,6 @@ class ApplicationListActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         appListAdapter.unregisterReceiver(this)
+        downloadReceiver.clearListeners()
     }
 }

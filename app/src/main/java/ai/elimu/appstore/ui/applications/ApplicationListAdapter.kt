@@ -156,7 +156,6 @@ class ApplicationListAdapter(
                                         context
                                     )!!
                                         .isoCode + File.separator + "apks" + File.separator + apkFile.name
-                                registeredReceivers.add(downloadReceiver)
                                 request.setDestinationInExternalFilesDir(
                                     context,
                                     null,
@@ -256,8 +255,6 @@ class ApplicationListAdapter(
                                 )!!
                                     .isoCode + File.separator + "apks" + File.separator + apkFile.name
                             Timber.i("destinationInExternalFilesDir: $destinationInExternalFilesDir")
-
-                            registeredReceivers.add(downloadReceiver)
 
                             request.setDestinationInExternalFilesDir(
                                 context,

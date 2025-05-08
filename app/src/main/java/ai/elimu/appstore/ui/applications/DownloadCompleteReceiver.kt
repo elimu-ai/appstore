@@ -17,6 +17,10 @@ class DownloadCompleteReceiver() : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
-        downloadListeners[downloadId]?.invoke()
+        downloadListeners.remove(downloadId)?.invoke()
+    }
+
+    fun clearListeners() {
+        downloadListeners.clear()
     }
 }
