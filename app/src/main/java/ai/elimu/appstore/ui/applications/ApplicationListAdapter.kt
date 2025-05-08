@@ -338,7 +338,11 @@ class ApplicationListAdapter(
 
     fun unregisterReceiver(context: Context) {
         for (receiver in registeredReceivers) {
-            context.unregisterReceiver(receiver)
+            try {
+                context.unregisterReceiver(receiver)
+            } catch (e: IllegalArgumentException) {
+                Timber.e(e)
+            }
         }
     }
 
