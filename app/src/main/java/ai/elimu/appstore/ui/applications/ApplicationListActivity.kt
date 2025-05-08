@@ -2,6 +2,9 @@ package ai.elimu.appstore.ui.applications
 
 import ai.elimu.appstore.R
 import ai.elimu.appstore.room.RoomDb
+import android.app.DownloadManager
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -15,6 +18,7 @@ class ApplicationListActivity : AppCompatActivity() {
 
     private val TAG = "ApplicationListActivity"
     private lateinit var appListAdapter: ApplicationListAdapter
+    private val downloadReceiver: DownloadCompleteReceiver = DownloadCompleteReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate")
@@ -35,7 +39,7 @@ class ApplicationListActivity : AppCompatActivity() {
 
         // Configure list adapter
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
-        appListAdapter = ApplicationListAdapter(this)
+        appListAdapter = ApplicationListAdapter(this, downloadReceiver)
         recyclerView.adapter = appListAdapter
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
@@ -59,6 +63,24 @@ class ApplicationListActivity : AppCompatActivity() {
             appListAdapter.setApplicationVersions(applicationVersions)
             recyclerView.post(appListAdapter::notifyDataSetChanged)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(downloadReceiver,
+                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), RECEIVER_EXPORTED)
+        } else {
+            @Suppress("UnspecifiedRegisterReceiverFlag")
+            registerReceiver(downloadReceiver,
+                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+        }
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(downloadReceiver)
     }
 
     override fun onDestroy() {
