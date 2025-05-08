@@ -80,7 +80,11 @@ class ApplicationListActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(downloadReceiver)
+        try {
+            unregisterReceiver(downloadReceiver)
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e)
+        }
     }
 
     override fun onDestroy() {
