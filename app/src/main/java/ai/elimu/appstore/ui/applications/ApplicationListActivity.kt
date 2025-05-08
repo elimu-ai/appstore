@@ -14,6 +14,7 @@ import timber.log.Timber
 class ApplicationListActivity : AppCompatActivity() {
 
     private val TAG = "ApplicationListActivity"
+    private lateinit var appListAdapter: ApplicationListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate")
@@ -34,8 +35,8 @@ class ApplicationListActivity : AppCompatActivity() {
 
         // Configure list adapter
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
-        val applicationListAdapter = ApplicationListAdapter(this)
-        recyclerView.adapter = applicationListAdapter
+        appListAdapter = ApplicationListAdapter(this)
+        recyclerView.adapter = appListAdapter
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
         val dividerItemDecoration =
@@ -50,13 +51,18 @@ class ApplicationListActivity : AppCompatActivity() {
             val applications =
                 applicationDao.loadAll()
             Timber.tag(TAG).d("applications.size(): %s", applications.size)
-            applicationListAdapter.setApplications(applications)
+            appListAdapter.setApplications(applications)
 
             val applicationVersions =
                 applicationVersionDao.loadAll()
             Timber.tag(TAG).d("applicationVersions.size(): %s", applicationVersions.size)
-            applicationListAdapter.setApplicationVersions(applicationVersions)
-            recyclerView.post(applicationListAdapter::notifyDataSetChanged)
+            appListAdapter.setApplicationVersions(applicationVersions)
+            recyclerView.post(appListAdapter::notifyDataSetChanged)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        appListAdapter.unregisterReceiver(this)
     }
 }

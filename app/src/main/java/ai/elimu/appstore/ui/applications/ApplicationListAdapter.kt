@@ -40,6 +40,7 @@ class ApplicationListAdapter(private val context: Context) :
     private var applications: List<Application>? = null
 
     private var applicationVersions: List<ApplicationVersion>? = null
+    private val registeredReceivers: MutableSet<BroadcastReceiver> by lazy { mutableSetOf() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicationViewHolder {
         Timber.i("onCreateViewHolder")
@@ -113,10 +114,12 @@ class ApplicationListAdapter(private val context: Context) :
                                 // Initiate installation of the APK file
                                 val intentFilter = IntentFilter(Intent.ACTION_PACKAGE_ADDED)
                                 intentFilter.addDataScheme("package")
+                                val packageAddedReceiver = PackageAddedReceiver(position)
                                 context.registerReceiver(
-                                    PackageAddedReceiver(position),
+                                    packageAddedReceiver,
                                     intentFilter
                                 )
+                                registeredReceivers.add(packageAddedReceiver)
                                 val apkUri = FileProvider.getUriForFile(
                                     context, BuildConfig.APPLICATION_ID + ".apk.provider",
                                     apkFile
@@ -145,14 +148,16 @@ class ApplicationListAdapter(private val context: Context) :
                                         context
                                     )!!
                                         .isoCode + File.separator + "apks" + File.separator + apkFile.name
+                                val downloadReceiver = DownloadCompleteReceiver(
+                                    position, destinationInExternalFilesDir,
+                                    checkSum = applicationVersion.checksumMd5
+                                )
                                 context.registerReceiver(
-                                    DownloadCompleteReceiver(
-                                        position, destinationInExternalFilesDir,
-                                        checkSum = applicationVersion.checksumMd5
-                                    ),
+                                    downloadReceiver,
                                     IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                                     Context.RECEIVER_EXPORTED
                                 )
+                                registeredReceivers.add(downloadReceiver)
                                 Timber.i("destinationInExternalFilesDir: $destinationInExternalFilesDir")
                                 request.setDestinationInExternalFilesDir(
                                     context,
@@ -211,11 +216,13 @@ class ApplicationListAdapter(private val context: Context) :
                             // Initiate installation of the APK file
                             val intentFilter = IntentFilter(Intent.ACTION_PACKAGE_ADDED)
                             intentFilter.addDataScheme("package")
-                            context.registerReceiver(PackageAddedReceiver(position), intentFilter)
+                            val packageAddedReceiver = PackageAddedReceiver(position)
+                            context.registerReceiver(packageAddedReceiver, intentFilter)
                             val apkUri = FileProvider.getUriForFile(
                                 context, BuildConfig.APPLICATION_ID + ".apk.provider",
                                 apkFile
                             )
+                            registeredReceivers.add(packageAddedReceiver)
                             val intent = Intent(Intent.ACTION_INSTALL_PACKAGE)
                             intent.setData(apkUri)
                             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -243,11 +250,16 @@ class ApplicationListAdapter(private val context: Context) :
                                     .isoCode + File.separator + "apks" + File.separator + apkFile.name
                             Timber.i("destinationInExternalFilesDir: $destinationInExternalFilesDir")
 
+                            val downloadReceiver = DownloadCompleteReceiver(
+                                position, destinationInExternalFilesDir,
+                                finalApplicationVersion.checksumMd5
+                            )
                             context.registerReceiver(
-                                DownloadCompleteReceiver(position, destinationInExternalFilesDir, finalApplicationVersion.checksumMd5),
+                                downloadReceiver,
                                 IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                                 Context.RECEIVER_EXPORTED
                             )
+                            registeredReceivers.add(downloadReceiver)
 
                             request.setDestinationInExternalFilesDir(
                                 context,
@@ -298,6 +310,11 @@ class ApplicationListAdapter(private val context: Context) :
         this.applicationVersions = applicationVersions
     }
 
+    fun unregisterReceiver(context: Context) {
+        for (receiver in registeredReceivers) {
+            context.unregisterReceiver(receiver)
+        }
+    }
 
     inner class ApplicationViewHolder internal constructor(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
@@ -347,6 +364,10 @@ class ApplicationListAdapter(private val context: Context) :
                     ).setBackgroundTint(ContextCompat.getColor(context, R.color.red)).show()
                 }
                 notifyItemChanged(itemPosition)
+                this@DownloadCompleteReceiver.let { receiver ->
+                    context.unregisterReceiver(receiver)
+                    registeredReceivers.remove(receiver)
+                }
             }
         }
     }
@@ -359,6 +380,8 @@ class ApplicationListAdapter(private val context: Context) :
             Timber.i("intent: $intent")
             Timber.i("intent.getData(): %s", intent.data)
             notifyItemChanged(itemPosition)
+            context.unregisterReceiver(this)
+            registeredReceivers.remove(this)
         }
     }
 }
