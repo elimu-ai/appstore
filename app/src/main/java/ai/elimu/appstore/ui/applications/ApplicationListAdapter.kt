@@ -62,7 +62,7 @@ class ApplicationListAdapter(private val context: Context) :
 
             // Populate TextViews with Application details
             val application = applications!![position]
-            Timber.i("application.getPackageName(): \"" + application.packageName + "\"")
+            Timber.i("application.getPackageName(): ${application.packageName}")
             viewHolder.textViewFirstLine.text = application.packageName
             viewHolder.textViewSecondLine.text = application.applicationStatus.toString()
 
@@ -182,7 +182,7 @@ class ApplicationListAdapter(private val context: Context) :
                         viewHolder.launchButton.visibility = View.VISIBLE
                         viewHolder.launchButton.setOnClickListener {
                             Timber.i("onClick")
-                            Timber.i("Launching \"" + application.packageName + "\"")
+                            Timber.i("Launching ${application.packageName}")
                             val packageManager = context.packageManager
                             val launchIntent =
                                 packageManager.getLaunchIntentForPackage(application.packageName)
