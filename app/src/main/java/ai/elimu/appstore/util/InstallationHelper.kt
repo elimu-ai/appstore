@@ -15,7 +15,7 @@ object InstallationHelper {
         try {
             packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
         } catch (e: PackageManager.NameNotFoundException) {
-            Timber.e(e)
+            Timber.w(e)
             return false
         }
         return true
