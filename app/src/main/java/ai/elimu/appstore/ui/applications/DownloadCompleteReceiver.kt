@@ -17,7 +17,24 @@ class DownloadCompleteReceiver() : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
-        downloadListeners.remove(downloadId)?.invoke()
+
+        val query = DownloadManager.Query().setFilterById(downloadId)
+        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val cursor = downloadManager.query(query)
+
+        if (cursor.moveToFirst()) {
+            val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+            if (statusIndex != -1) {
+                val status = cursor.getInt(statusIndex)
+                if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                    downloadListeners.remove(downloadId)?.invoke()
+                } else {
+                    // Handle failed download if needed
+                    downloadListeners.remove(downloadId)
+                }
+            }
+        }
+        cursor.close()
     }
 
     fun clearListeners() {
