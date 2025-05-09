@@ -121,11 +121,16 @@ jobs:
       - name: Rename signed release file to `ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk`
         run: mv ${{steps.sign_app.outputs.signedReleaseFile}} app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk
 
+      - name: Calculate checksum of file content
+        run: md5sum app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk > app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk.md5
+
       - name: Upload the signed APK file to GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: '${{ needs.create_git_tag.outputs.tagName }}'
-          files: app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk
+          files: |
+            app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk
+            app/build/outputs/apk/release/ai.elimu.appstore-${{ needs.create_git_tag.outputs.tagName }}.apk.md5
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
