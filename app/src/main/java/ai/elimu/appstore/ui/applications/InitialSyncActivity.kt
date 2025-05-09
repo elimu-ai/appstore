@@ -63,7 +63,7 @@ class InitialSyncActivity : AppCompatActivity() {
             override fun onFailure(call: Call<List<ApplicationGson>>, t: Throwable) {
                 Timber.e(t, "onFailure")
 
-                Timber.e(t, "t.getCause(): " + t.cause)
+                Timber.e(t, "t.getCause(): ${t.cause}")
 
                 // Handle error
                 Snackbar.make(binding.initialSyncTextview, t.cause.toString(), Snackbar.LENGTH_LONG).show()
@@ -91,7 +91,7 @@ class InitialSyncActivity : AppCompatActivity() {
                     // Store the new Application in the database
                     GsonToRoomConverter.getApplication(applicationGson)?.let { app ->
                         applicationDao.insert(app)
-                        Timber.i("%s%s", "Stored Application \"" + app.packageName + "\" in database with ID ", app.id)
+                        Timber.i("Stored Application ${app.packageName} in database with ID ${app.id}")
                     }
 
                     if (applicationGson.applicationStatus == ApplicationStatus.ACTIVE) {
@@ -104,10 +104,7 @@ class InitialSyncActivity : AppCompatActivity() {
                                 applicationVersionGson
                             )?.let { applicationVersion ->
                                 applicationVersionDao.insert(applicationVersion)
-                                Timber.i("%s%s", "Stored ApplicationVersion " +
-                                        applicationVersion.versionCode + " in database with ID ",
-                                    applicationVersion.id
-                                )
+                                Timber.i("Stored ApplicationVersion ${applicationVersion.versionCode} in database with ID ${applicationVersion.id}")
                             }
                         }
                     }
@@ -115,7 +112,7 @@ class InitialSyncActivity : AppCompatActivity() {
                     // Update the existing Application in the database
                     GsonToRoomConverter.getApplication(applicationGson)?.let { app ->
                         applicationDao.update(app)
-                        Timber.i("%s%s", "Updated Application \"" + app.packageName + "\" in database with ID ", app.id)
+                        Timber.i("Updated Application ${app.packageName} in database with ID ${app.id}")
                     }
 
                     // Delete all the Application's ApplicationVersions (in case deletions have been made on the server-side)
@@ -131,10 +128,8 @@ class InitialSyncActivity : AppCompatActivity() {
                                 applicationVersionGson
                             )?.let { applicationVersion ->
                                 applicationVersionDao.insert(applicationVersion)
-                                Timber.i("%s%s", "Stored ApplicationVersion " +
-                                        applicationVersion.versionCode + " in database with ID ",
-                                    applicationVersion.id
-                                )
+                                Timber.i("Stored ApplicationVersion ${applicationVersion.versionCode} " +
+                                        "in database with ID ${applicationVersion.id}")
                             }
                         }
                     }
