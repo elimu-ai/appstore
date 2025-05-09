@@ -26,11 +26,9 @@ class DownloadCompleteReceiver() : BroadcastReceiver() {
             val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
             if (statusIndex != -1) {
                 val status = cursor.getInt(statusIndex)
-                if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                if (status == DownloadManager.STATUS_SUCCESSFUL
+                    || status == DownloadManager.STATUS_FAILED) {
                     downloadListeners.remove(downloadId)?.invoke()
-                } else {
-                    // Handle failed download if needed
-                    downloadListeners.remove(downloadId)
                 }
             }
         }
