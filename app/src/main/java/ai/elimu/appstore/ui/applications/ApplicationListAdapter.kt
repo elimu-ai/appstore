@@ -187,7 +187,11 @@ class ApplicationListAdapter(
 
                         // Display the "Launch" button
 
-                        viewHolder.launchButton.visibility = View.VISIBLE
+                        if (application.packageName == BuildConfig.APPLICATION_ID) {
+                            viewHolder.launchButton.visibility = View.INVISIBLE
+                        } else {
+                            viewHolder.launchButton.visibility = View.VISIBLE
+                        }
                         viewHolder.launchButton.setOnClickListener {
                             Timber.i("onClick")
                             Timber.i("Launching ${application.packageName}")
