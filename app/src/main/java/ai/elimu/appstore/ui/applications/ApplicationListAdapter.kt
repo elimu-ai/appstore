@@ -2,6 +2,7 @@ package ai.elimu.appstore.ui.applications
 
 import ai.elimu.appstore.BuildConfig
 import ai.elimu.appstore.R
+import ai.elimu.appstore.databinding.ActivityApplicationListItemBinding
 import ai.elimu.appstore.room.entity.Application
 import ai.elimu.appstore.room.entity.ApplicationVersion
 import ai.elimu.appstore.ui.applications.ApplicationListAdapter.ApplicationViewHolder
@@ -51,9 +52,9 @@ class ApplicationListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicationViewHolder {
         Timber.i("onCreateViewHolder")
-        val itemView =
-            layoutInflater.inflate(R.layout.activity_application_list_item, parent, false)
-        return ApplicationViewHolder(itemView)
+        return ApplicationViewHolder(ActivityApplicationListItemBinding.inflate(
+            layoutInflater, parent, false)
+        )
     }
 
     override fun onBindViewHolder(viewHolder: ApplicationViewHolder, position: Int) {
@@ -358,8 +359,9 @@ class ApplicationListAdapter(
         }
     }
 
-    inner class ApplicationViewHolder internal constructor(itemView: View) :
-        RecyclerView.ViewHolder(itemView) {
+    inner class ApplicationViewHolder internal constructor(
+        itemView: ActivityApplicationListItemBinding
+    ) : RecyclerView.ViewHolder(itemView.root) {
         val textViewFirstLine: TextView
         val textViewSecondLine: TextView
 
@@ -373,15 +375,15 @@ class ApplicationListAdapter(
         init {
             Timber.i("ApplicationViewHolder")
 
-            textViewFirstLine = itemView.findViewById(R.id.textViewFirstLine)
-            textViewSecondLine = itemView.findViewById(R.id.textViewSecondLine)
+            textViewFirstLine = itemView.textViewFirstLine
+            textViewSecondLine = itemView.textViewSecondLine
 
-            launchButton = itemView.findViewById(R.id.list_item_launch_button)
-            installButton = itemView.findViewById(R.id.list_item_install_button)
-            downloadButton = itemView.findViewById(R.id.list_item_download_button)
-            installUpdateButton = itemView.findViewById(R.id.list_item_install_update_button)
-            downloadUpdateButton = itemView.findViewById(R.id.list_item_download_update_button)
-            downloadProgressBar = itemView.findViewById(R.id.list_item_download_progressbar)
+            launchButton = itemView.listItemLaunchButton
+            installButton = itemView.listItemInstallButton
+            downloadButton = itemView.listItemDownloadButton
+            installUpdateButton = itemView.listItemInstallUpdateButton
+            downloadUpdateButton = itemView.listItemDownloadUpdateButton
+            downloadProgressBar = itemView.listItemDownloadProgressbar
         }
     }
 
