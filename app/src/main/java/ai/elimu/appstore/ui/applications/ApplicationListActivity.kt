@@ -1,17 +1,14 @@
 package ai.elimu.appstore.ui.applications
 
-import ai.elimu.appstore.R
+import ai.elimu.appstore.databinding.ActivityApplicationListBinding
 import ai.elimu.appstore.room.RoomDb
 import android.app.DownloadManager
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import timber.log.Timber
 
 class ApplicationListActivity : AppCompatActivity() {
@@ -19,18 +16,18 @@ class ApplicationListActivity : AppCompatActivity() {
     private val TAG = "ApplicationListActivity"
     private lateinit var appListAdapter: ApplicationListAdapter
     private val downloadReceiver: DownloadCompleteReceiver = DownloadCompleteReceiver()
+    private lateinit var binding: ActivityApplicationListBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate")
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_application_list)
+        binding = ActivityApplicationListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
-        val toolBarLayout = findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
-        toolBarLayout.title = title
+        binding.toolbarLayout.title = title
     }
 
     override fun onStart() {
@@ -38,7 +35,7 @@ class ApplicationListActivity : AppCompatActivity() {
         super.onStart()
 
         // Configure list adapter
-        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
+        val recyclerView = binding.layoutAppList.recyclerView
         appListAdapter = ApplicationListAdapter(this, downloadReceiver)
         recyclerView.adapter = appListAdapter
         val linearLayoutManager = LinearLayoutManager(this)
