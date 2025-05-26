@@ -1,5 +1,5 @@
 [versions]
-elimuAnalytics = "3.2.19"
+elimuAnalytics = "3.2.22"
 elimuCommonUtils = "1.0.13"
 material = "1.12.0"
 retrofit = "2.11.0"
