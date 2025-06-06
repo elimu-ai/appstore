@@ -6,6 +6,7 @@ import ai.elimu.appstore.databinding.ActivityInitialSyncBinding
 import ai.elimu.appstore.rest.ApplicationsService
 import ai.elimu.appstore.room.GsonToRoomConverter
 import ai.elimu.appstore.room.RoomDb
+import ai.elimu.common.utils.ui.setLightStatusBar
 import ai.elimu.model.v2.enums.admin.ApplicationStatus
 import ai.elimu.model.v2.gson.application.ApplicationGson
 import android.content.Intent
@@ -27,6 +28,10 @@ class InitialSyncActivity : AppCompatActivity() {
 
         binding = ActivityInitialSyncBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        window.apply {
+            setLightStatusBar()
+        }
     }
 
     override fun onStart() {
