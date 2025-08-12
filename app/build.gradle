@@ -16,7 +16,7 @@ android {
         compileSdk 35
         targetSdkVersion 35
         versionCode 2005078
-        versionName "2.5.78-SNAPSHOT"
+        versionName "2.5.78"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
