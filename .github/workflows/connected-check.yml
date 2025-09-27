@@ -10,7 +10,7 @@ jobs:
   test:
     strategy:
       matrix:
-        api-level: [28, 29]
+        api-level: [29, 30, 31]
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -26,4 +26,5 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          arch: x86_64
           script: ./gradlew connectedCheck
