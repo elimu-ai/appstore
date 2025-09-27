@@ -9,11 +9,11 @@ plugins {
 
 android {
     namespace 'ai.elimu.appstore.utils'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
-        minSdk 26
-        targetSdk 35
+        minSdkVersion 29
+        targetSdkVersion 36
         versionCode 2005091
         versionName "2.5.91-SNAPSHOT"
     }
