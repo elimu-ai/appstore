@@ -158,7 +158,7 @@ jobs:
         run: echo "apkFileUrl ${{ needs.release_apk.outputs.apkFileUrl }}"
 
       - name: Send HTTP request to `${{ matrix.language_code }}.elimu.ai`
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
           url: http://${{ matrix.language_code }}.elimu.ai/rest/v2/applications/ai.elimu.appstore/application-versions/${{ needs.create_git_tag.outputs.tagName }}
           method: PUT
