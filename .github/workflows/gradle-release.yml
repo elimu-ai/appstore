@@ -8,7 +8,7 @@ jobs:
   create_git_tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -89,7 +89,7 @@ jobs:
         run: echo "tagName ${{ needs.create_git_tag.outputs.tagName }}"
 
       - name: Checkout refs/tags/${{ needs.create_git_tag.outputs.tagName }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: refs/tags/${{ needs.create_git_tag.outputs.tagName }}
 
