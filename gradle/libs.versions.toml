@@ -13,7 +13,7 @@ room = "2.8.4"
 androidXJunit = "1.3.0"
 androidXEspresso = "3.7.0"
 kotlinGradlePlugin = "2.2.20"
-agp = "8.8.2"
+agp = "8.9.1"
 
 [libraries]
 elimu-analytics = { group = "ai.elimu", name = "analytics", version.ref = "elimuAnalytics" }
