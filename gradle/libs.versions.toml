@@ -6,7 +6,7 @@ retrofit = "2.11.0"
 junit = "4.13.2"
 timber = "5.0.1"
 
-constraintLayout = "2.2.1"
+constraintLayout = "2.2.2"
 appCompat = "1.7.1"
 recyclerView = "1.4.0"
 room = "2.8.4"
