@@ -147,6 +147,7 @@ jobs:
   notify_webapp_api:
     needs: [ create_git_tag, release_apk ]
     strategy:
+      max-parallel: 1
       matrix:
         language_code: [ eng, hin, tgl, tha, vie ]
     runs-on: ubuntu-latest
