@@ -3,6 +3,7 @@ name: Gradle Release
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   create_git_tag:
